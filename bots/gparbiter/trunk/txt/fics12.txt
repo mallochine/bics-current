@@ -1,0 +1,92 @@
+Hi, Zon!
+
+Here is the immortal piece:
+
+Have fun with it and keep up the good work!
+Fermy
+
+Here is an example with 12 people:
+
+Preturnament seeding:
+
+1. Jkiller
+2. Pminear
+3. Venomous
+4. Bugzilla
+5. Knightdog
+6. Lindegren
+7. Marcusm
+8. Darkfire
+9. Jtp
+10. Kingwaler
+11. Marat
+12. Fermy
+
+Groups are Group1(#1,6,7,12), Group2(#2,5,8,11), Group3(#3,4,9,10)
+Results are:
+
+Group1           Group2           Group3
+Jkiller   9      Pminear   12     Venomous   11
+Lindegren 7      Marat     7      Bugzilla   9
+Marcusm   7      Knightdog 6      Jtp        5
+Fermy     7      Darkfire  5      Kingwalker 5
+
+Jkiller, Pminear, Venomous, Bugzilla and Marat immediately advance to the next
+stage;
+
+In group 1 there is a 3 way tie for the 2nd. First we have to determine the
+order of places.
+Lindegren, Marcusm and Fermy play elimination zh. Lindegren as a highest seed
+gets a bye in first round of zh. Marcusm wins over fermy. Fermy is eliminated,
+he gets place #4 in the group. Now Lindegren wins over Marcusm in zh. Thus
+Lindegren gets place #2 in the group and advances.
+
+Meanwhile there is a tie for 3rd in group 3. Jtp wins over Kingwalker in zh to
+get place #3 in his group.
+
+At this point we determined the place of every player in his respective group.
+First 2 places advance, so 6 people (Jkiller, Pminear, Venomous, Bugzilla,Marat
+and Lindegren) already advanced.
+
+Now we need to select two out of 3 people who get 3rd places in their groups.
+Marcusm has the most points of these 3, so he advances. Finally, Knigthdog plays
+jtp 2 0 zh for the final place in the next stage. Knightdog wins and advances.
+
+Stage 2.
+We have 8 people here. For stage 2 people are seeded according to the following
+rule:
+1. Winner of Group 1 ---    Jkiller
+2. Winner of Group 2 ---    Pminear
+3. Winner of Group 3 ---    Venomous
+4. 2nd place of Group 3 --- Bugzilla
+5. 2nd place of Group 2 --- Marat
+6. 2nd place of Group 1 --- Lindegren
+7. 3rd place with most points --- Marcusm
+8. another 3rd place          --- Knightdog
+
+You may notice that if there wouldn't be upset in group 2 (marat 2nd, Kdog 3rd)
+the seeding
+will repeat the seeding for stage 1.
+
+Ok now we form 2 groups according to this new Seeding. The groups are:
+
+Group 1          Group 2
+Jkiller (#1)     Pminear(#2)
+Bugzilla (#4)    Venomous(#3)
+Marat (#5)       Lindegren (#4)
+Knightdog (#8)   Marcusm (#5)
+
+In the first round
+Jkiller/Bugzilla plays Marat/Knightdog (Jkiller v Marat)
+Pminear/Venomous v Lindegren/marcusm (pminear v Lindegren)
+
+2nd round
+Jkiller/Marat v Bugzilla/Kdog (jkiller v Knightdog)
+Pminear/Lindegren v  Venomous/marcusm (pminear v Marcusm)
+
+3rd round
+Jkiller/Kdog v Bugzilla/marat (jkiller v bugzilla)
+Pminear/marcusm v venomous/lindgegren (pminear v venomous)
+
+That's it. Final stage is the same as in 16-players case.
+

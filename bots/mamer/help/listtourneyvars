@@ -1,0 +1,57 @@
+listtourneyvars
+
+Alias: information, lv, vars
+
+Usage: listtourneyvars <optional tourney number>
+
+This command lists the variables for the specified tourney number.  The
+tourney number is the value of your default tourney variable if it is not
+specified; otherwise the value of your default tourney variable will
+change to the specified tourney number.
+
+Here is a sample variable listing:
+
+:           (T)ime:     3 
+:      (I)ncrement:     0 
+:         (R)ounds:     0 
+:    Max (P)layers:    16 
+:           (M)ode:     r (r)ated or (u)nrated
+:          (S)tyle:     s (s)wiss, (r)ound robin, (k)nock out,
+:                         or (d)ouble round robin
+:        (V)ariant:     w (w)ild, (r)egular, (b)ug, (s)uicide, or
+(c)razyhouse
+:      (W)ild Type:    10 (0), (1), (2), (3), (4), (5), (8), (9)8a, (10)fr
+:     Rating (L)ow:     0 
+:    Rating (H)igh:  9999 
+:
+:          Manager:  toddmf 
+
+The characters enclosed in () are shortcuts that a mamer manager can use
+to change the values of the variables.
+
+Here is what each of the variables mean:
+
+    Time         -- Same as always: minutes to start the game with
+    Increment    -- Same as always: additional seconds per move
+    Rounds       -- Number of rounds in the tourney. If this is 0, mamer will 
+                    choose an optimal number of rounds.
+    Max Players  -- The tourney will automatically close when this many
+                    players have joined.
+    Mode         -- Will the tourney games be rated or unrated?
+    Style        -- Round Robin(everyone plays everyone), double round
+                    robin(everyone plays everyone twice- one game with
+                    each color), Swiss System(system where, generally
+                    speaking, players play opponents with the same score
+                    in the tourney each round), or knockout(single
+                    elimination)?
+    Variant      -- What type of game is being played?  Regular is used 
+                    for blitz, standard, and lightning.
+    Wild Type    -- This only appears when Variant is set to Wild.  This
+                    is the type of wild that will be played.
+    Rating Low   -- Players with a rating lower than this cannot join.
+    Rating High  -- Players with a rating higher than this cannot join.
+    Manager      -- The handle of this tourney's manager.
+
+See also: default, settourneyvar, swiss
+
+[Last modified: March 8, 1999 -- toddmf]

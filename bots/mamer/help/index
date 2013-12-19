@@ -1,0 +1,14 @@
+ about             index             manager_level     showhelpfile
+ addchaos          info              messman           shutdown
+ addcomment        join              open              standings
+ addtotourney      keep              performance       start
+ announce          knockout          rank              swiss
+ chaos             listmanagers      rating            tourneytell
+ close             listplayers       setcommandlevel   upset
+ create            listrank          setmanagerlevel   user_commands
+ default           listtourneygames  setres            vars
+ delete            listtourneys      setsilence        version
+ finger            listtourneyvars   setstat           who
+ forfeit           loadedusers       settourneyvar     withdraw
+ games             manager_commands  showcommands
+ grid              manager_help      showcomment

@@ -1,0 +1,6 @@
+#COMMAND
+Removes a comment.  Supply the number of the comment obtained with ShowComments.
+
+Note that this should only be used when a comment was added in error.  Never delete a comment because it is outdated.
+
+#USAGE

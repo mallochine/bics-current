@@ -1,0 +1,11 @@
+showcomment
+
+Alias: sc
+
+Usage: showcomment <handle>
+
+Reserved for mamer managers (level of 25 or higher)
+
+This command displays the specified user's mamer comment file.
+
+[Last modified: March 7, 1999 -- toddmf]

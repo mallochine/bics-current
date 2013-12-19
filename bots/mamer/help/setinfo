@@ -1,0 +1,13 @@
+setinfo
+
+Usage: setinfo <handle> <number of tourneys> <wins> <losses> <draws>
+               <first places> <second places> <third places>
+
+Reserved for mamer managers (level 50 or higher)
+
+This command is used to set <handle>'s mamer finger statistics in the
+event that data becomes corrupted somehow.
+
+See also: finger, setstat
+
+[Last modified: September 20, 1999 -- toddmf]

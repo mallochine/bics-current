@@ -1,0 +1,4 @@
+#COMMAND
+Shuts down %me and saves all data in memory to disk.
+
+#USAGE

@@ -1,0 +1,26 @@
+user_commands
+
+Command            Alias       Level  Basic info
+---------------------------------------------------------------------
+finger           | finger     |   0 | Displays the stats for a user.
+information      | vars       |   0 | Displays the tournament variables.
+join             | join       |   0 | Request to enter a tourney.
+listmanagers     | lm         |   0 | Displays the Managers list.
+listplayers      | lp         |   0 | Displays the players in the
+                                      tourney.
+listrank         | rank       |   0 | Displays player rank.
+listtourneys     | lt         |   0 | Displays the tournament list.
+listtourneygames | games      |   0 | Displays the tournament games.
+listtourneyvars  | lv         |   0 | Displays the tournament variables.
+players          | who        |   0 | Displays the players in the
+                                      tourney.
+setsilence       | silence    |   0 | Sets your silence variable
+showcommands     | showcommands |   0 | List commands and descripts.
+showhelpfile     | help       |   0 | Shows a help file.
+tourneytell      | tt         |   0 | Tells all the players in a tourney.
+standings        | grid       |   0 | Displays the players in the
+                                      tourney.
+withdraw         | withdraw   |   0 | Remove yourself from a tourney.
+version          | version    |   0 | Print mamer version.
+
+[Last modified: March 7, 1999 -- toddmf]

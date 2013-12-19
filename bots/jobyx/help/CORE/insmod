@@ -1,0 +1,4 @@
+#COMMAND
+Inserts a loadable JobyX module.  You will be notified of any conflicts detected between all loaded modules.
+
+#USAGE

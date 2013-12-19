@@ -1,0 +1,102 @@
+# Sample ftb config file - edit this to fit your needs
+
+
+#-------------------------------------------------
+# Server information
+#-------------------------------------------------
+
+# Handle name used to log into the server.
+user	= TestTeamBot
+
+# Password for this account.  Comment it out for use with guest accounts.
+#password	= ChangeMe
+
+# Name of the server.  Used in various places such as the finger information
+# and shouts.
+server	= Moof Chess Server
+
+# Host address of the server.
+host	= freechess.org
+
+# Port number to connect.
+port	= 5000
+
+
+#-------------------------------------------------
+# timers (in seconds)
+#-------------------------------------------------
+
+# A "spam" is the advertisement of team formation in the "teams channel".
+spam_interval	= 560
+
+# Time to wait when one of the captains disconnect during a team game.
+# When this time is up, FTB will reset itself.
+captain_drop_time_out	= 900 
+
+# Remove the player from the team list if the player is not active (ie. not
+# sending tells to the team channel) for the time period specified below.
+player_idle_time_out	= 600
+
+# FTB will stop sending spam if there is no activity for this long.
+activity_time_out		= 600 
+
+# Send a cshout advertisement each 'cshout_interval' seconds.
+cshout_interval		= 8000 
+
+# Set this to a higher number if you have a slow connection.
+# 1 should be suitable in most cases.
+# It is not recommended to set this higher than 2.
+pose_time_out                  = 1 
+
+
+#-------------------------------------------------
+# game setup
+#-------------------------------------------------
+
+# Number of votes needed to appoint a possible captain.
+needed_to_appoint    = 3
+
+# Number of votes needed to remove a player from its captain position.
+needed_to_kick       = 3
+
+# Minimum number of players needed to start a team game.
+needed_to_start	= 4
+
+# Default time controls of a team game.  Currently used only in the help
+# file.
+default_time_controls       = 60 60
+
+
+#-------------------------------------------------
+# channels
+#-------------------------------------------------
+
+# The channel to advertise team formation.
+teams_channel = 20
+
+# The channel of one team, where the team discusses their next move.
+team_A_channel = 21
+
+# The channel of the other team.
+team_B_channel = 22
+
+
+#-------------------------------------------------
+# lists
+#-------------------------------------------------
+
+# List of FTB admins.  Admins have access to the admin commands.
+admins = tom Dick harry
+
+# Add abusers to be ignored by FTB here.
+ignore = jill jAne harvey123
+
+#-------------------------------------------------
+# logs
+#-------------------------------------------------
+
+# The directory where you want log files to be saved
+# logfile_prefix = logs/
+
+# Keep Logs? 1 = yes 0 = no
+log_games = 0

@@ -1,0 +1,4 @@
+#COMMAND
+Reloads saved files from disk, overwriting all data in memory.  Use with caution!
+
+#USAGE

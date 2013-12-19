@@ -1,0 +1,4 @@
+#COMMAND
+Displays information on a loaded JobyX module.  A list of all commands, lists, variables, and avariables will be displayed, as well as any custom information provided by the module itself.
+
+#USAGE

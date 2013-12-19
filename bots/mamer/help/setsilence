@@ -1,0 +1,18 @@
+setsilence
+
+Alias: silence
+
+Usage: setsilence <integer>
+
+The setsilence command is used to change the value of your mamer
+silence variable, which filters tourneytells.  If you set it to 0, you
+will hear all tourneytells.  If you set it to 1, you will only hear
+tourneytells from the manager of the tournament.  If you set it to 2, you
+will hear no tourneytells.
+
+To view the current value of a user's mamer silence variable, use mamer's
+"finger" command.
+
+See also: finger, tourneytell
+
+[Last modified: March 8, 1999 -- toddmf]

@@ -1,0 +1,87 @@
++---------------+
+|JobyX Changelog|
++---------------+
+
++------+
+|Legend|
++------+
+
++   Feature added
+#   Feature fixed
+-   Miscellaneous
+.   in jobyx.pl
+C   in CORE.pm
+?   elsewhere
+
++-----------+
+|0.99.7 beta|
++-----------+
+#.   &::getpi guest detection.
+-.   Removed an unused variable.
+#.   ICS_input hooks were causing jobyx.pl to loop.
+
++-----------+
+|0.99.6 beta|
++-----------+
++.   Smarter option for disabling automatic &::getpi.
+#.   &::userinfo.
+
++-----------+
+|0.99.5 beta|
++-----------+
++.   Option to disable automatic &::getpi of connecting users.
+-?   Miscellaneous bug fixes and enhancements.
+
++-----------+
+|0.99.4 beta|
++-----------+
++.   &::table causes cells starting with \0 to be right-aligned.
++.   &::table now causes undefs to be handled as merged cells.
++C   ShowListInfo, ShowCommandInfo, and ShowVariableInfo commands.
++.   The parameter parser now prevents unnecessary Perl warnings.
+
++------------+
+|0.99.3 alpha|
++------------+
++C   ListTUs command.
+-C   Default userlevels tweaked.
++.   &::table.
+-C   ShowList (w/o params) and ListCommands now use &::table.
++?   New and old features added to documentation.
+#.   &::qtell now correctly handles qtells over 1000 characters.
+#.   &::qtell handles $#items+1==$height_variable properly now.
+#C   ShowList now properly considers the view level before showing a list.
++C   Added %var substitution directive to the help system.
+#.C  Connection drop detector.
+-?   Rewrote packaging script into a makefile.
+
++------------+
+|0.99.2 alpha|
++------------+
++?   New features added to documentation.
+#C   Set command.
+#.   &::getvar.
+
++------------+
+|0.99.1 alpha|
++------------+
+
++C   Help and usage system.
++C   Comment file system.
++.   &::list_comment.
+#.   &::getpi.
+-.   &::getpi is now compatible with FICS.
+-C   CORE now displays userlevels and comment counts via the ICS_finger hook.
+#.   &::qtell.
++C   Finished pager.
++?   Help and usage files written.
++C   SetLevel command.
+-?   Demo JobyX configuration file updated.
+-.C  Language pack system modified.
++C   Connection termination detection.
+
++------------+
+|0.99.0 alpha|
++------------+
+
+- Original release.

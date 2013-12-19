@@ -1,0 +1,10 @@
+version
+
+Alias: ve
+
+Usage: version
+
+This command displays the current mamer version and the time and date it
+was compiled on.
+
+[Last modified: March 7, 1999 -- toddmf]

@@ -1,0 +1,17 @@
+The Internet Chess Servers are services that you can telnet to and use to play
+ chess with many other players around the world, both human and machine.
+
+
+
+The following is a list of current BICS servers that are up and running:
+
+Name                 Address         Port #   Timeseal Required?
+
+BICS Regular      chess.sipay.ru      5000          Yes  
+BICS Development  dev.chess.sipay.ru  5000          Yes
+
+
+The main interface used to connect to BICS is Thief. You can download the latest version
+at http://www.thief-interface.com.  
+
+[Last Modified: November 26, 2009 -- ilknight]  

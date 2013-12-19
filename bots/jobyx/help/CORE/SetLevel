@@ -1,0 +1,8 @@
+#COMMAND
+Changes the %me level of a user.
+
+You may not:
++ change the level of a user on the same or higher level as yourself.
++ change the level of a user to the same or higher level than yours.
+
+#USAGE

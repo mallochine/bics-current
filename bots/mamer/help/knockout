@@ -1,0 +1,16 @@
+knockout
+
+Knockout tourneys are also known as single elimination tourneys.  Here is
+how they work.  Firstly, the amount of players required to start must be
+either 2^x or 2^x-1, where x > 2.  In other words, you can start with 7, 
+8, 15, 16, 31, 32, 63, 64, etc.  x also represents the number of rounds
+the tourney will last.  Once started, the the players are seeded based on
+their ratings.  If there are an odd number of players at the start of a
+round, one player is given a bye and moves on to the next round.  The
+remaining players play.  The top seed plays the bottom seed, the
+2nd seed plays the second to last seed, etc.  Winners move on to the next
+round. In the event of a draw, whoever played black moves on the if the
+difference in rating between the two players is less than 200 points.
+Otherwise, the lower rated player moves on.
+
+[Last modified: September 25, 1998 -- toddmf]

@@ -1,0 +1,47 @@
+Question: What is DRR?
+Answer: DRR stands for Double Round Robin. It means that all players in a tournament play every other player in the tournament twice.
+
+Question: How do I withdraw from (leave) a tournament?
+Answer: If the tournament has started, use "telltm -d May I withdraw?", and wait for them to give you permission. If the tournament has not started, simply type "td withdraw #", # being the tournament ID number.
+
+Question: What is Dinamo?
+Answer: Dinamo is a form of Accelerated Swiss where higher rated players play each other faster. Therefore, instead of higher rated players having to earn their way to the top with the Swiss System, they are automaitcally placed there. 
+
+Question: What is KO?
+Answer: KO stands for Knock Out, where players get eliminated after losing. On the case of a draw, the player who is white gets eliminated, and the player who is black proceeds to the next round.
+
+Question: What is SS?
+Answer: SS stands for Swiss System. It is the most simple pairing style that matches opponents based on their number of wins and losses in the tournament. 
+
+Question: My opponent is idle and hasn't started the game. What should I do?
+Answer: Contact the Tournament Manager (TM) using "telltm -d <message>".
+
+Question: My opponent is disconnected. What should I do?
+Answer: Contact the Tournament Manager (TM) using "telltm -d <message>".
+
+Question: I cannot see my board and I am using Jin. Why is this?
+Answer: Your interface (Jin) does not support the varient that you are playing.
+
+Question: What round is it?
+Answer: You can use "td g" to find out.
+
+Question: Who can make me a tourney?
+Answer: A Tournament Manager (TM) can. Use "showtm", and ask them in a private tell for a tournament. Alternatively, you can ask for a tournament in channel 49.
+
+Question: Can I make a tourney?
+Answer: No. You must ask a Tournament Manager (TM) to make one for you. Use "showtm", and ask them in a private tell for a tournament. Alternatively, you can ask for a tournament in channel 49.
+
+Question: When does this tourney start?
+Answer: Either when the tournament fills up with enough players, or, if the tournament is a scheduled tournament, it should start at the given start time found in the name of the tournament.
+
+Question: How do I start the game? 
+Answer: Use "td pg" to play your game in a tournament.
+
+Question: After the game, when do we play again?
+Answer: When the next round starts. This happens when all games in the current round have been played.
+
+Question: How many rounds are there?
+Answer: You can use "td g" to find out.
+
+Question: How can I join a tournament?
+Answer: Use "td j #", # being the tournament identification number. 

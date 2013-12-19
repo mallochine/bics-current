@@ -1,0 +1,50 @@
+FicsTeamBot version 1.10
+===============================
+
+Organizes team games on a chess server.
+
+
+System Requirements:
+********************
+
+Perl, about 4 MB RAM, about 2 MB disk space.
+
+
+INSTRUCTIONS FOR USE:
+*********************
+
+Copy "ftb.config.sample" to "ftb.config", and edit it as desired.
+
+Once ficsteambot is logged into the server, it can be controlled by an admin
+who is also logged into the server:
+
+Tell the bot 'help admin' for details on the admin commands
+
+Player ratings are stored in the file "ftb.ratings".
+
+There are references in the code to commands which may be specific to the FICS server.  These may need to be changed in the code when using the bot on another server.  The 'tg' server alias is one example.
+
+Admins are expected to monitor games from time to time.  If a player is disruptive, cheats , or misuses the bot, the admin can use "pose +cen <name>" to ban the player from using the bot.
+
+
+Bug reports and Feature requests:
+*********************************
+
+Items noted are not yet concrete and represent possible changes, except for those marked with (!) which represent necessary or highly desired fixes or changes.
+
+Bugs:
+*****
+
+dickyticker reported being assigned an unusually low rating by the bot.  It was around 50.
+
+Feature Requests:
+******
+
+ Put abusers in censor list.  Tell the abuser to message an admin to be removed.
+ Keep record of abusive captains (in an ics formula variable).
+
+ From time to time notify everyone if someone is playing on one team and inside the opposing teams channel.
+
+ Make instructions and output that is more friendly to new users and makes it easier to find games and channels.
+
+ Log files should be html and include board diagrams (with piece images.)

@@ -1,0 +1,4 @@
+#COMMAND
+Displays help information on a particular command or topic.  If the topic name is omitted, the "index" topic will be displayed.
+
+#USAGE

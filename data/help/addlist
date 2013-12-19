@@ -1,0 +1,18 @@
+Usage: addlist <list> <information
+
+>  
+
+This command adds information to the list in question.  There are several kinds of lists 
+on the server.  Some can only be modified by admins; others can be modified by 
+all users.  The "sublist" command removes information from a list.
+
+  The standard alias for "addlist" is "+".  For example, "addlist notify
+ SomeGuy" could be typed as "+notify SomeGuy" instead.
+  
+
+
+See Also:  admins  alias  showlists  sublist
+
+
+[Last modified: November 26, 2009 -- ilknight]
+

@@ -1,0 +1,1080 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>JobyX Module Reference/Manual</title>
+<link rev="made" href="mailto:chris@pyromaniacs.hopto.org" />
+</head>
+
+<body style="background-color: white">
+
+<p><a name="__index__"></a></p>
+<!-- INDEX BEGIN -->
+
+<ul>
+
+	<li><a href="#jobyx_reference/manual">JOBYX REFERENCE/MANUAL</a></li>
+	<ul>
+
+		<li><a href="#jobyx_configuration">JobyX configuration</a></li>
+		<li><a href="#location_of_modules">Location of Modules</a></li>
+		<li><a href="#user_levels">User Levels</a></li>
+		<li><a href="#qualifications">Qualifications</a></li>
+		<li><a href="#core_verification_subs">Core Verification Subs</a></li>
+		<li><a href="#server_connection">Server Connection</a></li>
+		<li><a href="#command_definition">Command Definition</a></li>
+		<li><a href="#list_definition">List Definition</a></li>
+		<li><a href="#variable_definition">Variable Definition</a></li>
+		<li><a href="#avariable_definition">Avariable Definition</a></li>
+		<li><a href="#loading_a_module">Loading a Module</a></li>
+		<li><a href="#removing_a_module">Removing a Module</a></li>
+		<li><a href="#core_features">Core Features</a></li>
+		<li><a href="#hooks">Hooks</a></li>
+		<li><a href="#dealing_with_conflicts">Dealing With Conflicts</a></li>
+		<li><a href="#help_system">Help System</a></li>
+	</ul>
+
+	<li><a href="#bugs">BUGS</a></li>
+	<li><a href="#credits">CREDITS</a></li>
+</ul>
+<!-- INDEX END -->
+
+<hr />
+<p>
+</p>
+<hr />
+<h1><a name="jobyx_reference/manual">JOBYX REFERENCE/MANUAL</a></h1>
+<p>Herein you will find enough information to write basic JobyX modules, and/or get JobyX running.  If you need any other assistance, visit the SourceForge project page at <a href="http://www.sourceforge.net/projects/jobyx">http://www.sourceforge.net/projects/jobyx</a>.</p>
+<p>
+</p>
+<h2><a name="jobyx_configuration">JobyX configuration</a></h2>
+<p>The file <em>jobyxconfig.pm</em> contains global constants that JobyX uses to login to the server, load default modules, etc.  A sample is provided, called <em>jobyxconfig.pm.demo</em>.  Rename this to <em>jobyxconfig.pm</em> and edit it to suit your needs.  Note that you should remove the sample language customization constants, unless you want JobyX to parse shouts instead of tells.</p>
+<p>For information on customizing what you call your TUs (Trusted Users), see the top of <em>JX_Mod/CORE/English.pm</em>.  It will explain how to do this by editing <em>jobyxconfig.pm</em>.</p>
+<p>I have tried to supply meaningful default command levels for each command.  Feel free to tweak them.  They are located in <em>JX_Mod/CORE.pm</em>.  After you modify them, <em>back up the file</em> lest a JobyX update clobber your modified version.  This also means you will have to re-edit them after a JobyX update.  The backup you made will help you remember which settings you chose.</p>
+<p>
+</p>
+<h2><a name="location_of_modules">Location of Modules</a></h2>
+<p>Modules should be placed in <code>path_to_jobyx/JX_Mod/</code> and should have a package name of <code>JX_Mod::your_module_name</code>.  For example, my Tourney module is placed in <em>/home/chris/jobyx/JX_Mod/Tourney.pm</em> and the first line is <code>package&nbsp;JX_Mod::Tourney;</code>.  Note that you may not create nested modules; <code>JX_Mod::Tourney::Seek</code> won't work.</p>
+<p>
+</p>
+<h2><a name="user_levels">User Levels</a></h2>
+<p>Every user has a numeric userlevel, which defaults to 10, unless the user is a guest, then the level is 1.  Userlevels can range from 0-100.  All commands should be above level 0, as this level is reserved for abusers.  Userlevels can be customized by editing the <code>@levels</code> definition in jobyx.pl.  The following levels should ALWAYS be in place - modification could cause problems.</p>
+<p>0 = Abuser</p>
+<p>1 = Guest</p>
+<p>10 = Player</p>
+<p>99 = Operator</p>
+<p>Any level defined as 100 will be ignored, as it is reserved for JobyX itself.  On startup it will automatically set level 100 to the bot's server handle.</p>
+<p>You may modify the names of the default levels, but make sure they still mean the same thing.  For example, 0 could be ``Offender'', 1 could be ``Unreg'', 10 could be ``User'', and 99 could be ``Super User''.</p>
+<p>
+</p>
+<h2><a name="qualifications">Qualifications</a></h2>
+<p>----------------</p>
+<p>This is experimental and subject to change.  In the future, requirements will be tested via a verification sub.  For example:</p>
+<pre>
+        sub verify_insmod {
+                my @ui=&amp;::userinfo($_[0]);
+                $ui[0] or return 0;
+                return ($ui[1]-&gt;[4] &gt;= 99 or &amp;::inlist('tadmin',$_[0]));
+        }</pre>
+<p>While a bit clunkier, this will allow more complicated checks, as well as a cleaner display of <strong>ListCommands</strong>.</p>
+<p>Note that if only a userlevel check is needed, a number may be used in place of a verification sub.  This level would also be displayed on the <strong>ListCommands</strong> output.  If a verification sub is used, the userlevel will not be displayed on this output.</p>
+<p>----------------</p>
+<p>To restrict access to commands by userlevel or position in lists, a (sort of) language has evolved.  Here are the possible arguments:</p>
+<dl>
+<dt><strong><a name="item_number">number (like 10 or 50)</a></strong><br />
+</dt>
+<dd>
+Specifies the userlevel required.
+</dd>
+<p></p>
+<dt><strong><a name="item_ly%3a%3clist%3e">ly:&lt;list&gt;</a></strong><br />
+</dt>
+<dd>
+The user must be in the <code>&lt;list&gt;</code> list.
+</dd>
+<p></p>
+<dt><strong><a name="item_ln%3a%3clist%3e">ln:&lt;list&gt;</a></strong><br />
+</dt>
+<dd>
+The user must not be in the <code>&lt;list&gt;</code> list.
+</dd>
+<p></p></dl>
+<p>You can combine these with the following ``operators'':</p>
+<dl>
+<dt><strong><a name="item_%2b">+</a></strong><br />
+</dt>
+<dd>
+logical AND
+</dd>
+<p></p>
+<dt><strong><a name="item_%2c">,</a></strong><br />
+</dt>
+<dd>
+logical OR
+</dd>
+<p></p></dl>
+<p>Operators are read from left to right.  There is no ``order of operations''.</p>
+<p>Note that parentheses may <em>not</em> be used for grouping!  If you need to do something really complex, verify it in the verification/command subroutine.</p>
+<p>Any time that ``userlevel'' is mentioned, it really means ``qualifications string'' unless it says ``numeric userlevel''.</p>
+<p>
+</p>
+<h2><a name="core_verification_subs">Core Verification Subs</a></h2>
+<p>The core provides several subroutines for common variable/list types.  Note that some have no application for a list.  For example, &amp;::boolean probably wouldn't make a good list validator.  To create your own verification subs, use either of the following formats:</p>
+<dl>
+<dt><strong><a name="item_lists">lists</a></strong><br />
+</dt>
+<dd>
+&amp;verifysub($handle,$list,$new_item)
+</dd>
+<p></p>
+<dt><strong><a name="item_variables%2favariables">variables/avariables</a></strong><br />
+</dt>
+<dd>
+&amp;verifysub($handle,$var,$new_setting,$old_setting)
+</dd>
+<p></p></dl>
+<p>Note that it is not required to use any parameters.  For example, <code>&amp;::handle</code> only uses <code>$new_item</code> (or <code>$new_setting</code> for variables) to validate the item.  On the other hand, <code>&amp;::boolean</code> uses <code>$old_setting</code> when <code>$new_setting</code> is null.  It is possible to create subs for lists <em>and</em> variables, like <code>&amp;::handle</code> or <code>&amp;::notnull</code>.</p>
+<dl>
+<dt><strong><a name="item_%5c%26%3a%3aboolean_variable">\&amp;::boolean <em>variable</em></a></strong><br />
+</dt>
+<dd>
+Looks for ``n/no/off/0'' for false, and ``y/yes/on/1'' for true.  Return value will be (0) when value is invalid, (1) when value is OK, or (2,0 || 1) if a string is used instead of ``0'' or ``1''.  If the new setting is omitted, the old setting will be negated and returned.
+</dd>
+<p></p>
+<dt><strong><a name="item_%5c%26%3a%3anotnull_list%2c_variable">\&amp;::notnull <em>list, variable</em></a></strong><br />
+</dt>
+<dd>
+Return true when the new item is not null or whitespace.
+</dd>
+<p></p>
+<dt><strong><a name="item_%5c%26%3a%3atrue_variable">\&amp;::true <em>variable</em></a></strong><br />
+</dt>
+<dd>
+Always return true.  (Dangerous!  Consider \&amp;::notnull.)
+</dd>
+<p></p>
+<dt><strong><a name="item_%5c%26%3a%3ahandle_list%2c_variable">\&amp;::handle <em>list, variable</em></a></strong><br />
+</dt>
+<dd>
+The item must be a server handle.  Automatic name completion (I.E. ``techde'' -&gt; ``TechDeck'') will occur.
+</dd>
+<p></p>
+<dt><strong><a name="item_%5c%26%3a%3ahandle_no_complete_list%2c_variable">\&amp;::handle_no_complete <em>list, variable</em></a></strong><br />
+</dt>
+<dd>
+Same as above, but no completion.  (I.E. ``techde'' -&gt; error.)
+</dd>
+<p></p>
+<dt><strong><a name="item_%5c%26%3a%3ahandle_lower_list%2c_variable">\&amp;::handle_lower <em>list, variable</em></a></strong><br />
+</dt>
+<dd>
+The person adding the item must be on a higher numeric userlevel than the person to be added.
+</dd>
+<p></p>
+<dt><strong><a name="item_%5c%26%3a%3ahandle_lower_no_complete_list%2c_varia">\&amp;::handle_lower_no_complete <em>list, variable</em></a></strong><br />
+</dt>
+<dd>
+Combination of previous two subs.
+</dd>
+<p></p></dl>
+<p>
+</p>
+<h2><a name="server_connection">Server Connection</a></h2>
+<p>Because JobyX uses a nonblocking socket, detecting when the server closes the connection is not as easy as waiting for input to run out.  In order to detect a broken connection, JobyX will examine each line against the regular expressions found in <code>@Lang::CORE::connection_fail</code>.</p>
+<p>However, JobyX anticipates that your connection may not always be cleanly cut, so if it doesn't recieve anything from the server for one full minute, it will send the bogus ``notacommand'' command.  If JobyX doesn't recieve a reply within 30 seconds, it assumes that the connection was dropped, saves all data, and restarts itself.</p>
+<p>
+</p>
+<h2><a name="command_definition">Command Definition</a></h2>
+<p>Commands are the heart of JobyX's operation.  When JobyX is told something, it will attempt to locate the best match from the commands it knows, and pass execution to the appropriate subroutine.</p>
+<p>@command=(</p>
+<dl>
+<dt><strong><a name="item_%24name%2c">$name,</a></strong><br />
+</dt>
+<dd>
+This is the name of the command (duh).  It is what users will type to execute it.  You should stick with upper and lowercase letters.  An exception is when you are creating a one-character alias-type-thing, like ``+'', ``-'', ``='', or ``.''.  If a command's name is one character, and is not a letter, then no space is required between it and the first argument.  All other command names <em>must</em> start with a letter.  If you make a command <code>!helloworld</code>, nobody will be able to use it, because the command parser will try to execute the ``!'' command with ``helloworld'' as the first argument.
+</dd>
+<p></p>
+<dt><strong><a name="item_%5c%26handler%2c">\&amp;handler,</a></strong><br />
+</dt>
+<dd>
+Reference to the subroutine that will handle this command.  The sub will be called like <code>&amp;handler($handle_of_caller,@args)</code>, where <code>$handle_of_caller</code> is the handle of the user that is executing the command, and <code>@arg</code> is the arguments supplied with the command.
+</dd>
+<p></p>
+<dt><strong><a name="item_%24execlv%2c">$execlv,</a></strong><br />
+</dt>
+<dd>
+Userlevel required to execute the command.
+</dd>
+<p></p>
+<dt><strong><a name="item_%24seelv%2c">$seelv,</a></strong><br />
+</dt>
+<dd>
+Userlevel required to see the command.  Not neccessary if <code>$visible==0</code>, but you should still supply it so you don't confuse yourself.
+</dd>
+<p></p>
+<dt><strong><a name="item_%24args%2c">$args,</a></strong><br />
+</dt>
+<dd>
+Maximum number of arguments, 0 for infinite.
+</dd>
+<p></p>
+<dt><strong><a name="item_%24visible%2c">$visible,</a></strong><br />
+</dt>
+<dd>
+Whether or not the command will be displayed on the <strong>ListCommands</strong> output.  Generally, this should be on for the first instance of a command, and off for aliases (commands with different names but the same command handler).  See the CORE module for some examples.
+</dd>
+<p></p></dl>
+<p>);</p>
+<p>
+</p>
+<h2><a name="list_definition">List Definition</a></h2>
+<p>JobyX comes with a standard ICS-compatible list feature.  Lists can be used to store a variety of information including handles, IP addresses, email addresses, port numbers, ``bad words'', and anything else you can think of.</p>
+<p>@list=(</p>
+<dl>
+<dt><strong>$name,</strong><br />
+</dt>
+<dd>
+The name of the list.  This is used with the +addlist/-sublist/=showlist commands.
+</dd>
+<p></p>
+<dt><strong>$seelv,</strong><br />
+</dt>
+<dd>
+Userlevel required to see the list on the output of <strong>ShowList</strong> when no listname is specified.
+</dd>
+<p></p>
+<dt><strong><a name="item_%24viewlv%2c">$viewlv,</a></strong><br />
+</dt>
+<dd>
+Userlevel required to view the contents of the list.
+</dd>
+<p></p>
+<dt><strong><a name="item_%24addlv%2c">$addlv,</a></strong><br />
+</dt>
+<dd>
+Userlevel required to add an item to the list.
+</dd>
+<p></p>
+<dt><strong><a name="item_%24sublv%2c">$sublv,</a></strong><br />
+</dt>
+<dd>
+Userlevel required to remove an item from the list.
+</dd>
+<p></p>
+<dt><strong><a name="item_%24private%2c">$private,</a></strong><br />
+</dt>
+<dd>
+If true, each user will have their own copy of the list, like ``notify'' or ``censor''.  If false, the list is shared, like ``admin'' or ``muzzle''.
+</dd>
+<p></p>
+<dt><strong><a name="item_%5c%26verifysub%2c">\&amp;verifysub,</a></strong><br />
+</dt>
+<dd>
+Reference to a subroutine that will be called to verify that an item is indeed valid for this list.  It will <em>only</em> be called when an <strong>AddList</strong> is in progress.  <strong>SubList</strong> will not make use of it.  It will be called like:
+</dd>
+<dd>
+<pre>
+        &amp;verifysub($handle_of_caller,$list_name,$item)</pre>
+</dd>
+<dd>
+<p>and will expect a return list of:</p>
+</dd>
+<dd>
+<pre>
+        return (1)              #item is OK, add it
+        return (2,$item)        #add $item instead
+        return (0,$error)       #don't add the item, and give the error
+                                #$error to the caller.</pre>
+</dd>
+<dd>
+<p>The <code>(2,$item)</code> format may be used to add a different item instead.</p>
+</dd>
+<dd>
+<p>If anything is acceptable, set the reference to <code>\&amp;::notnull</code>.</p>
+</dd>
+<p></p>
+<dt><strong><a name="item_%5c%26addsub%2c">\&amp;addsub,</a></strong><br />
+</dt>
+<dd>
+Reference to a subroutine that will be called <em>after</em> an item has been added.  It will be called like:
+</dd>
+<dd>
+<pre>
+        &amp;addsub($handle_of_caller,$list_name,$item,$add)
+        # note that &amp;subsub has the same parameters
+        # $add == 1 if the item was added</pre>
+</dd>
+<dd>
+<p>A return value of true will qtell <code>$item</code> the <strong>You have been added to/removed from the <code>$list_name</code> list by <code>$handle_of_caller</code>.</strong> message.  If you don't want to write a handler just to return true, set the reference to <code>\&amp;::true</code>.  You should definately not return true if the list contains something other than handles.  To make the list automatically add a comment for the user, set the reference to <code>\&amp;::list_comment</code>, which also returns true, meaning that the user will also be notified.</p>
+</dd>
+<dd>
+<p>This can be employed to do a variety of things.  For my Tourney module, I use it to call <code>\&amp;::setlevel</code> to change the user's level to 20 when <code>$list_name</code> eq <strong>Manager</strong>, providing that the user is below level 20.  I could also make it <code>&amp;::send(&quot;tell 6 $item has been made a TM by $handle_of_caller.\n&quot;)</code>, though that could be overkill.</p>
+</dd>
+<p></p>
+<dt><strong><a name="item_%5c%26subsub%2c">\&amp;subsub,</a></strong><br />
+</dt>
+<dd>
+Reference to a subroutine that will be called <em>after</em> an item has been removed.  See <code>\&amp;addsub</code> for details.
+</dd>
+<p></p>
+<dt><strong><a name="item_%24max%2c">$max,</a></strong><br />
+</dt>
+<dd>
+Maximum number of items that can be in this list.  If you don't want a limit, use 0.  It's a good idea to put limits on personal lists so that malicious users can't eat disk space or memory.  Global lists shouldn't need a limit unless you're worried that your bot's admins won't behave.  But you're the one training them, right?
+</dd>
+<p></p>
+<dt><strong><a name="item_%24type%2c">$type,</a></strong><br />
+</dt>
+<dd>
+The plural name of what is stored on the list.  This is displayed like <strong>-- <code>$listname</code> list: <code>$num $type</code> --</strong>.  For example, lists that store handles should stick with ``names''; lists that store IP addresses may want to use ``ips''; etc.
+</dd>
+<p></p>
+<dt><strong><a name="item_%5c%40entries%2c">\@entries,</a></strong><br />
+</dt>
+<dd>
+Reference to a list containing the default items for this list.  Note that these will be used <em>only</em> if the list file on disk <em>does not exist</em>.  If the file is merely empty, the list will be too.  For example, my ProxyBuster module defines a few default ports to scan.  You probably don't want to set this for personal lists.
+</dd>
+<p></p></dl>
+<p>);</p>
+<p>
+</p>
+<h2><a name="variable_definition">Variable Definition</a></h2>
+<p>Variables are a simple, yet effective way for each user to keep their own settings.  First, check to see if a personal list would be better for the option you're considering.  For example, ``censor'' probably wouldn't make a good variable; a personal list would be more efficient.</p>
+<p>@variable=(</p>
+<dl>
+<dt><strong>$name,</strong><br />
+</dt>
+<dd>
+Name of the variable.  Used in <strong>Set</strong> and displayed in <strong>Variables</strong>.
+</dd>
+<p></p>
+<dt><strong><a name="item_%24havelv%2c">$havelv,</a></strong><br />
+</dt>
+<dd>
+Userlevel required to have the variable at all.  In my Tourney module, for example, there is an <strong>Open</strong> variable, which is used by TMs to specify whether or not they are open to receive tourney requests.  This variable's <code>$havelv</code> is 20, thus preventing non-TMs from getting confused about it.
+</dd>
+<p></p>
+<dt><strong><a name="item_%24default%2c">$default,</a></strong><br />
+</dt>
+<dd>
+Default value of the variable.
+</dd>
+<p></p>
+<dt><strong><a name="item_%24visibility%2c">$visibility,</a></strong><br />
+</dt>
+<dd>
+This specifies who can see the setting:
+</dd>
+<dd>
+<p>0 = Everybody can see the setting.
+1 = Each user can only see his/her own setting.
+2 = Nobody can see the setting.</p>
+</dd>
+<p></p>
+<dt><strong>\&amp;verifysub,</strong><br />
+</dt>
+<dd>
+Reference to a subroutine that will be called when a variable is about to be set.  It will be called like:
+</dd>
+<dd>
+<pre>
+        &amp;verifysub($handle_of_caller,$variable,$setting)</pre>
+</dd>
+<dd>
+<p>and expects a return value of:</p>
+</dd>
+<dd>
+<pre>
+        return (1)              # setting is OK, set it
+        return (2,$setting)     # set to $setting instead
+        return (0,$error)       # setting is not OK.  use error $error
+                                # if present, else use generic &quot;Bad
+                                # setting for variable $variable.&quot;</pre>
+</dd>
+<dd>
+<p>If the variable is a standard boolean (on/off) variable, use <code>\&amp;::boolean</code>.</p>
+</dd>
+<p></p>
+<dt><strong><a name="item_%5c%26setsub%2c">\&amp;setsub,</a></strong><br />
+</dt>
+<dd>
+Reference to a subroutine that will be called <em>after</em> a variable has been set.  It will be called like:
+</dd>
+<dd>
+<pre>
+        &amp;setsub($handle_of_caller,$variable,$setting)</pre>
+</dd>
+<dd>
+<p>In my Tourney module, I use <code>&amp;::send</code> to add or remove the user from the server's TM list depending on the <code>$setting</code> of the <strong>Open</strong> variable.  This will turn their (TM) light on or off.</p>
+</dd>
+<dd>
+<p>Note that you can use different subs for different variables, or the same sub for a few or all variables.  It's up to you how you want to use it.  <code>$variable</code> is supplied specifically for this case.  If you use different subs for different variables, you can safely ignore it.</p>
+</dd>
+<p></p></dl>
+<p>);</p>
+<p>
+</p>
+<h2><a name="avariable_definition">Avariable Definition</a></h2>
+<p>Avariables are in a sense JobyX's personal variables.  They should be used to hold things that affect JobyX's behavior globally.  Like variables and personal lists, consider whether a public list would be better suited.  In my BadWord module, for example, I use a global list, <strong>BadWords</strong>, to store the list of unacceptable terms.  However, the same module uses the <strong>MaxWarnings</strong> avariable to set how many warnings a user can receive before he/she is automatically muzzled.  The <strong>ASet</strong> command is used to modify avariables, and you may view them by using <strong>AVariables</strong>.</p>
+<p>@avariable=(</p>
+<dl>
+<dt><strong>$name,</strong><br />
+</dt>
+<dd>
+Name of the avariable.  Used with <strong>ASet</strong> to modify it, and displayed with <strong>AVariables</strong>.
+</dd>
+<p></p>
+<dt><strong><a name="item_%24seelevel%2c">$seelevel,</a></strong><br />
+</dt>
+<dd>
+Level required to see the avariable.
+</dd>
+<p></p>
+<dt><strong><a name="item_%24setlevel%2c">$setlevel,</a></strong><br />
+</dt>
+<dd>
+Level required to set the avariable.
+</dd>
+<p></p>
+<dt><strong>\&amp;verifysub,</strong><br />
+</dt>
+<dd>
+Reference to a subroutine that will be called when this avariable is about to be set.  See the <code>\&amp;verifysub</code> definition under <strong>Variable Definition</strong>.
+</dd>
+<dd>
+<p>It is probably safe to use <code>\&amp;::notnull</code> here, since only people in the aconfig list can use it, and that will most likely be just you and a few select others that (supposedly) know what they are doing.  If you plan on having a lot of (clueless) people in this list, you may wish to define verification subs.</p>
+</dd>
+<p></p>
+<dt><strong>$default,</strong><br />
+</dt>
+<dd>
+Default value of the avariable.
+</dd>
+<p></p>
+<dt><strong>\&amp;setsub,</strong><br />
+</dt>
+<dd>
+Reference to a subroutine that will be called <em>after</em> an avariable is set.  It will be called like:
+</dd>
+<dd>
+<pre>
+        &amp;setsub($handle_of_caller,$avariable,$setting)</pre>
+</dd>
+<dd>
+<p>You probably won't need to use this one, but it is provided for flexibility.</p>
+</dd>
+<p></p></dl>
+<p>);</p>
+<p>
+</p>
+<h2><a name="loading_a_module">Loading a Module</a></h2>
+<p>When a module is inserted, its <a href="#item_ics_init"><code>ICS_init</code></a> sub will be called like:</p>
+<pre>
+        &amp;JX_Mod::&lt;module&gt;::ICS_init($username,$JobyX_version,$handle_of_insertee)</pre>
+<p><code>$username</code> is JobyX's handle on the server, and <code>$JobyX_version</code> is the version of JobyX in the format <strong>major.minor.revision</strong>.  You can use this to check for a particular version.  <code>$handle_of_insertee</code> is the server handle of the user that inserted the module.  Note that the module may be loading before the server connection is established, so don't do anything requiring a connection.  Your module's <a href="#item_ics_begin"><code>ICS_begin</code></a> sub will be called (without any parameters) after the connection to the server is complete.  If a bot operator inserts the module, <a href="#item_ics_begin"><code>ICS_begin</code></a> will be called immediately following <a href="#item_ics_init"><code>ICS_init</code></a>.</p>
+<p>The real meat of this subroutine is the return value.  This is your chance to tell JobyX about any commands, lists, variables, and avariables your module provides.</p>
+<pre>
+        return (
+        [\@command1   ... \@commandN],
+        [\@list1      ... \@listN],
+        [\@variable1  ... \@variableN],
+        [\@avariable1 ... \@avariableN],
+        \&amp;idlesub
+        );</pre>
+<p>Notice that the actual commands/lists/etc are <em>references</em>.  This is <em>very</em> important!  The syntax of the @command/@list/etc lists are specified above.</p>
+<p>Returning <code>(0,$error)</code> will abort the load.  I use this in my Tourney module to abort a load when a stored tourney can't be read.</p>
+<p><code>\&amp;idlesub</code> will be called when there is no input from the server.  This means that your sub could get called as many as five times per second!  This sub should be quick and efficient--too much work could delay JobyX's response, as it will not begin reading from the server again until this function returns.  In my Tourney module, I use it to periodically announce tourneys.  Like most other subroutine references, you may supply <code>undef</code> if you're not going to use it.</p>
+<p>If one of your modules depends on another, use <a href="#item_ismoduleloaded"><code>&amp;::ismoduleloaded($module)</code></a> to determine if a required module is loaded.  Generally, modules should not be dependant on other modules.  If you think two modules need each other to function, consider merging them in to one module.  This will be cleaner and more efficient.</p>
+<p>Also note that you can't specify what number the module will have.  More on this in <strong>Conflicts</strong>.</p>
+<p>
+</p>
+<h2><a name="removing_a_module">Removing a Module</a></h2>
+<p>When a module is about to be removed, the <a href="#item_ics_term"><code>ICS_term</code></a> sub will be called like:</p>
+<pre>
+        &amp;Module::ICS_term($handle_of_remover)</pre>
+<p><code>$handle_of_remover</code> is the server handle of the user that removed the module.  If the handle is <strong>*DEBUG*</strong>, JobyX itself unloaded the module, probably during a shutdown/restart.</p>
+<p>Like <a href="#item_ics_init"><code>ICS_init</code></a>, you can return stuff here:</p>
+<pre>
+        return (0)              #All OK, remove the module
+        return (1,$error)       #Something's wrong, don't remove the module,
+                                #and tell the remover $error.</pre>
+<p>In my Tourney module, I return <code>(1,$error)</code> when I can't save the tourney list, for example.  If the error is not serious, it is a good idea to return <code>(0)</code>.  Note that returning <code>(1,$error)</code> will not cancel the unload if the connection to the server was terminated, or if a bot operator forced a shutdown/restart.</p>
+<p>This sub should be used to save any persistant items.  Note that variable settings and lists are managed by JobyX; you don't need to do anything here to save those things.</p>
+<p>If your sub returns <code>(0)</code>, Joby will remove all commands, lists, variables, and avariables specific to your module from memory.  This allows you to customize a bot on-the-fly.  Note that the actual module code will not be removed, but all connections between JobyX and it will be effectively severed.  No hooks will be called.</p>
+<p>
+</p>
+<h2><a name="core_features">Core Features</a></h2>
+<p>The core provides some other subs that you can call from your modules:</p>
+<dl>
+<dt><strong><a name="item_%24%3a%3alast_flags">$::last_flags</a></strong><br />
+</dt>
+<dd>
+This is about the only global <em>variable</em> of interest.  It will contain the flags captured from the last tell.  See the Tell sample module for an example.  I was considering passing it to the command handler, right after the user's handle, but it's not often you'd need it, so this seems more efficient and out-of-the-way.
+</dd>
+<p></p>
+<dt><strong><a name="item_columns">&amp;::columns(@items)</a></strong><br />
+</dt>
+<dd>
+Arrange the elements of <code>@items</code> in columns.  The width will never exceed 79.  The return list is suitable for feeding to &amp;::qtell.
+</dd>
+<p></p>
+<dt><strong><a name="item_execcommand">&amp;::execcommand($handle,$command,$args)</a></strong><br />
+</dt>
+<dd>
+Pretend that user <code>$handle</code> is executing command <code>$command</code> with arguments <code>$args</code>.  Note that <code>$args</code> <em>is not a list</em>!  Doing this:
+</dd>
+<dd>
+<pre>
+        &amp;::execcommand('Hitmonchan','addlist','censor','tupac');</pre>
+</dd>
+<dd>
+<p>would not have the desired effect.  Hitmonchan would be told how to use <strong>AddList</strong>.  This is probably what you want:</p>
+</dd>
+<dd>
+<pre>
+        &amp;::execcommand('Hitmonchan','addlist','censor tupac');</pre>
+</dd>
+<p></p>
+<dt><strong><a name="item_getavar">&amp;::getavar($avariable)</a></strong><br />
+</dt>
+<dd>
+Returns the current value of the <code>$avariable</code> avariable.
+</dd>
+<p></p>
+<dt><strong><a name="item_getvar">&amp;::getvar($handle,$variable)</a></strong><br />
+</dt>
+<dd>
+Returns the current value of <code>$handle</code>'s <code>$variable</code> variable.  Note that this is not always the same as the data contained in the <code>%var</code> hash in the user's parray, which will be unset if the variable hasn't been set by the user.
+</dd>
+<p></p>
+<dt><strong><a name="item_%26%3a%3agetnextline">&amp;::getnextline</a></strong><br />
+</dt>
+<dd>
+Returns the next line from the server.  Note that when called outside of the core input loop, lines are <code>push()</code>ed to an array and <code>shift()</code>ed off by the input loop after your handler returns.  This means that any lines read via <a href="#item_%26%3a%3agetnextline"><code>&amp;::getnextline</code></a> <em>will</em> be parsed by the input loop, which is probably a good thing.  Also note that <code>\&amp;idle</code> subs may be called while waiting for an input line, so don't do anything in your idle sub that could interfere with the sub you're calling <a href="#item_%26%3a%3agetnextline"><code>&amp;::getnextline</code></a> from.
+</dd>
+<p></p>
+<dt><strong><a name="item_getpi">&amp;::getpi($handle,$expect_complete)</a></strong><br />
+</dt>
+<dd>
+Returns user info for <code>$handle</code>.  Use <code>&amp;::userinfo</code> if all the info you need is supplied by it, as it is more efficient.  Generally, you should only need to call <code>&amp;::getpi</code> for <code>$flags</code> or <code>\%ratings</code>.  Note that <a href="#item_%24%3a%3alast_flags"><code>$::last_flags</code></a> could possibly take care of the flags you need, but on some servers xtells don't contain flags, so look out.
+</dd>
+<dd>
+<p>If <code>$expect_complete</code> is on, <code>&amp;::getpi</code> will not return success when the server returns a completed handle.  For example, if the user HotPawn existed, <a href="#item_getpi"><code>&amp;::getpi(&quot;hotpaw&quot;,1)</code></a> would fail.  If <code>$expect_complete</code> was off, or omitted, <code>&amp;::getpi</code> would return stats for ``HotPawn''.  (These examples assume that the user ``HotPaw'' doesn't exist.)</p>
+</dd>
+<dd>
+<p>return (</p>
+</dd>
+<dl>
+<dt><strong><a name="item_%24exists%2c">$exists,</a></strong><br />
+</dt>
+<dd>
+1 if the user exists, 0 otherwise.
+</dd>
+<p></p>
+<dt><strong><a name="item_%24handle%2c">$handle,</a></strong><br />
+</dt>
+<dd>
+The handle of the player, in the correct case.
+</dd>
+<p></p>
+<dt><strong><a name="item_%24online%2c">$online,</a></strong><br />
+</dt>
+<dd>
+1 if the user is online, 0 otherwise.  If this is all you're going to check, <code>&amp;::userinfo</code> will be more efficient.
+</dd>
+<p></p>
+<dt><strong><a name="item_%24guest%2c">$guest,</a></strong><br />
+</dt>
+<dd>
+1 if the user is a guest, 0 otherwise.
+</dd>
+<p></p>
+<dt><strong><a name="item_%24flags%2c">$flags,</a></strong><br />
+</dt>
+<dd>
+<em>Current</em> flags for this user, such as ``(*)'', ``(TM)'', or ``(C)''.  Note that admins can turn off their (*), so only depend on constant flags.  On all servers that I know of, the (C) flag is constant.  I use this in my Tourney module to reject computer players from non-computer tourneys, and in my Vote module to restrict voting to human accounts.
+</dd>
+<p></p>
+<dt><strong><a name="item_%5c%25ratings%2c">\%ratings,</a></strong><br />
+</dt>
+<dd>
+Hash <em>reference</em> to the user's ratings.  <code>$ratings-&gt;{'blitz'}</code> will return the user's blitz rating, for example.
+</dd>
+<p></p>
+<dt><strong><a name="item_%24email%2c">$email,</a></strong><br />
+</dt>
+<dd>
+User's registered email address.  Only available if JobyX's server handle has admin status.
+</dd>
+<p></p>
+<dt><strong><a name="item_%24ip%2c">$ip,</a></strong><br />
+</dt>
+<dd>
+User's current IP address.  Like <code>$email</code>, admin status is required.
+</dd>
+<p></p></dl>
+<p>);</p>
+<dt><strong><a name="item_inlist">&amp;::inlist($list,$item)</a></strong><br />
+</dt>
+<dd>
+Returns 1 if <code>$item</code> is in the <code>$list</code> list.
+</dd>
+<p></p>
+<dt><strong>&amp;::inlist($list,$item,$owner)</strong><br />
+</dt>
+<dd>
+Returns 1 if <code>$item</code> is in <code>${owner}</code>'s personal <code>$list</code> list.
+</dd>
+<p></p>
+<dt><strong><a name="item_ipc">&amp;::ipc($module,@args)</a></strong><br />
+</dt>
+<dd>
+Send list <code>@args</code> to module <code>$module</code> via the <a href="#item_ics_ipc"><code>ICS_ipc</code></a> hook.  The return value will be whatever was returned from the other module's <a href="#item_ics_ipc"><code>ICS_ipc</code></a>.  If module <code>$module</code> is not loaded, or does not implement <a href="#item_ics_ipc"><code>ICS_ipc</code></a>, <code>undef</code> will be returned.  Since modules are meant to be independant, there is little use for this.  Flexibility is the key though, so I leave the judgement up to you.
+</dd>
+<p></p>
+<dt><strong><a name="item_ismoduleloaded">&amp;::ismoduleloaded($module)</a></strong><br />
+</dt>
+<dd>
+Returns 1 if module <code>$module</code> is currently loaded.
+</dd>
+<p></p>
+<dt><strong><a name="item_parse">&amp;::parse($string)</a></strong><br />
+</dt>
+<dd>
+Parses <code>$string</code> as if it was received from the server.  Be careful not to start an infinite loop by making it parse a tell to the same command handler that you're calling <code>&amp;::parse</code> from.
+</dd>
+<p></p>
+<dt><strong><a name="item_qtell">&amp;::qtell($handle,@lines)</a></strong><br />
+</dt>
+<dd>
+Page the lines in <code>@lines</code> to user <code>$handle</code>.  Don't worry about newlines embedded in the lines; they will be handled the same was as if the strings on both sides were separate elements of <code>@lines</code>.  The user's <strong>Height</strong> variable is taken into account here.
+</dd>
+<p></p>
+<dt><strong><a name="item_qualified">&amp;::qualified($handle,$userlevel)</a></strong><br />
+</dt>
+<dd>
+Returns 1 if <code>$handle</code> meets the qualifications specified in <code>$userlevel</code>.  See <strong>Qualifications</strong> at the beginning of this document for information on qualification strings.
+</dd>
+<p></p>
+<dt><strong><a name="item_table">&amp;::table($padding,@rows)</a></strong><br />
+</dt>
+<dd>
+Create a nicely formatted table, using the values you supplied.  (Basically, beefed up version of &amp;::columns.)  If <code>$padding</code> is on, each cell will be wrapped with spaces to make the output easier to read.  Please note that cells <em>will not wrap</em>, even if the width of the table would exceed 79!  Cells are left-aligned by default.  To make a cell right-aligned, prefix the content with character 0.  The format of <code>@rows</code> is:
+</dd>
+<dd>
+<pre>
+        @rows=(\@row1, \@row2, ... \@rowN)</pre>
+</dd>
+<dd>
+<p>For each row, you can do either of the following:</p>
+</dd>
+<dd>
+<pre>
+        # Standard row.
+        @row1=('Column 1','Column 2', ... 'Column X');
+        # Second column, value &quot;50&quot;, is right-aligned.  Note that just &quot;\050&quot;
+        # won't work... character 50 will be displayed left-aligned.  See the
+        # perlop manpage.
+        @row2=('Blitz:',&quot;\00050&quot;);
+        
+        # Divider.
+        @row2=();</pre>
+</dd>
+<dd>
+<p>The number of columns actually displayed depends on the number of items in the longest row.</p>
+</dd>
+<dd>
+<p>For example, the following code:</p>
+</dd>
+<dd>
+<pre>
+        &amp;::table(
+        ['Manager','Level','Status'],
+        [],
+        ['ChrisHowie','Operator(99)','Always busy'],
+        ['Venom','Master(30)'],
+        );</pre>
+</dd>
+<dd>
+<p>Would return a list that, when used with &amp;::qtell, would display the following:</p>
+</dd>
+<dd>
+<pre>
+        +-----------------------------------------+
+        | Manager    | Level        | Status      |
+        |------------|--------------|-------------|
+        | ChrisHowie | Operator(99) | Always busy |
+        | Venom      | Master(30)   |             |
+        +-----------------------------------------+</pre>
+</dd>
+<dd>
+<p>Nifty, no?  Of course, you can modify the returned list before you pass it to &amp;::qtell, either to add a few status rows to the end, or something completely bizzare.</p>
+</dd>
+<dd>
+<p>If you want to create a merged cell, span the area with <code>undef</code>s.  For example:</p>
+</dd>
+<dd>
+<pre>
+        &amp;::table(
+        ['Statistics',undef],
+        [],
+        ['One','Two'],
+        ['Three',undef],
+        );</pre>
+</dd>
+<dd>
+<p>Would result in this:</p>
+</dd>
+<dd>
+<pre>
+        +--------------+
+        | Statistics   |
+        |--------------|
+        | One   | Two  |
+        | Three        |
+        |       | Four |
+        +--------------+</pre>
+</dd>
+<dd>
+<p>Note that you cannot supply <code>undef</code> as the content for the first column, or your command handler will die.</p>
+</dd>
+<dd>
+<p>To right-align a cell, preceed the cell with the null character.  For example, ``\0001.00'' will display ``1.00'' aligned to the right.</p>
+</dd>
+<dd>
+<p>There is no special way to create extra-tall rows.  If you want to wrap cells, you'll have to do something really interesting and complicated.</p>
+</dd>
+<p></p>
+<dt><strong><a name="item_userinfo">&amp;::userinfo($handle)</a></strong><br />
+</dt>
+<dd>
+Returns an array:
+</dd>
+<dd>
+<p>return (</p>
+</dd>
+<dl>
+<dt><strong><a name="item_%24success%2c">$success,</a></strong><br />
+</dt>
+<dd>
+1 if the user was online, or if the user was offline but the player's file was successfully read.  Note that if the user is offline, changes to the player's array <em>will not</em> be saved!
+</dd>
+<p></p>
+<dt><strong><a name="item_%5c%40parray%2c">\@parray,</a></strong><br />
+</dt>
+<dd>
+The user's array.
+</dd>
+<p></p></dl>
+<p>);</p>
+<p>As for the format of the player array:</p>
+<p>[</p>
+<dl>
+<dt><strong>$handle,</strong><br />
+</dt>
+<dd>
+User's handle.  The case of the handle is saved to disk, so the handle case is reliable whether the user is online or offline, unless an admin has changed the case of the handle since the user's last logoff.
+</dd>
+<p></p>
+<dt><strong>$guest,</strong><br />
+</dt>
+<dd>
+Guest status.  If the file was read from disk, this will never be 1; guest parrays aren't saved.
+</dd>
+<p></p>
+<dt><strong>$email,</strong><br />
+</dt>
+<dd>
+Email address.
+</dd>
+<p></p>
+<dt><strong>$ip,</strong><br />
+</dt>
+<dd>
+IP address.
+</dd>
+<p></p>
+<dt><strong><a name="item_%24userlevel%2c">$userlevel,</a></strong><br />
+</dt>
+<dd>
+User's numeric userlevel.
+</dd>
+<p></p>
+<dt><strong><a name="item_%5c%25vars%2c">\%vars,</a></strong><br />
+</dt>
+<dd>
+Hash <em>reference</em> to the user's variable settings.  In general, <code>&amp;::getvar</code> is more reliable, because it will take into account unset variables with default values.
+</dd>
+<p></p>
+<dt><strong><a name="item_%5c%25misc%2c">\%misc,</a></strong><br />
+</dt>
+<dd>
+Miscellanous data about the user.  This stuff will get saved in the user's file, so you can put things you will want to remember later in here.  For example, my Tourney module stores tourney statistics in this hash.
+</dd>
+<p></p></dl>
+<p>]</p>
+</dl>
+<p>
+</p>
+<h2><a name="hooks">Hooks</a></h2>
+<p>Though not hooks in the traditional sense, JobyX will let your module know when something interesting happens on the server, or locally.  It is not neccessary to supply any of these.  (Exceptions: <a href="#item_ics_init"><code>ICS_init</code></a> and <a href="#item_ics_term"><code>ICS_term</code></a>.)  If your module doesn't have a specific hook, JobyX will skip it when a hook event occurs.  Modules receive hooks in the order that they were loaded in.</p>
+<p>The list is sorted <em>somewhat</em> alphabetically; similar hooks are grouped.</p>
+<dl>
+<dt><strong><a name="item_ics_init"><code>ICS_init($username,$version,$handle)</code></a></strong><br />
+</dt>
+<dd>
+<code>$handle</code> is trying to insert your module.  See <strong>Loading a Module</strong> above.
+</dd>
+<p></p>
+<dt><strong><a name="item_ics_begin">ICS_begin</a></strong><br />
+</dt>
+<dd>
+See <strong>Loading a Module</strong> above.
+</dd>
+<p></p>
+<dt><strong><a name="item_ics_term">ICS_term</a></strong><br />
+</dt>
+<dd>
+See <strong>Removing a Module</strong> above.
+</dd>
+<p></p>
+<dt><strong><a name="item_ics_connect"><code>ICS_connect($handle,$guest,$ip)</code></a></strong><br />
+</dt>
+<dd>
+<code>$handle</code> has connected to the server.  <code>$guest</code> and <code>$ip</code> will only be available if JobyX's server account has admin status.
+</dd>
+<p></p>
+<dt><strong><a name="item_ics_disconnect"><code>ICS_disconnect($handle)</code></a></strong><br />
+</dt>
+<dd>
+<code>$handle</code> has left the server.
+</dd>
+<p></p>
+<dt><strong><a name="item_ics_dis_connect"><code>ICS_dis_connect($handle,$arrive)</code></a></strong><br />
+</dt>
+<dd>
+<code>$handle</code> has connected if <code>$arrive</code>, else disconnected.
+</dd>
+<p></p>
+<dt><strong><a name="item_ics_finger"><code>ICS_finger($handle_of_caller,$requested_handle)</code></a></strong><br />
+</dt>
+<dd>
+<code>$handle_of_caller</code> is requesting finger information on <code>$requested_handle</code>.  You can return a string to append to the finger notes, with newlines if more than one line is required.  In my Tourney module, I return the user's tournament statistics.  Each module's return information will be separated with a newline automatically.
+</dd>
+<p></p>
+<dt><strong><a name="item_ics_input"><code>ICS_input($line)</code></a></strong><br />
+</dt>
+<dd>
+Called when a line is received from the server.  <code>$line</code> <em>will not</em> have a trailing newline, and any prompt will be removed.  A return value of <code>(1)</code> tells JobyX not to parse this line further.  A return value of <code>(2)</code> tells JobyX to not parse this line further, and also to not call <a href="#item_ics_input"><code>ICS_input</code></a> for any remaining modules.  Generally, if you want to stop JobyX from parsing, <code>(1)</code> should be used.  There's no telling what another module can see in this line.  An exception is when your module is going to take exclusive action on this line and you don't want another module to take action.  For example, interpreting a shout as a command and you don't want another module doing the same thing and flooding the shouter.
+</dd>
+<p></p>
+<dt><strong><a name="item_ics_tell"><code>ICS_tell($handle,$flags,$message)</code></a></strong><br />
+</dt>
+<dd>
+<code>$handle</code> (with flags <code>$flags</code>) has told JobyX <code>$message</code>.  A return value of <code>(1)</code> will make JobyX ignore this command.  A return value of <code>(2)</code> will make JobyX ignore this command, and also not call <a href="#item_ics_tell"><code>ICS_tell</code></a> for any remaining modules.  Generally, you should use <code>(2)</code>, for obvious reasons.  We don't want a whole load of modules interpreting a tell as a command and responding at once.  For example, a VoteBot module could do something like:
+</dd>
+<dd>
+<pre>
+        sub ICS_tell {
+                my($handle,undef,$mess)=@_;
+                if ($mess=~/^ \d+ [a-z]? $/xi) {
+                        my @res=&amp;::userinfo($handle);
+                        $res[0] or return;
+                        my $lt=$res[1]-&gt;[6]-&gt;{'lasttopic'};
+                        ($lt&gt;0) or return;
+                        &amp;::execcommand($_[0],'vote',&quot;$lt $message&quot;);
+                        return 2;
+                }
+        }</pre>
+</dd>
+<dd>
+<p>to make it behave like giantfish's VoteBot.  (Note that the <strong>Vote</strong> command would most likely be setting the user's <code>$misc-&gt;{'lasttopic'}</code> miscellaneous setting.</p>
+</dd>
+<p></p>
+<dt><strong><a name="item_ics_ipc"><code>ICS_ipc($module,@args)</code></a></strong><br />
+</dt>
+<dd>
+This will be called when module <code>$module</code> wants to talk to your module.  This can be used to share any type of data, which is transmitted in <code>@args</code>.  See <code>&amp;::ipc</code>.
+</dd>
+<p></p>
+<dt><strong><a name="item_ics_module_info">ICS_module_info</a></strong><br />
+</dt>
+<dd>
+The <strong>modinfo</strong> command has been called on your module.  Return either a string with lines separated by newlines, or a <code>@list</code> of lines.  You can display anything that you think is relevant to the current state of the module.  For example, a Tourney module might display how many tourneys are in memory.  This can be <em>very</em> useful in debugging.
+</dd>
+<p></p>
+<dt><strong><a name="item_ics_lsmod"><code>ICS_lsmod($maxlen)</code></a></strong><br />
+</dt>
+<dd>
+Similar to <a href="#item_ics_module_info"><code>ICS_module_info</code></a>, but the return should be one string, without newlines.  Called when <strong>lsmod</strong> is executed.  It is perfectly okay to return nothing.  Should yo decide to return anything, it should be a brief quip about the internal state of the module.  Try not to exceed <code>$maxlen</code> characters.  <code>$maxlen</code> is found by subtracting the length of your module name and number from 79, thus giving the longest string that you can return without wrapping.  You can exceed this if neccessary, but you should try to keep long output for <a href="#item_ics_module_info"><code>ICS_module_info</code></a>.
+</dd>
+<p></p>
+<dt><strong><a name="item_ics_pre_module_load"><code>ICS_pre_module_load($module)</code></a></strong><br />
+</dt>
+<dd>
+Module <code>$module</code> is about to be loaded.  A return value of <code>(1,$error)</code> will cancel the load and supply the error message <strong>Module1 refused the load of Module2. <code>$error</code></strong>.  Note that at this point, the module has not been loaded yet.  If you need to do <code>&amp;::ipc</code> with another module, use the <a href="#item_ics_module_loaded"><code>ICS_module_loaded</code></a> hook instead.
+</dd>
+<p></p>
+<dt><strong><a name="item_ics_module_loaded"><code>ICS_module_loaded($module)</code></a></strong><br />
+</dt>
+<dd>
+Module <code>$module</code> has been loaded.
+</dd>
+<p></p>
+<dt><strong><a name="item_ics_pre_module_unload"><code>ICS_pre_module_unload($module)</code></a></strong><br />
+</dt>
+<dd>
+Module <code>$module</code> is about to be unloaded.  A return value of <code>(1,$error)</code> will cancel the unload and supply the error message <strong>Module1 refused the removal of Module2. <code>$error</code></strong>.  This can be useful if your module depends on another.  Note that at this point, the module has not been unloaded yet.  <code>&amp;::ipc</code> will still work.
+</dd>
+<p></p>
+<dt><strong><a name="item_ics_module_unloaded"><code>ICS_module_unloaded($module)</code></a></strong><br />
+</dt>
+<dd>
+Module <code>$module</code> has been unloaded.
+</dd>
+<p></p></dl>
+<p>
+</p>
+<h2><a name="dealing_with_conflicts">Dealing With Conflicts</a></h2>
+<p>Occasionally, two modules may want the same command, list, variable, or avariable.  How does JobyX determine which module's command handler is called?  Simple: The first module that was loaded is given preference.</p>
+<p>Note that both commands <em>are</em> stored in memory, so if the first module is removed, the second module's command will become available.  There is no way to specifically call the second module's handler while the first module is loaded.</p>
+<p>Note that this applies to lists, variables, and avariables as well.</p>
+<p>If you know of other modules that have the same commands/lists/etc as one of yours, you can do something like the following:</p>
+<pre>
+        package JX_Mod::Foo;
+        
+        sub ICS_init {
+                if (&amp;::ismoduleloaded('Bar')) {
+                        return (0,&quot;Bar conflicts with this module.&quot;);
+                }
+                # return commands and stuff...
+        }
+        
+        sub ICS_pre_module_load {
+                if (shift eq 'Bar') {
+                        return (1,&quot;Bar conflicts with this module.&quot;);
+                }
+        }</pre>
+<p>While not very compatible, this method is the best when you can't help a conflict.  The downside is that you must be aware of the module that is causing the conflict.  The upside is that the other module's author need not insert code to check for your module, becuase the <a href="#item_ics_pre_module_load"><code>ICS_pre_module_load</code></a> hook will take care of it.</p>
+<p>Try to name your commands and stuff with names that apply to your module.  For example, my Vote module names the command used to create topics <strong>CreateTopic</strong>.  Naming it <strong>Create</strong> could cause conflicts with other modules very easily.</p>
+<p>To end on a happy note, if JobyX detects a conflict when you are using <strong>insmod</strong>, it will include them in the response.  The best thing to do at that point is to use <strong>rmmod</strong> and try to fix the conflict.</p>
+<p>
+</p>
+<h2><a name="help_system">Help System</a></h2>
+<p>JobyX provides a fully-functional helpfile system.  By using the <strong>Help</strong> command, users can request documentation on any command or topic.  To create help files for your module, simply place them in <code>path_to_jobyx/help/module_name</code>.  For example, my Tourney module places its helpfiles in <em>/home/chris/jobyx/help/Tourney/</em>.</p>
+<p>Usage files can be placed in <code>path_to_jobyx/usage/module_name</code>.</p>
+<p>Conflicting helpfiles are dealt with in the same manner as commands/lists/etc.  The first module loaded is given preference.</p>
+<p>When the <strong>Help</strong> command is called, JobyX builds an index of all of the helpfiles, working through each module's help folders in the order that they were loaded.  If two files have the same name, the second is ignored.  The practical upshot of this work is for helpfile name completion.  For example, if a user types <strong>help me</strong>, and the first module has the ``mean'' file, while the second has the ``metaphor'' helpfile, the result will be a <strong>Helpfile ambiguous</strong> error.  If JobyX looked in each directory until it found a match, ``mean'' would be displayed.</p>
+<p>To restrict access to helpfiles and usage files, the following check is performed: When a user requests a help/usage file, the entire command database is checked for commands with the same</p>
+<p>Aside from plain helpfiles, you can use some directives to mutate them based on a user's qualifications.  Directives are in effect until the _next_ directive is encountered.  Note that directives are not effective in usage files.  If a directive starts with ``#'', it must be flush left; if ``%'', then it can appear anywhere.</p>
+<dl>
+<dt><strong><a name="item_%23see_%24string">#SEE $string</a></strong><br />
+</dt>
+<dd>
+This directive is totally ignored by the helpfile parser, but it is read by the index builder.  In order to view the helpfile (including seeing it in a ``helpfile ambiguous'' error), the user must pass the qualification string <code>$string</code>.
+</dd>
+<dd>
+<p>To save time, the index builder only reads the first line of each helpfile.  As a result, this directive is effective only on the first line.</p>
+</dd>
+<p></p>
+<dt><strong><a name="item_%23command">#COMMAND</a></strong><br />
+</dt>
+<dd>
+Similar to the <code>#SEE</code> directive, this line will limit visibility of the helpfile.  Like <code>#SEE</code>, it is ignored by the parser.  When the indexer encounters this line, it will search for a command with the same name <em>within the same module</em>.  If it finds a match, the visibility level of the helpfile will be the same as the visibility of the matching command.  This will save you time when editing command levels; you won't have to edit each helpfile as well.  Note that this will cause a performance hit when building the index, but that's why we don't build the index each time a helpfile is requested.
+</dd>
+<dd>
+<p>Because it is also effective only on the first line, the <code>#SEE</code> and <a href="#item_%23command"><code>#COMMAND</code></a> directives are mutually exclusive.</p>
+</dd>
+<dd>
+<p><strong>NOTE</strong>: Since usage files are always associated with commands, they have, hypothetically speaking, an implied <a href="#item_%23command"><code>#COMMAND</code></a> directive in them.  That is, the usage command will filter visibility based on the visibility of the matching command.</p>
+</dd>
+<p></p>
+<dt><strong><a name="item_%23qualified_%24string">#QUALIFIED $string</a></strong><br />
+</dt>
+<dd>
+The user must pass the qualification string <code>$string</code> to read the next chunk.
+</dd>
+<p></p>
+<dt><strong><a name="item_%23%21qualified_%24string">#!QUALIFIED $string</a></strong><br />
+</dt>
+<dd>
+The user must <em>not</em> pass the qualification string <code>$string</code> to read the next chunk.
+</dd>
+<p></p>
+<dt><strong><a name="item_%23stop">#STOP</a></strong><br />
+</dt>
+<dd>
+Stop reading the helpfile.  This is only effective if the user would normally be able to read this line.  While not absolutely neccessary, it can speed up parsing.  See the example below.
+</dd>
+<p></p>
+<dt><strong><a name="item_%23break">#BREAK</a></strong><br />
+</dt>
+<dd>
+Synonym for <strong>#QUALIFIED 1</strong>, and slightly faster.
+</dd>
+<p></p>
+<dt><strong><a name="item_%23usage">#USAGE</a></strong><br />
+</dt>
+<dd>
+Dumps the usage file with the same name as the helpfile.
+</dd>
+<p></p>
+<dt><strong><a name="item_%me">%me</a></strong><br />
+</dt>
+<dd>
+The name of JobyX's server account is substituted in here.  This is the only directive that does not have to be flush left, and can appear more than once per line.
+</dd>
+<p></p>
+<dt><strong><a name="item_%tell">%tell</a></strong><br />
+</dt>
+<dd>
+The value of the <strong>TellMe</strong> avariable is substituted in here.  This avariable should contain the quickest way to talk to JobyX.  If defaults to ``tell $::username''.
+</dd>
+<p></p>
+<dt><strong><a name="item_%var'expression'">%var'<em>expression</em>'</a></strong><br />
+</dt>
+<dd>
+Substitutes the result of a Perl expression.  In the simplest use, it returns the value of a variable, hence the name ``%var''.  Note that all calls are from <code>JX_Mod::CORE</code>'s namespace.  You cannot extend expressions across lines.
+</dd>
+<dd>
+<p>Single quotes were chosen because you can always use double quotes in place of single quotes, but the reciprocal isn't always true.</p>
+</dd>
+<p></p>
+<dt></dt>
+</dl>
+<p>Here is an example helpfile for the command <strong>CreateTourney</strong> from my Tourney module:</p>
+<pre>
+        #COMMAND
+        Creates a tournament.
+        
+        #USAGE</pre>
+<p>Quite simple, really.  I could also have done <code>#SEE 20</code> instead of using <a href="#item_%23command"><code>#COMMAND</code></a>, but now this helpfile and the <strong>CreateTourney</strong> command are effectively linked; any change to the visibility of <strong>CreateTourney</strong> will be followed by the helpfile.</p>
+<p>Here is a more complex example of an index helpfile:</p>
+<pre>
+        Hello!  My name is %me, and I am your friendly tournament robot!
+        
+        For a list of tournaments, type &quot;%tell lt&quot;.
+        To join a tournament, type &quot;%tell join &lt;number&gt;&quot;.
+        #QUALIFIED 20
+        For tournament managing directions, type &quot;%tell help tm_guide&quot;.
+        #QUALIFIED ly:admin
+        For server admin commands, type &quot;%tell help admin_guide&quot;.
+        #BREAK
+        
+        Have fun!</pre>
+<p>Notice the creative use of directives to provide all staff members, TM or admin, with directions, and only when they <em>are</em> a TM or admin.</p>
+<p>Please note that #comments are not allowed, and will be displayed.  The # directive notation is used because it is fairly common in programming languages.</p>
+<p>As far as restricting usage files, JobyX will try to find a command with the same name as a usage file requested.  If it finds one, the user must be qualified to <em>see</em> the command in order to view the file.  If JobyX can't find a command with the same name, the usage file will be displayed regardless of the user's level.  (<strong>NOTE</strong>: In the future, helpfiles may be dealt with in the same manner; I.E. finding a matching command.)</p>
+<p>
+</p>
+<hr />
+<h1><a name="bugs">BUGS</a></h1>
+<p>While I'm not aware of any yet, this <em>is</em> the first release, so I'm sure there are some.  Post any you find on the Bug Tracker on the SourceForge project page at <a href="http://www.sourceforge.net/projects/jobyx">http://www.sourceforge.net/projects/jobyx</a> and I'll fix them ASAP.</p>
+<p>
+</p>
+<hr />
+<h1><a name="credits">CREDITS</a></h1>
+<p>Special thanks to the Free Internet Chess Server (FICS - <a href="http://www.freechess.org">http://www.freechess.org</a>) and the DeepNet Chess Server (DNCS - <a href="http://chess.deepnet.com">http://chess.deepnet.com</a>) for allowing me to test JobyX on their servers.</p>
+
+</body>
+
+</html>

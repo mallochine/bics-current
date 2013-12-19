@@ -1,0 +1,165 @@
+Hi, gentlemen. There is one feature of the proposed bot that I think will cause problems, which is that you have the bot selecting the players and setting the tournament size. I think the arbiter in charge of registration needs to be in control of that. Possible problems if you let a bot do it: How does the bot exclude a banned player? How does the bot let a qualifier in? (It sounds the bot will put the qualifier at the bottom of the semi-eligible players.) 
+
+Rather than try to explain how I think the bot should handle registration, let me create a mock registration with an imaginary bot that has the features I think are important: 
+
+= = = = = = = = = = 
+
+Arbiter to bot: "open" 
+
+<The bot opens registration> 
+
+Bot Message to ch 224: Registration for the GP tournament is now open. Tell the arbiter "I want to play" to register 
+
+
+<Now assume various players tell me they want to play.> 
+
+Arb to bot: "add pminear" 
+
+Bot to 224: pminear is added to the tourney. There are now 1 players, including 0 semi-eligible 
+
+
+Arb to bot: "add tecumseh" 
+
+Bot to 224: tecumseh is added to the tourney. There are now 2 players, including 0 semi-eligible 
+
+
+Arb to bot: "add gnesj" 
+
+Bot to me: "gnesj is not signed on" 
+
+<Oops, misspelled his handle...> 
+
+Arb to bot: "add gnejs" 
+
+Bot to 224: gnejs is added to the tourney. There are now 3 players, including 0 semi-eligible 
+
+
+Arb to bot: "add marat" 
+
+Bot to me: "marat is semi-eligible, add anyway?" 
+
+<Oops, marat's rating too low, think I will wait on him...> 
+
+Arb to bot: "n" 
+
+
+Arb to bot: "add basauri" 
+
+Bot to me: "basauri is NOT eligible, add anyway?" 
+
+<Basauri is a qualfier, so he plays...> 
+
+Arb to bot: "y" 
+
+Bot to 224: basauri is added to the tourney. There are now 4 players, including 1 semi-eligible 
+
+
+Arb to bot: "add jkiller" 
+
+Bot to 224: jkiller is added to the tourney. There are now 5 players, including 1 semi-eligible 
+
+
+Arb to bot: "add anky" 
+
+Bot to me: "Anky is not signed on" 
+
+<Oops, anky must have disconnected...> 
+
+
+Arb to bot: "add fermy" 
+
+Bot to 224: fermy is added to the tourney. There are now 6 players, including 1 semi-eligible 
+
+
+<Oh, Anky just sent me a message, he is back...> 
+
+Arb to bot: "add anky" 
+
+Bot to 224: Anky is added to the tourney. There are now 7 players, including 1 semi-eligible 
+
+
+Arb to bot: "add venomous" 
+
+Bot to 224: venomous is added to the tourney. There are now 8 players, including 1 semi-eligible 
+
+
+Arb to bot: "add knightdog" 
+
+Bot to 224: knightdog is added to the tourney. There are now 9 players, including 1 semi-eligible 
+
+
+<No more eligible players here. Think I will add some semi-eligible players and close registration:> 
+
+Arb to bot: "add marat" 
+
+Bot to me: "marat is semi-eligible, add anyway?" 
+
+Arb to bot: "y" 
+
+Bot to 224: marat is added to the tourney. There are now 10 players, including 2 semi-eligible 
+
+
+Arb to bot: "add jtp" 
+
+Bot to me: "jtp is semi-eligible, add anyway?" 
+
+Arb to bot: "y" 
+
+Bot to 224: jtp is added to the tourney. There are now 11 players, including 3 semi-eligible 
+
+
+Arb to bot: "add nitemove" 
+
+Bot to me: "nitemove is NOT eligible, add anyway?" 
+
+<Oops, the message suggests nitemove's rating is too low, I won't confirm this one....> 
+
+Arb to bot: "n" 
+
+
+Arb to bot: "add theraven" 
+
+Bot to me: "TheRaven is semi-eligible, add anyway?" 
+
+Arb to bot: "y" 
+
+Bot to 224: TheRaven is added to the tourney. There are now 12 players, including 4 semi-eligible 
+
+
+Arb to bot: "close" 
+
+<The bot verifies all registered players are still signed on> 
+
+Bot to me: "basauri not signed on" 
+
+<Oops, basauri disconnected. I'll give him a minute to return.> 
+
+
+<Oh, good, basauri has returned....> 
+
+Arb to bot: "add basauri" 
+
+Bot to me: "basauri is NOT eligible, add anyway?" 
+
+Arb to bot: "y" 
+
+Bot to 224: basauri is added to the tourney. There are now 12 players, including 4 semi-eligible 
+
+
+Arb to bot: "close" 
+
+<The bot verifies all registered players are still signed on> 
+
+Bot to me: "All registered players still connected, closing registration..." 
+
+<The bot arranges the players in rating order. Assume the order is gnejs, pminear, jkiller, ...., marat, basauri> 
+
+Bot to 224: Registration is now closed. The player for today's tournament are: 
+
+Bot to 224: Gnejs (1), pminear (2), jkiller (3), venomous (4), Anky (5), knightdog (6), fermy (7), tecumseh (8) 
+
+Bot to 224: jtp (9), TheRaven (10), marat (11), basauri (12) 
+
+
+Registration is complete. Now the bot can set up round 1: it sets up the three groups, then messages each player on who they should partner and who they should challenge. 
+

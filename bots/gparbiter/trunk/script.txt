@@ -1,0 +1,9 @@
+- channel 1
+- channel 2
+- channel 50
+set bugopen 0
+set open 0
+set tell 1
+set ctell 1
+set seek 0
+set bugopen 0

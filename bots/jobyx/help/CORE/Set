@@ -1,0 +1,6 @@
+#COMMAND
+Sets one of your personal variables.
+
+For help on a particular variable, type "%tell help v_<variable>".  For example, to get help on the "Height" variable: "%tell help v_height".
+
+#USAGE
