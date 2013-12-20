@@ -1,0 +1,40 @@
+listtourneygames
+
+Alias: games
+
+Usage: listtourneygames <optional tourney number>
+
+This command will list any unfinished games in the current round of the
+specified tourney.  The tourney number is the value of your default
+tourney variable if it is not specified; otherwise the value of your
+default tourney variable will change to the specified tourney number.
+
+Here is a sample of the output of this command:
+
+:Tourney Games for Round # 3
+:
+:Bd#              White [SCR ] [Rtng] vs Black              [SCR ] [Rtng] 
+:---------------------------------------------------------------------------
+:  1              Perks [ 2.0] [1743] vs MartinG            [ 2.0] [1763]  47
+:  2        innocentone [ 1.5] [1989] vs trikmamak          [ 1.5] [1853]  39
+:  4             Bremen [ 1.0] [1516] vs GreenFord          [ 1.0] [1798]  49
+:  6             palash [ 0.0] [1727] vs hasank             [ 0.0] [1715]  43
+
+Bd# is the board number.  Board 1 is the "top" board, where generally, the
+tournament leaders are playing.  As the board number increases, the
+tourney standing of the players involved generally decreases.
+
+White is the handle of the player who has white in the game.
+
+[SCR ] is the player's score in the current tourney.  A win is worth one
+point, a draw is worth half a point, and a loss is worth zero points.
+
+[Rtng] is the player's rating in the category of the games being played in
+the tourney before the tourney starts.
+
+The number in the rightmost column is the game number.  You would observe
+the game by typing "observe <game number>".
+
+See also: default
+
+[Last modified: March 8, 1999 -- toddmf]

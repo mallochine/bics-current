@@ -1,0 +1,1 @@
+Sets how many lines you will get at once from helpfiles or other long output.  Valid values are 7-9999 inclusive.

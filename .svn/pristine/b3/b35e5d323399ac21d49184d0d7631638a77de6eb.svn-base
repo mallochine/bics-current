@@ -1,0 +1,17 @@
+addcomment
+
+Alias: ac
+
+Usage: addcomment <handle> <comment>
+
+Reserved for mamer managers (level of 25 or higher)
+
+This command adds a comment to a player's mamer comment file.  Use this to
+record information about someone that you'd like all TMs to be able to
+see.  This usually means exceptionally poor, good, or interesting
+behavior.  Please keep comments tourney related and try to stick to facts
+as much as possible (keep personal disputes out of comments).
+
+See also: showcomment
+
+[Last modified: March 8, 1999 -- toddmf]

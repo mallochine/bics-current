@@ -1,0 +1,13 @@
+create
+
+Alias: cr
+
+Usage: create
+
+Reserved for mamer managers (level of 10 or higher)
+
+This command creates a new tourney and assigns it a tourney number.  The
+value of your default tourney variable will change to the number of the
+tourney created.
+
+[Last modified: March 8, 1999 -- toddmf]

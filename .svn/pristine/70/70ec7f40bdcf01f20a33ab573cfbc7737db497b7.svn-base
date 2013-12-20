@@ -1,0 +1,4 @@
+#COMMANE
+Toggles the state of an item in a list.  If the item is in the list, it will be removed, otherwise it will be added.
+
+#USAGE

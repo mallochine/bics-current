@@ -1,0 +1,46 @@
+body, textarea, input.text, div {
+  color: gray;
+ 
+ 
+  background-color: white;  
+  border: none;
+  font-size: 14;
+  font-weight: bold;
+  padding: 0 px;
+}
+
+textarea {
+
+scrollbar-base-color:white;
+
+background-color: white;
+}
+
+table{
+  float:left;
+
+}
+.board {
+border: ridge orange 3px;
+}
+.board td  {
+border-left: solid black 1px;
+border-top: solid black 1px;
+}
+select{
+  display:none;
+}
+
+input.button {
+background-color: #b5c9e2;
+border-top-color: #cce3ff;
+border-left-color: #cce3ff;
+border-bottom-color: #31557f;
+border-right-color: #31557f;
+width: auto; 
+ 
+
+}
+
+
+

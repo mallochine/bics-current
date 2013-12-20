@@ -1,0 +1,22 @@
+addchaos
+
+Alias: chaos
+
+Usage: addchaos <handle> <optional number of points> <optional reason>
+
+Reserved for mamer managers (level of 25 or higher)
+
+Use this command to give someone the specified number of chaos points.  If
+you do not specify the number of points, 10 will be added.  To take chaos
+points away, add a negative number of chaos points ("addchaos abc -10"
+removes 10 of abc's chaos points). 
+
+Whenever you add or remove chaos points, a comment is automatically added to 
+that user's mamer comment file saying that you did so.  If you specify the
+<optional reason>, then the reason is also added to the user's mamer
+comment file.  If you use the <optional reason>, then you must also
+specify the number of chaos points, even if it is 10.
+
+See also: addcomment, chaos, showcomment
+
+[Last modified: March 8, 1999 -- toddmf]

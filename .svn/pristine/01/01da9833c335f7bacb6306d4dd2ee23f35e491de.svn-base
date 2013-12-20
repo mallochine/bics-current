@@ -1,0 +1,32 @@
+;
+; TBOT settings file
+;
+; Server=0 --> USCL 5000 (valid guest channels: 1, 2, 24, 50)
+; Server=1 --> FICS 5000 (valid guest channels: 1 to 255)
+; Server=2 --> FICS 23   (valid guest channels: 1 to 255)
+;
+[Main]
+Server=1
+State=2
+Handle=gparbiter
+Password=234
+Coordinate=1 31 1024 737 0
+Font=Consolas,18,0,0,0,0
+Foreground=4978f3
+Background=000000
+Channel=223
+Arbiter=generationf
+Arb #1=
+Arb #2=
+Arb #3=
+Arb #4=
+Eligible game=1000
+Eligible best 1=1000
+Eligible current 1=1000
+Eligible best 2=900
+Eligible current 2=900
+Semi-eligible game=500
+Semi-eligible best 1=500
+Semi-eligible current 1=500
+Semi-eligible best 2=500
+Semi-eligible current 2=500

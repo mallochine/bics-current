@@ -1,0 +1,104 @@
+<sergiy@its.caltech.edu>
+<cferrante@worldnet.att.net>
+
+Here is an example with 16 people:
+
+Preturnament seeding:
+
+1. Jkiller
+2. Pminear
+3. Venomous
+4. Bugzilla
+5. Knightdog
+6. Lindegren
+7. Marcusm
+8. Darkfire
+9. Jtp
+10. Kingwaler
+11. Marat
+12. Fermy
+13. Burgsvik
+14. Valdushka
+15. TheRaven
+16. Ishamael
+
+Then I put people in each group in order of places that they got. The only unclear moment here is
+why pminear and not marcusm is the winner of Group 2 and the answer is: 
+because pminear was a higher seed at the beginning of this stage.
+
+
+Group1       Group2          Group3        Group 4
+--------------------------------------------------
+Darkfire 11  Pminear     10  Venomous 12   Fermy 10
+Jkiller 9    Marcusm     10  Lindegren 8   Burgsvik 8
+Jtp 5        Kingwalker  6   Valdushka 6   Knightdog  6
+Ishamael 5   TheRaven    4   Marat 4       Bugzilla 6
+
+Now we go to the stage 2 in which 8 people participate => 2 groups.
+
+Stage 2:
+Group1:  Darkfire (winner of group 1) Fermy(winner of group 4) Lindegren (2nd
+place of group 3)  Marcusm (2nd place in group 2). They are SEEDED IN THE GROUP
+in this order.  That is Darkfire is the highest seed and marcusm is the lowest.
+
+Therefore, in round 1 darkfire partners fermy and they play 5 games against Lindegren-Marcusm
+darkfire (seed#1 in the group) plays against Lindegren (seed #3 in the group)
+
+Then, Darkfire (#1) partners Lindegren (#3) and they play Fermy(#2) and Marcusm(#4);
+Darkfire (#1) plays against Marcusm (#4)
+
+Finally Darkfire (#1) partners marcusm (#4) and plays versus Fermy (#2) and Lindegren (#3).
+Darkfire(#1) plays against Fermy(#2)
+
+
+Now suppose result is
+Darkfire 8
+Marcusm 8
+Fermy 8
+Lindegren 6
+
+
+This is a 3-way tie for 1st place. Only One has to be eliminated. Darkfire (the
+highest seed in the group) is considered the winner. Fermy and marcusm play 2 0
+crazyhouse. Marcusm wins and he get's place #2 in the group.
+
+
+Now on to another group. In order of seed we have:
+Group2: Pminear (winner of group 2) Venomous (winner of group 3) Burgsvik (2nd
+place in group 4) Jkiller
+(second place in group 1).
+Round1: Pminear/Venomous v Burgsvik/Jkiller (pminear v burgsvik)
+Round2: Pminear/burgsvik v Venomous/jkiller (pminear v Jkiller)
+Round3: Pminear/Jkiller v Venomous/Burgsvik (pminear v Venomous).
+
+
+Suppose the result is
+Jkiller 9
+Pminear 7
+Venomous 7
+Burgsvik 7
+
+
+This is 3-way tie for 2nd. Jkiller is clear winner of the group. 3 other play
+elimination crazyhouse to determine a second place. Pminear as a highest seed in
+the group get's by in the first round of zh. Venomous plays burgsvik and
+venomous wins. Burgsvik is eliminated. Now venomous plays pminear. Pminear wins
+and gets second place.
+
+
+Final Stage
+Order of seeds in the group is:
+Darkfire (winner of group 1) Jkiller (winner of group 2) Pminear (2nd in group
+2) marcusm second in group 1).
+
+
+Therefore, The order of play is:
+1. dfire/jk v pm/marcusm (dfire v pm)
+2. dfire/pm v jk/marcusm (dfire v marcusm)
+3. dfire/marcusm v jk/pm (dfire v jk).
+
+
+Pminear 10
+Jkiller 8
+Venomous 8
+Fermy 4

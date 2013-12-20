@@ -1,0 +1,6 @@
+#COMMAND
+Displays the contents of a list.  If the list name is omitted, a list of available lists will be displayed.
+
+For help on a particular list, type "%tell help l_<listname>".
+
+#USAGE

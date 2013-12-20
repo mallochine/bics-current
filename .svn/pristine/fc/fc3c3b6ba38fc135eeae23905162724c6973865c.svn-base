@@ -1,0 +1,21 @@
+open
+
+Alias: o
+
+Usage: open <optional tourney number>
+
+Reserved for mamer managers (level 10 or higher)
+
+This causes the specified tourney to be opened, allowing players to join the
+tourney.  The tourney number is the value of your default tourney variable
+if it is not specified; otherwise the value of your default tourney
+variable will change to the specified tourney number.
+
+Mamer cshouts and tells channel 49 the tourney announcement when the
+tourney is opened.  Once a tourney is open and after it has closed, the 
+only variables that can be changed are "Rounds", "Max Players", "Mode",  
+and "Style".
+
+See also: announce, default, listtourneyvars, settourneyvar
+
+[Last modified: March 8, 1999 -- toddmf]

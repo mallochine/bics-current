@@ -1,0 +1,8 @@
+getpi - gets player information
+RESTRICTED FOR USE BY TD PROGRAMS
+
+Usage: getpi user
+Returns: *getpi user <zh_rate> <st_rate> <bug_rate> <bug_partner> <bug_partner_rate>*
+Example: *getpi johnthegreat 2234 2119 1991 nope 0*
+
+[Last modified: December 21, 2008 -- johnthegreat]

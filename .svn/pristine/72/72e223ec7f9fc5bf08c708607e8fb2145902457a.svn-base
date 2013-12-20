@@ -1,0 +1,47 @@
+finger
+
+Alias: fi
+
+Usage: finger <optional handle>
+
+Use the "finger" command to find out a player's mamer statistics.  If you do
+not specify the handle, you will see your own statistics.  Here is a sample 
+"finger":
+
+:toddmf's Stats:
+:
+:Name               Tnys   W    L   D  1st 2nd 3rd Chaos Rating
+:----------------- ----- ---- ---- --- --- --- --- ----- ------
+:toddmf              815 1918  818 143 310 228   1     0   1.48 
+:
+:Default Tourney =    1  Silence =  0
+:
+:Manager Level: 75     Managed Tourneys: 2035 
+
+"Name" is the handle of the player you are fingering.
+"Tnys" is the number of tourneys he/she has played in.
+"W" is the number of games he/she has won in tourneys.
+"L" is the number of games he/she has lost in tourneys.
+"D" is the number of games he/she has drawn in tourneys.
+"1st" is the number times he/she has finished in or tied for first place.
+"2nd" is the number times he/she has finished in or tied for second place.
+"3rd" is the number times he/she has finished in or tied for third place.
+"Chaos" is the number of Chaos Points he/she has.
+"Rating" is the player's mamer rating.
+"Default Tourney" is the tourney number that his/her commands default to.
+"Silence" is the value of his/her mamer silence variable.
+"Manager Level" is his/her manager level (displayed only for mamer
+     managers).
+"Managed Tourneys" is the number of tourneys he/she has managed (displayed
+     only for mamer managers).
+
+
+NOTE: "3rd"s have been recorded for a much shorter time than "1st"s and 
+      "2nd"s.  Also, 3rds are only recorded for tourneys with at least 8
+      players, and 2nds are only recorded for tourneys with at least
+      6 players.  This explains the low number of 3rd place finishes many
+      users have.
+
+See also: chaos, default, manager_level, mamer_rating, setsilence
+
+[Last modified: March 8, 1999 -- toddmf]

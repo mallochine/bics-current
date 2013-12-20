@@ -1,0 +1,4 @@
+#COMMAND
+Displays information about a user.  If the handle to query is omitted, your information will be displayed.
+
+#USAGE

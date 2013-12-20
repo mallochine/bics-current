@@ -1,0 +1,4 @@
+Welcome to the world of JobyX!  You can put your own introductory text in this file.
+
+Here are a few cool things you can do with helpfiles:
+My name is %me.  You can talk to me by using "%tell".  My operator's name is %var'$::operator'.  There are %var'$#::modules+1' modules loaded, and they are: %var'join(", ",map {$_->[0]} @::modules)'.

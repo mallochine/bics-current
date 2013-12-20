@@ -1,0 +1,4 @@
+#COMMAND
+Reloads a module.  This is essentially an alias for "rmmod <module>" followed immediately by "insmod <module>".
+
+#USAGE

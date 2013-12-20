@@ -1,0 +1,19 @@
+listrank
+
+Alias: rank
+
+Usage: listrank <optional integer or handle>
+
+This command displays a ranking of players (by their mamer rating) who
+have played in at least 5 mamer tourneys.  If you don't specify a specific
+handle or number, then your ranking is shown.  If you specify a handle,
+then that player's ranking is shown.  If you specify a number, then
+rankings near that number are shown.  For example, "mam rank 1" will show
+the players near rank 1, or in other words, the top players.
+
+Note: The ranking list can only be updated manually, so it is often
+somewhat out of date.
+
+See also: rating
+
+[Last modified: March 8, 1999 -- toddmf]

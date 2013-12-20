@@ -1,0 +1,10 @@
+acheckhelp         aconfig            addcomment         addplayer          
+adjudicate         admin              adump              ahelp              
+announce           annunreg           areload            asetadmin          
+asetbugfr          asetbughouse       asetemail          asethandle         
+asetpasswd         asetrealname       asetsimul          asetstd            
+asetzh             atell              aupdate            ftell              
+hideinfo           memusage           myfen              newboard           
+nuke               pose               quota              raisedead          
+remplayer          rerank             showcomment        shutdown           
+summon             

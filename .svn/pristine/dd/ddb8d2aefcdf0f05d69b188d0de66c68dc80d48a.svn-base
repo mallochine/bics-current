@@ -1,0 +1,2 @@
+#SEE 90
+The command that users should type to communicate with %me.  The default is "tell %me".  If there is a server alias to talk to %me, set TellMe to that instead.

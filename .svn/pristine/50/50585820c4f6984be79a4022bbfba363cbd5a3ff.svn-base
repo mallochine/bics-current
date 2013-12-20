@@ -1,0 +1,4 @@
+#COMMAND
+Evaluates a block of Perl code and displays the result in list context.  Note that execution happens inside of JX_Mod::CORE's namespace.
+
+#USAGE

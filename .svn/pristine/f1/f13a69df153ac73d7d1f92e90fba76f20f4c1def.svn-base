@@ -1,0 +1,45 @@
+default
+
+Several of mamers commands require a tourney number as one of their
+arguments.  You can often omit this tourney number by taking advantage of
+your default tourney variable.  For example, if the value of your default
+tourney variable is 2, then the command "mam who" is equivalent to "mam
+who 2".  The value of a user's default tourney variable can be viewed
+using mamer's "finger" command.  The value of a user's default tourney 
+variable will change to the specified tourney number when he/she uses one
+of several commands that requires a tourney number to be specified.
+
+Here is a chart that lists all of mamer's commands that require a tourney
+number to be specified, whether or not the default tourney will be used if
+the tourney number isn't specified, and whether or not the command will
+change the value of the default tourney variable.
+
+Command          | default used? | changes default? 
+----------------------------------------------
+addtotourney     | yes           | yes
+announce         | yes           | yes
+close            | yes           | yes
+delete           | no            | yes
+forfeit          | no            | yes
+join             | no            | yes
+keep             | yes           | yes
+listplayers      | yes           | yes
+listtourneygames | yes           | yes
+listtourneyvars  | yes           | yes
+open             | yes           | yes
+setres           | yes           | yes
+settourneyvar    | yes           | yes
+tourneytell      | no            | no
+start            | yes           | yes
+withdraw         | no            | no
+
+The "create" command does not take any arguments, but it changes the value
+of your default tourney variable to the value of the tourney number that
+was just created.
+
+The "listtourneys" command has an optional tourney number argument. It
+will not change the value of your default tourney variable.
+
+See also: finger
+
+[Last modified: March 8, 1999 -- toddmf]

@@ -1,0 +1,18 @@
+setcommandlevel
+
+Alias: setcl
+
+Usage: setcommandlevel <command> <level>
+
+Reserved for mamer managers (level 50 or higher)
+
+This command sets the minimum manager level required to use <command> to
+<level>.  You can only modify the level of commands that require a level
+lower than or equal to yours to use, and you can only modify it to or
+below your manager level.  The most common use for this is to disable a
+buggy command or to stop tourneys from being created temporarily to make
+room for a scheduled event.
+
+See also: manager_level, showcommands
+
+[Last modified: March 8, 1999 -- toddmf]

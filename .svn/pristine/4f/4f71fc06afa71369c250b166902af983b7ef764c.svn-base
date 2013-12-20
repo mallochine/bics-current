@@ -1,0 +1,17 @@
+delete
+
+Alias: d
+
+Usage: delete <tourney number>
+
+Use the "delete" command to delete the specified tourney.  The value of  
+your default tourney variable will change to the specified tourney number.
+
+The most common usage of "delete" is to delete a tourney in which there
+are not enough players to close and start.  Mamer deletes tourneys that
+are not "kept" two hours after their completion.  Please do not delete the
+tourneys before then, as many users view the standings of recent tourneys.
+
+See also: close, default, keep
+
+[Last modified: March 8, 1999 -- toddmf]

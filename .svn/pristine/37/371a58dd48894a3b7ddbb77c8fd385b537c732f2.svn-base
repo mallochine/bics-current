@@ -1,0 +1,124 @@
+I certainly want it to be able to select 16 ppl that play and do parings
+for the groups on first stage and second stage. Ability to create/
+delete groups manually is important. If it would be able conduct rounds
+automatically, it would be awesome.
+
+Bot has operator commands
+open // opens tourney for registration
+forfeit <handle> // forfeits handle
+close //closes tourney for registration
+group <name of the group> <round>  <handle1> <handle2> <handle3>
+<handle4> //
+manually forms group in case something goes wrong
+matchlength <round> <#of games in match> //  set the length of one
+match, 5 is default
+kill <name of the group>
+help // lists operator commands
+
+Player commands:
+join // joins the tourney.
+standing [full]// tells player current standing in his group. option
+full gives
+standing in all groups.
+help //lists player commands
+
+I haven't figured out yet how to tell bot who is his operator and i
+don't know exactly who's gonna be the operator.
+
+Now how it works.
+operator tells to the bot "open", and registration starts. Player tells
+bot "join"
+in order to join. When operator decides that it's time to close
+registration, he
+tells the bot "close". On this command bot ranges everybody who joined
+by
+following criteria
+1. Eligibility
+2. Current fics rating.
+
+Eligible are people with ((Best fics >2300)&(current FICS >2000) or
+(Best Fics
+>2200) & (current fics >2100)). So eligible people have priority, but
+otherwise
+players are ranged by current fics rating.
+
+Then, let E be the number of eligible people, J be the number of people
+who
+joined.
+If  E<=8, bot selects first 8 people (based on above rank). If  J<16 bot
+selects
+first 8 ppl. If E>8 and J>=16 bot selects first 16 ppl. Here bot issues
+in channel
+24 list of selected people.
+
+Then bot forms groups of 4 ppl in the following way based on the above
+ranking.
+Let N be the number of selected ppl.
+if N=8 G1=1,4,5,8. G2=2,3,6,7.
+if N=16 G1=1,8,9,16; G2=2,7,10,15; G3=3,6,11,14; G4=4,5,12,13.
+if N=12 G1=1,6,7,12; G2=2,5,8,11, G3=3,4,9,10
+
+At this point it tells everybody in the tourney the group in which they
+are:
+i.e. tell fermy You play in the group with Jkiller, whoami, linuso.
+
+Next people in the group partner according to the following system.
+
+1 round: 1partners 2 and plays against 3 partnered with 4. Number here
+stand for order in the group. 1 plays 3. 
+ 
+
+Bot tells everybody whom he should partner. After
+they played
+mathclength number of games, bots tells everybody that round is over and
+
+standings.
+
+2 round: 1partners 3 , 2parnters 4. Bot does exactly the same.   1plays 4. 
+3 round: 1partners 4, 2 partners 3. 1 plays 2. 
+
+After 3 rounds are over bot advances to the next round places #1 in
+groups. If
+there are ties for the 3 rd place, he tells tied players to play 2 0 zh
+until the
+first win and waits for result.
+
+in case of 3 way tie highest rated gets bye in the first round of 2 0 zh
+sudden
+death.        
+
+in case of 4 way tie 1 plays 4 and 2 plays 3.
+
+In case bot failed to do everything correctly operator may issue command
+
+kill <name of the group > to get rid of the group that was formed with
+errors, and
+then issue group blah blah to form group manually.
+
+If there are 16 players playing, two second stage groups are formed by
+the rule:
+
+H_1 = winner of G1, G4, second places of G3, G2, (they are seeded in the 
+group in this order)  
+H2 has the rest, the order is winner of G2, winner of G3, second place of G4, 
+second place of G1. 
+
+In case of tie for 1st/2nd in the group higher seed takes the spot of
+the winner
+and lower seed takes the spot of the 2nd place.
+
+In the final round the order of seeds is: 1st place of H1, 1st place of H2, 
+second place of H2, second place of H1. 
+
+One more thing. In case bot loses connection it should have some
+recovery
+mechanism.
+
+
+I guess there must be some way for operator to assign places in the group 
+manually. 
+
+It would be nice if after the tourney bot will generate the results and
+overall standings in form suitable to bugboard. I'll give you URL to the point 
+calculations later. 
+

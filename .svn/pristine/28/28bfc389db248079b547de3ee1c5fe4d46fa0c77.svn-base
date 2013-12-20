@@ -1,0 +1,18 @@
+tourneytell
+
+Alias: tt
+
+Usage: tourneytell <tourney number> <message>
+
+This command is used to send the specified message to all the users in the
+specified tourney number, except for those using mamer's silence variable.
+This is useful to avoid cluttering channel 49 with tells useful only to
+those in your tourney.
+
+Managers with a manager level of 50 or higher can send a tourneytell to
+any tourney.  Other managers and users can only send tourneytells to a
+tourney they are managing and/or have joined.
+
+See also: manager_level, setsilence
+
+[Last modified: March 8, 1999 -- toddmf]

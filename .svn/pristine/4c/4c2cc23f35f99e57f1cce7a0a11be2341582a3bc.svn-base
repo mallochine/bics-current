@@ -1,0 +1,13 @@
+loadedusers
+
+Alias: lu
+
+Usage: loadedusers
+
+Reserved for mamer managers (level 25 or higher)
+
+Mamer frequently loads and unloads information about users into RAM.  This
+command displays a list of users currently loaded.  It will probably be
+useless to you :)
+
+[Last modified: March 8, 1999 -- toddmf]

@@ -1,0 +1,18 @@
+settourneyvar
+
+Alias: stv
+
+Usage: settourneyvar <variable> <value> <optional tourney number>
+
+Reserved for mamer managers (level 10 or higher)
+
+This command sets the the value of a tourney variable. To see a list of the
+variables and their function, read "mam help listtourneyvars".
+
+The tourney number is the value of your default tourney variable if it is
+not specified; otherwise the value of your default tourney variable will
+change to the specified tourney number. 
+
+See also: default, listtourneyvars
+
+[Last modified: March 8, 1999 -- toddmf]

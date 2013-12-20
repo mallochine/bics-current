@@ -1,0 +1,19 @@
+close
+
+Alias: cl
+
+Usage: close <optional tourney number>
+
+Reserved for mamer managers (level 10 or higher)
+
+This command closes the specified tourney, preventing more players from
+joining.  The tourney number is the value of your default tourney variable
+if it is not specified; otherwise the value of your default tourney 
+variable will change to the specified tourney number.
+
+If the amount of players who have joined reaches the "Max Players" set in
+the tourney's variables, the tourney will close automatically.
+
+See also: default, listtourneyvars, settourneyvar
+
+[Last modified: March 8, 1999 -- toddmf]

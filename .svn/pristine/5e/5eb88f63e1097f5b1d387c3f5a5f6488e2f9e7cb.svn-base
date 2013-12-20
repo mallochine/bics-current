@@ -1,0 +1,17 @@
+start
+
+Alias: No alias
+
+Usage: start <optional tourney number>
+
+This command starts the specified tourney if its status is "set" (in other
+words, if it has been closed with "close" or by the number of players
+reaching the value of the "Max Players" variable). 
+
+The tourney number is the value of your default tourney variable if it is
+not specified; otherwise the value of your default tourney variable will
+change to the specified tourney number.
+
+See also: close, default, listtourneyvars
+
+[Last modified: March 8, 1999 -- toddmf]

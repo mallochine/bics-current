@@ -1,0 +1,29 @@
+;
+; TBOT group file
+;
+[Main]
+Count=2
+
+[Group 1]
+Index 1=0
+Index 2=3
+Index 3=4
+Index 4=7
+
+[Group 2]
+Index 1=1
+Index 2=2
+Index 3=5
+Index 4=6
+
+[Group 3]
+Index 1=0
+Index 2=0
+Index 3=0
+Index 4=0
+
+[Group 4]
+Index 1=0
+Index 2=0
+Index 3=0
+Index 4=0

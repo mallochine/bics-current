@@ -1,0 +1,9 @@
+#COMMAND
+Displays how to use a particular command.
+
+Usage legend:
+<text> - Mandatory parameter.
+[text] - Optional parameter.
+text   - Literal text.
+
+#USAGE

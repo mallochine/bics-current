@@ -1,0 +1,20 @@
+showcommands
+
+Alias: No alias
+
+Usage: showcommands
+
+This command displays a list of all of mamer's commands, their aliases, the
+minimum manager level needed to use them, and a short summary of the command's
+function.  If you are not a mamer manager, you can use the commands marked as
+level 0 commands.
+
+To see this list with only mamer's user (non-manager) commands, see the
+user_commands mamer help file.
+
+To see this list with only mamer's manager commands, see the
+manager_commands mamer help file. 
+
+See also: help, manager_level
+
+[Last modified: March 8, 1999 -- toddmf]

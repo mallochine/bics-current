@@ -1,0 +1,181 @@
+;
+; TBOT player file
+;
+[Main]
+Count=8
+
+[Player 1]
+Handle=botthree
+Status=0
+Online=1
+Best=0
+Current=2110
+Game=176
+Score 1=0
+Score 2=0
+Score 3=0
+
+[Player 2]
+Handle=botone
+Status=0
+Online=1
+Best=0
+Current=2027
+Game=309
+Score 1=0
+Score 2=0
+Score 3=0
+
+[Player 3]
+Handle=bottwo
+Status=0
+Online=1
+Best=0
+Current=2015
+Game=338
+Score 1=0
+Score 2=0
+Score 3=0
+
+[Player 4]
+Handle=botfour
+Status=0
+Online=1
+Best=0
+Current=1769
+Game=151
+Score 1=0
+Score 2=0
+Score 3=0
+
+[Player 5]
+Handle=GenerationF
+Status=0
+Online=1
+Best=0
+Current=1757
+Game=371
+Score 1=0
+Score 2=0
+Score 3=0
+
+[Player 6]
+Handle=AramenI
+Status=0
+Online=1
+Best=0
+Current=1605
+Game=12
+Score 1=0
+Score 2=0
+Score 3=0
+
+[Player 7]
+Handle=Aramen
+Status=0
+Online=1
+Best=0
+Current=1570
+Game=466
+Score 1=0
+Score 2=0
+Score 3=0
+
+[Player 8]
+Handle=AramenII
+Status=0
+Online=1
+Best=0
+Current=1407
+Game=9
+Score 1=0
+Score 2=0
+Score 3=0
+
+[Player 9]
+Handle=
+Status=0
+Online=0
+Best=0
+Current=0
+Game=0
+Score 1=0
+Score 2=0
+Score 3=0
+
+[Player 10]
+Handle=
+Status=0
+Online=0
+Best=0
+Current=0
+Game=0
+Score 1=0
+Score 2=0
+Score 3=0
+
+[Player 11]
+Handle=
+Status=0
+Online=0
+Best=0
+Current=0
+Game=0
+Score 1=0
+Score 2=0
+Score 3=0
+
+[Player 12]
+Handle=
+Status=0
+Online=0
+Best=0
+Current=0
+Game=0
+Score 1=0
+Score 2=0
+Score 3=0
+
+[Player 13]
+Handle=
+Status=0
+Online=0
+Best=0
+Current=0
+Game=0
+Score 1=0
+Score 2=0
+Score 3=0
+
+[Player 14]
+Handle=
+Status=0
+Online=0
+Best=0
+Current=0
+Game=0
+Score 1=0
+Score 2=0
+Score 3=0
+
+[Player 15]
+Handle=
+Status=0
+Online=0
+Best=0
+Current=0
+Game=0
+Score 1=0
+Score 2=0
+Score 3=0
+
+[Player 16]
+Handle=
+Status=0
+Online=0
+Best=0
+Current=0
+Game=0
+Score 1=0
+Score 2=0
+Score 3=0
