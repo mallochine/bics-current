@@ -132,6 +132,7 @@ GENSTRUCT struct game {
 	//int wTimeForCompensator;
    //int lagForCompensator;
 	int databaseLink;
+    unsigned flag_check_time;
 	/* this is a dummy variable used to tell which bits are saved in the structure */
 
 	unsigned not_saved_marker;

@@ -299,7 +299,7 @@ static int style12(struct game_state_t *b, struct move_t *ml)
 
     // Determine the lag.
     //
-    // As the move has just been processed,
+    // As the move has just been processed...
     // if White is to move now, then Black has just played
     // a move, so we want to display the lag for Black.
     // Vice versa.

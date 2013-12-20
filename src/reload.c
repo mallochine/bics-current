@@ -19,6 +19,8 @@
 */
 
 #include "includes.h"
+#include "reload.h"
+
 dbi_conn conn; //mega global connect
 
 static void variable_reload(void)
@@ -77,7 +79,6 @@ void db_connect()
 }
 void db_disconnect()
 {
-
 	dbi_conn_close(conn);
 	dbi_shutdown();
 }

@@ -927,17 +927,89 @@ static int player_has_mating_material(struct game_state_t *gs, int color)
 
 int com_flag(int p, param_list param)
 {
-
+    struct player *pp = &player_globals.parray[p];
+    struct game *gg;
+    int g;
+    int myColor;
 
 	if (!pIsPlaying(p)) {
 		pprintf(p, "You are not playing a game.\n");
 		return COM_OK;
 	}
 
-	if (!BoolCheckPFlag(p,PFLAG_AUTOFLAG))
-	  {
-	    pprintf(p, "Opponent is not out of time, wait for server autoflag.\n");
-	  }
+    g = pp->game;
+
+    gg = &game_globals.garray[g];
+
+    myColor = (p == gg->white ? WHITE : BLACK);
+    if (gg->type == TYPE_UNTIMED) {
+        pprintf(p, "You can't flag an untimed game.\n");
+        return COM_OK;
+    }
+    if (gg->numHalfMoves < 2) {
+        pprintf(p, "You cannot flag before both players have moved.\nUse abort instead.\n"     );
+        return COM_OK;
+    }
+    game_update_time(g);
+
+    {
+        int myTime, yourTime, opp = pp->opponent, serverTime;
+
+        if (net_globals.con[pp->socket]->timeseal) {    /* does caller use timeseal? */
+            myTime = (myColor==WHITE?gg->wRealTime:gg->bRealTime);
+        } else {
+            myTime = (myColor == WHITE?gg->wTime:gg->bTime);
+        }
+        serverTime = (myColor == WHITE?gg->bTime:gg->wTime);
+
+        if (net_globals.con[player_globals.parray[opp].socket]->timeseal) { /* opp uses ti     meseal? */
+            yourTime = (myColor == WHITE?gg->bRealTime:gg->wRealTime);
+        } else {
+            yourTime = serverTime;
+        }
+
+        /* the clocks to compare are now in myTime and yourTime */
+        if ((myTime <= 0) && (yourTime <= 0)) {
+            decline_withdraw_offers(p, -1, -1,DO_DECLINE);
+            game_ended(g, myColor, END_BOTHFLAG);
+            return COM_OK;
+        }
+
+        if (yourTime > 0) {
+            /* Opponent still has time, but if that's only because s/he
+             * may be lagging, we should ask for an acknowledgement and then
+             * try to call the flag. */
+
+            if (serverTime <= 0 && gg->game_state.onMove != myColor
+                && gg->flag_pending != FLAG_CHECKING) {
+                /* server time thinks opponent is down, but RealTIme disagrees.
+                 * ask client to acknowledge it's alive. */
+                gg->flag_pending = FLAG_CALLED;
+                gg->flag_check_time = time(0);
+                pprintf(p, "Opponent has timeseal; checking if (s)he's lagging.\n");
+                pprintf (opp, "\n[G]\n");
+                return COM_OK;
+            }
+
+            /* if we're here, it means one of:
+             * 1. the server agrees opponent has time, whether lagging or not.
+             * 2. opp. has timeseal (if yourTime != serverTime), had time left
+             *    after the last move (yourTime > 0), and it's still your move.
+             * 3. we're currently checking a flag call after having receiving
+             *    acknowledgement from the other timeseal (and would have reset
+             *    yourTime if the flag were down). */
+
+            pprintf(p, "Your opponent is not out of time!\n");
+            return COM_OK;
+        }
+    }
+
+    decline_withdraw_offers(p, -1, -1,DO_DECLINE);
+    if (player_has_mating_material(&gg->game_state, myColor))
+        game_ended(g, myColor, END_FLAG);
+    else
+        game_ended(g, myColor, END_FLAGNOMATERIAL);
+
 	return COM_OK;
 }
 

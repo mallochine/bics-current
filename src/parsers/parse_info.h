@@ -230,6 +230,7 @@ static const struct parse_struct pinfo_game[] = {
 {"bLastMoveTime", 0, sizeof(int), offsetof(struct game, bLastMoveTime), 0, NULL, 0, gen_dump_int, gen_parse_int},
 {"bug_count", 0, sizeof(int), offsetof(struct game, bug_count), 0, NULL, 0, gen_dump_int, gen_parse_int},
 {"databaseLink", 0, sizeof(int), offsetof(struct game, databaseLink), 0, NULL, 0, gen_dump_int, gen_parse_int},
+{"flag_check_time", 0, sizeof(unsigned), offsetof(struct game, flag_check_time), 0, NULL, 0, gen_dump_unsigned, gen_parse_unsigned},
 {"not_saved_marker", 0, sizeof(unsigned), offsetof(struct game, not_saved_marker), 0, NULL, 0, gen_dump_unsigned, gen_parse_unsigned},
 {"result", 0, sizeof(enum gameend), offsetof(struct game, result), 0, NULL, FLAG_ALWAYS, gen_dump_enum_gameend, gen_parse_enum_gameend},
 {"winner", 0, sizeof(int), offsetof(struct game, winner), 0, NULL, 0, gen_dump_int, gen_parse_int},
