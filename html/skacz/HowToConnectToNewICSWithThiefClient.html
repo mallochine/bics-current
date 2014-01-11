@@ -1,0 +1,48 @@
+<HTML>
+<HEAD>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1250">
+<META NAME="keywords" CONTENT="Free internet chess server, Thief, Connect, New server">
+<META NAME="Author" CONTENT="SKAcz">
+<META NAME="description" CONTENT="How to connect to new open source free bronstein bughouse chess internet server">
+<meta name="Robots" content="FOLLOW">
+</HEAD>
+<TITLE>How to connect to BICS or any other new free internet chess server (ICS) using Thief Client Interface</TITLE>
+<BODY bgcolor>
+<H1>How to connect to BICS or any other new free internet chess server (ICS) using Thief Client Interface</H1>
+
+
+
+Here is manual how to easy join any new ICS using Thief interface for playing chess, bughouse chess, crazyhouse etc.
+Its showed on example of new BICS server called AlexBug.Com on port 5000.
+Here is it step by step in pictures:
+<p>
+Run Thief and then follow pictures.
+<img src="style/images/ConnectingWithThiefToNewICS000.gif"></p>
+<p><img src="style/images/ConnectingWithThiefToNewICS001.gif"></p>
+<p><img src="style/images/ConnectingWithThiefToNewICS002.gif"></p>
+<p><img src="style/images/ConnectingWithThiefToNewICS003.gif"></p>
+<p><img src="style/images/ConnectingWithThiefToNewICS004.gif"></p>
+<p><img src="style/images/ConnectingWithThiefToNewICS005.gif"></p>
+<p><img src="style/images/ConnectingWithThiefToNewICS006.gif"></p>
+<p><img src="style/images/ConnectingWithThiefToNewICS007.gif"></p>
+<p><img src="style/images/ConnectingWithThiefToNewICS008.gif"></p>
+<p><img src="style/images/ConnectingWithThiefToNewICS009.gif">
+Now You made new connection and logged to new internet chess server using Thief.</p>
+<p>
+Next time You can simply open connection You made.
+<img src="style/images/ConnectingWithThiefToNewICS010.gif"></p>
+<hr>
+<h2>For advanced users</h2>
+	 First add to THIEF.SYS file (open for example in notepad or notepad++) new server on empty position, here example position 15:
+	 <cite>
+	 <BR>Server 15 address=AlexBug.Com
+     <BR>Server 15 port=5000
+     <BR>Server 15 prompt=[fics% ]
+     <BR>Server 15 type=0
+	 </cite>
+	 <BR>
+	 then u can create new connection selecting new server from list, timeseal or let it empty and handle (or use guest), save and connect.
+         But when u use in thief reconnect, it will when thief starts rewrite THIEF.SYS and delete it. 
+         So if u have set all as u wish and only need this server of BICS, simply make it read only file. Thief then messaging error when starts that cannot write in, but after it all working fine.
+
+</HTML>

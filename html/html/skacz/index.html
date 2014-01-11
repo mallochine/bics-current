@@ -1,0 +1,177 @@
+﻿<!DOCTYPE html>
+
+<html lang="cs" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8" />
+    <title>AlexBug.Com - Free Internet Chess Server</title>
+
+    <link rel="stylesheet" href="style/site.css" />
+
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+
+            var bgArray = ['BughouseWars.gif', 'BughouseWars.gif'];
+            var bg = bgArray[Math.floor(Math.random() * bgArray.length)];
+            $("header").css("background-image", "url('style/images/" + bg + "')");
+
+        });
+    </script> 
+ 
+</head>
+<body>
+
+
+
+  <div class="outerWrapper">
+  <header>
+  <nav>
+      <ul>
+      <li><a href="#about">About chess server</a></li>
+      <li><a href="#calendarofevents">Events</a></li>
+	  <li><a href="#services">Register</a></li>	
+	  <li><a href="#contacts">Contacts</a></li>
+	  <!--
+      <li><a href="#services">Services</a></li>
+      <li><a href="#links">Links</a></li>
+      -->
+	  </ul>
+	</nav>
+  </header>
+
+
+<div class="contentWrapper">
+
+<div class="mainContent">
+  <article id="about">
+  <h1 class="bughousewars"><span class="auto-style1">About</span> chess server</h1>
+  <p class="bughousewars">
+    This is really free bughouse chess server.
+	All are welcome to play and test lightning, blitz chess, crazyhouse and bughouse!
+	<b>Actually alpha version for testing.</b>
+	Time controls N minutes for game and also B seconds for move (bronstein) are supported.
+	We hope soon here could be best bughouse chess actions.
+	We do what we can to have really open source project working.
+	<b>We play not for rating, but for moves, games and tourneys !</b>
+	But rating system here is supported also, its part of fun. 
+	Actually will be improved a bit, based on last years experiece.
+	We plan organize here periodic online tournaments opened to all players without limitations of skills, rating, or whatever.	
+  </p>
+  <div class="onas">
+    <!-- 1 polozka vice info  -->
+       <div style="position: relative; left: 620px; top:30px; width: 300px; margin-left: 20px">
+        <div style="position: absolute; left: 1px; top:-20px; width: 200px; margin-left: 20px">
+          <div class="vkrouzku1znViceInfo"><p>+</p></div>
+        </div>
+        <div style="position: absolute; left: -10px; top:5px; width: 200px; margin-left: 20px">
+            <p class="bughousewarsviceinfo">
+              <a href="http://bughousechess.wz.cz">infos about bughouse wars</a> 
+            </p>
+        </div>
+       </div>
+    <!-- end 1 polozka vice info  -->
+  </div>
+  </article>
+  </div> <!-- End mainContent-->
+
+<div class="mainContent">
+<article id="calendarofevents">
+  <h1 class="bughousewars">
+  Calendary of <span class="auto-style1">Events</span>
+  </h1>
+
+  <h2 class="bughousewars" style="text-align:center; font: 25px/1.5 Segoe UI; font-weight: 500; color: #000000; ">
+    Join our chess server - its for free ! &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br />
+  </h2>
+
+
+
+  <div class="calendarofevents2">
+           <table class="bughousewarscalendarofevents">
+		   <tr><td class="bughousewarscalendarofevents"><div class="vkrouzku2zn1kaltab"><p>21</p></div><div class="vkrouzku2zn2kaltab"><p>12</p></div></td><td class="bughousewarskalendarakce" style="width:75%"><p class="bughousewarscalendarofeventsnaz">Alpha version of server runs! BICS alive again!</p><p class="bughousewarscalendarofevents">After many years, core of server (time/flag solution) has been rewriten. Bughouse (also bronstein) Internet Chess Server reborn. Join us, help us testing or just play with us. Fast or slower bughouse, all on one server. </p> </td></tr>
+
+           <tr><td class="bughousewarscalendarofevents"><div class="vkrouzku2zn1kaltab"><p>??</p></div><div class="vkrouzku2zn2kaltab"><p>12</p></div></td><td class="bughousewarskalendarakce" style="width:75%"><p class="bughousewarscalendarofeventsnaz">Tournament in both F1 and slower bughouse</p><p class="bughousewarscalendarofevents">Come here and play with us. Here will be tournaments in both fastest and slower bughouse. For fastest will be used time control 2 minutes per game. For slower bughouse Czech Open 2014 time control 2s for move (bronstein) with 2 minutes reserve. Date/Time will be determined yet.</p> </td></tr>
+
+           <tr><td class="bughousewarscalendarofevents"><div class="vkrouzku2zn1Bkaltab"><p>31</p></div><div class="vkrouzku2zn2Bkaltab"><p>12</p></div></td><td class="bughousewarskalendarakce" style="width:75%"><p class="bughousewarscalendarofeventsnaz">We welcome all to be testers !</p><p class="bughousewarscalendarofevents">This year we testing, but it cannot stop us organizing tournaments. Follow us, we give You know!</p> </td></tr>
+
+           </table>
+
+  
+  </div>
+  </article>
+
+
+
+  </div> <!-- End mainContent2-->
+
+<div class="mainContent">
+<article id="services">
+  <h1 class="bughousewars">Services <span class="auto-style1">&</span> Server : Are <span class="auto-style1">Free</span> </h1>
+  <p class="bughousewars">You can play here a lot of games for free.
+  You can join as guest or register Your nick <a href="http://alexbug.com/register_form.php">here</a>.
+  Password You can change using command password oldpassword newpassword. 
+  If You have some nick on FICS already, its reserved for You here also and for nobody else!
+  </p>
+  <p class="bughousewars">As interface to connect to our server You can use <a href="http://www.thief-interface.com/">Thief</a>.
+  If You are new, follow tutorial in pictures <a href=HowToConnectToNewICSWithThiefClient.html> how to create new connection to ICS</a>.
+  </p>  
+  </article>
+  </div> <!-- End mainContent-->
+
+<div class="mainContent2">
+ <article id="comunity">
+  <h1 class="bughousewars">
+    Com<span class="auto-style1">Uni</span>ty<span class="auto-style1"></span>
+  </h1> 
+  <div class="comunity">
+    <p class="bughousewars">  
+         	<img src="style/images/ComunityBughouseChess.JPG">
+	</p>			
+    <p class="bughousewars">    
+    We are here to play and having fun. Remember it! <br/>Behave like nice friendly person even if You hate losing games :) 
+	</p>
+	<p class="bughousewars">
+	We are on  <a href="https://www.facebook.com/groups/241510295868351/">facebook</a> also.
+	</p>
+	<p class="bughousewars">
+    A lot about bughouse chess You can find also <a href="http://bughousechess.wz.cz">here</a>.
+	</p>
+   </div>
+  </article>
+  </div> <!-- End mainContent2-->
+
+
+  </div> <!-- End mainContent2-->
+
+
+
+<div class="mainContent2">
+<article id="contacts">
+<h1 class="bughousewars">
+  C<span class="auto-style1">on</span>tacts
+</h1>
+  <div class="contacts"> 
+  <p class="bughousewars">
+  <img src="style/images/EarthChessContacts4.jpg">
+  </p>
+
+  
+  </div>
+  
+
+
+      <!-- End mainContent2-->
+
+
+</div> <!-- End contentWrapper -->
+
+<footer>
+  <p>Copyright &copy; 2013 AlexBug.Com</p>
+</footer> <!-- End footer -->
+
+</div> <!-- End outerWrapper -->
+
+
+
+</body>
+</html>

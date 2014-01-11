@@ -1,0 +1,778 @@
+
+body {
+	background: #FAFAFA;
+	font: 16px/18px "Segoe UI";
+	/*color:#1E00FF;*/
+	color:#876D05;
+	876D05
+	
+}
+
+a {
+    color:#FFCC06;
+}
+
+.outerWrapper {
+	margin: 0px auto;
+	width: 960px;
+	padding: 0px;
+	background: #EDEDED;
+}
+
+header {
+	width: 100%;
+	height: 653px;
+	text-align: center;
+	background: url(images/cw1.jpg) no-repeat top center;
+	padding-top: 0px;
+}
+
+
+nav {
+	position: relative;
+	top: 4px; left:300px;
+	height: 100px;
+	font-family: "Segoe UI";
+	overflow: hidden;
+	width: 486px;
+	margin: 0px;
+	overflow: hidden;
+}
+
+nav ul {
+  font: 15px/1 "Segoe UI";
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+nav ul li {
+	width: auto;
+	text-align: center;
+	display: block;
+	position: relative;
+	float: left;
+}
+
+nav ul li a {
+	line-height: 20px;
+	display: block;
+	background-color: #0000aa;
+
+/* tohle dela to menu s mezerama mezi polozkama*/
+
+	text-decoration: none;
+	padding: 3px 4px 4px 4px;
+	background: transparent;
+	color: #696563; 
+	margin-left: 6px;
+	white-space: nowrap;
+	width:auto;
+	height:29px;
+	text-align:center;
+}
+
+/*
+ul li:nth-child(4n+1) {
+        background-color: transparent;
+        }
+ 
+      ul li:nth-child(4n+2) {
+        background-color: #95999C;
+        top: 1px;
+        }
+ 
+      ul li:nth-child(4n+3) {
+        background-color: #C15306;
+        top: 2px;
+        }
+ 
+      ul li:nth-child(4n+4) {
+        background-color: #A70C10;
+        top: 3px;
+        }
+      ul li:nth-child(4n+5) {
+        background-color: transparent;
+        top: 4px;
+        }
+      ul li:nth-child(4n+6) {
+        background-color: #95999C;
+        top: 5px;
+        }
+    */
+
+nav ul li a:hover {
+    /*color: #ffffff;
+    font-style:oblique;
+	background-color: #DC3431;
+    font-weight: bold;
+    font-style:oblique;        
+    */
+	
+    font-variant: small-caps;
+    font-weight: 700;
+	color: #FFCC06;
+    /* duha
+    -webkit-background-clip: border-box;
+	color: white;
+	-webkit-text-fill-color: transparent;
+  	background-image: -webkit-gradient(linear, left top, right top, from(#ff0000), to(#ffffff));
+	background-image: -webkit-linear-gradient(left, #F5AF19, #DE3532, #DE3532, #ff0000, #CACACA); 
+	background-image:    -moz-linear-gradient(left, #F5AF19, #DE3532, #DE3532, #ff0000, #CACACA); 
+	background-image:     -ms-linear-gradient(left, #F5AF19, #DE3532, #DE3532, #ff0000, #CACACA); 
+	background-image:      -o-linear-gradient(left, #F5AF19, #DE3532, #DE3532, #ff0000, #CACACA); 
+       */     
+}
+
+        .auto-style1 {
+            color: #876D05
+        }
+        .auto-style2 {
+            color: #FFCC06
+        }
+        .bughousewarsclenstviTypOs {
+            /*
+            font-size: 19px;
+            color: #86828F;
+            text-decoration: underline;
+            */
+            
+        }
+        .bughousewarsclenstviTypSkup {
+            
+            /*font-size: 19px; 
+             text-decoration: underline; 
+                */
+            color: #86828F;
+            
+        }
+
+
+
+.contentWrapper {
+	width: 100%;
+	font: 14px/1 "Segoe UI";
+	margin-top: 0px;
+	overflow: hidden;
+}
+.mainContent {
+	background: #FAFAFA;
+	width: 100%;
+	float: left;
+	padding-right: 20px;
+    border: 1px solid #EDEDED;
+}
+
+.mainContent2 {
+	background: #FAFAFA;
+	width: 100%;
+	float: left;
+	padding-right: 20px;
+    border: 1px solid #EDEDED;
+}
+
+
+h1.bughousewars {
+ border: 0;
+ width: 960px;  /* 800 */
+ height: 22px;
+ text-align: center; 
+ /*text-indent 90*/
+ padding: 0px 0px 60px 0px;
+ font: 50px/1 "Segoe UI";
+ font-weight: 300;
+ color: #FFCC06;
+ }
+
+h2.bughousewars {
+font: 30px/1 "Segoe UI";
+font-weight: 400;
+position:relative;
+left:52px;
+}
+
+#SpanClenstviOs:hover {
+cursor: pointer;
+}
+
+#SpanClenstviSk:hover {
+cursor: pointer;
+}
+
+h2.bughousewarspartneri {
+font: 30px/1 "Segoe UI";
+font-weight: 400;
+text-align: center; 
+}
+
+h2.bughousewarsvetsi {
+font: 35px/1 "Segoe UI";
+font-weight: 300;
+position:relative;
+left:52px;
+color: #696563;
+}
+
+h3.bughousewarspartneri {
+font: 30px/1 "Segoe UI";
+font-weight: 400;
+text-align: left;
+padding-left:50px; 
+}
+
+h4.bughousewarspartneri {
+font: 25px/1 "Segoe UI";
+font-weight: 400;
+text-align: left;
+padding-left:50px;
+}
+
+h4.bughousewarspartneribenefit {
+font: 25px/1 "Segoe UI";
+font-weight: 400;
+text-align: left;
+padding-left:50px;
+padding-bottom:1px;
+padding-top:1px; 
+color:red;
+line-height: 32px; 
+}
+
+a.bughousewarspartneri {
+font: 25px/1 "Segoe UI";
+font-weight: 400;
+text-align: left;
+padding-left:50px; 
+color:#696563;
+}
+
+p.bughousewars {
+color:876D05; /*#696563;*/
+position:relative;
+left:50px;
+top: -20px;
+width: 860px;
+font: 21px "Segoe UI"; 
+font-weight: 300;
+text-align: justify;
+}
+
+
+
+
+p.bughousewarscalendarofeventsnaz {
+color:#696563;
+position:relative;
+left:1px;
+width: 660px;
+font: 21px "Segoe UI"; 
+font-weight: 300;
+text-align: justify;
+margin-bottom: 0px;
+}
+
+p.bughousewarscalendarofeventsnaz {
+color:#696563;
+position:relative;
+left:1px;
+width: 660px;
+font: 21px "Segoe UI"; 
+font-weight: 300;
+text-align: justify;
+margin-bottom: 0px;
+}
+
+td.bughousewarscalendarofevents {
+    padding-top:30px;
+}
+
+p.bughousewarscalendarofevents {
+color:#696563;
+position:relative;
+left:1px;
+top: 1px;
+width: 660px;
+font: 14px "Segoe UI"; 
+font-weight: 300;
+text-align: justify;
+margin-top: 0px;
+
+}
+
+
+
+td.bughousewarskalendarakce{
+  text-align:justify;
+  vertical-align:top;
+}
+
+:
+p.bughousewarswhite {
+color:#696563;
+font: 21px "Segoe UI"; 
+font-weight: 300;
+margin-top:100px;
+}
+
+p.bughousewarswhitegeneral {
+background-color:white;
+color:#696563;
+font: 21px "Segoe UI"; 
+font-weight: 300;
+}
+
+p.bughousewarsmensi {
+color:#696563;
+position:relative;
+left:50px;
+top: -40px;
+width: 880px;
+font: 14px "Segoe UI"; 
+font-weight: 100;
+}
+
+p.bughousewarsviceinfo {
+color:#696563;
+position:relative;
+left:50px;
+top: -40px;
+width: 880px;
+font: 17px "Segoe UI"; 
+font-weight: 100;
+}
+
+div.bughousewarsclenstvi {
+    visibility: visible;
+    position:relative;
+    left:50px;
+    top: 20px;
+    width:230px;
+    height:355px; 
+    background: #4D475C;
+    color:white;  
+    padding:  0px 15px 1px 15px;
+    overflow: hidden;
+    text-align:center;
+    font: 16px "Segoe UI";
+}
+
+div.bughousewarsclenstvitym {
+    visibility: hidden;
+    position:relative;
+    left:50px;
+    top: -1048px;
+    width:230px;
+    height:355px; 
+    background: #4D475C;
+    color:white;  
+    padding:  0px 15px 1px 15px;
+    overflow: hidden;
+    text-align:center;
+    font: 16px "Segoe UI";
+}
+
+div.bughousewarsclenstviz {
+    visibility: visible;
+    position:relative;
+    top: -336px;
+    left:346px;
+    width:230px;
+    height:355px;
+    background: #4D475C;
+    color:white;  
+    padding:  0px 15px 1px 15px;
+    overflow: hidden;
+    text-align:center;
+    font: 16px "Segoe UI";
+}
+
+div.bughousewarsclenstvip {
+    visibility: visible;
+    position:relative;
+    top: -692px;
+    left:646px;
+    width:230px;
+    height:355px;
+    background: #4D475C;
+    color:white;  
+    padding:  0px 15px 1px 15px;
+    overflow: hidden;
+    text-align:center;
+    font: 16px "Segoe UI";
+}
+
+
+div.bughousewarsclenstviskup {
+    visibility: hidden;
+    position:relative;
+    left:346px;
+    top: -1404px;
+    width:230px;
+    height:355px; 
+    background: #4D475C;
+    color:white;  
+    padding:  0px 15px 1px 15px;
+    overflow: hidden;
+    text-align:center;
+    font: 16px "Segoe UI";
+}
+
+
+div.bughousewarsclenstvidoplnk {
+    visibility: hidden;
+    position:relative;
+    left:346px;
+    top: -1404px;
+    width:230px;
+    height:355px;
+    background: #4D475C;
+    color:white;  
+    padding:  0px 15px 1px 15px;
+    overflow: hidden;
+    text-align:center;
+    font: 16px "Segoe UI";
+}
+
+
+
+.imgcentr
+{
+ margin:0px auto;
+ display:block;
+}
+
+
+
+h3.bughousewarsclenstvi {
+ font: 20px "Segoe UI";
+ font-weight: 600; 
+}
+
+p.bughousewarsclenstviVCene {
+  font: 18px "Segoe UI";
+}
+
+table.bughousewarsclenstvi {
+ font: 18px "Segoe UI";
+}
+
+td.bughousewarsclenstvitext {
+  text-align:left;
+}
+
+td.bughousewarsclenstvicislo {
+  text-align:right;
+}
+
+td.bughousewarsclenstvitextpozn {
+  text-align:left;
+  font: 12px "Segoe UI";
+}
+
+div.bughousewarsclenstviviceinf {
+    position: relative;
+    
+}
+div.bughousewarsclenstviviceinfz {
+    position: relative;
+    top: 10px;
+}
+
+div.bughousewarsclenstviviceinfp {
+    position: relative;
+    top: 10px;
+}
+
+div.bughousewarsclenstvikruh {
+    position: relative;
+    left: 80px;
+    top: 50px;
+    width:30px;
+    height:30px; 
+    background: white;
+    color:yellow;
+    border-radius: 50%;
+    text-align:center;
+}
+
+div.bughousewarsclenstvikruh2 {
+    position: relative;
+    left: 2px;
+    top: 2px;
+    width:26px;
+    height:26px; 
+    color:white;
+    border-radius: 50%;
+    text-align:center;
+    background: #4D475C;
+}
+
+p.bughousewarsclenstviviceinfsipka {
+    font-size:large;
+    font-weight: 900;
+}
+
+p.bughousewarsclenstviviceinf {
+    text-align:right;
+    font: 18px "Segoe UI";
+}
+
+
+
+
+.vkrouzku2zn1kaltab {
+    border: 2px solid #FFCC06;
+    border-radius: 100%;
+    height: 45px;
+    width: 45px;
+    text-align: center;
+    background-color:#FFCC06;
+}
+
+.vkrouzku2zn1kaltab p {
+    margin-top: 3px;
+    font-size: 34px;
+    font-weight: 400;
+    color: white;
+}
+
+.vkrouzku2zn2kaltab {
+    border: 2px solid #876D05;
+    border-radius: 100%;
+    height: 45px;
+    width: 45px;
+    text-align: center;
+    background-color:#876D05;
+}
+
+.vkrouzku2zn2kaltab p {
+    margin-top: 3px;
+    font-size: 34px;
+    font-weight: 400;
+    color: white;
+}
+
+div.vkrouzku2zn2kaltab {
+    position:relative;
+    left:52px;
+    top: -29px;
+}
+
+
+.vkrouzku2zn1Bkaltab {
+    border: 2px solid #FFCC06;
+    border-radius: 100%;
+    height: 45px;
+    width: 45px;
+    text-align: center;
+    background-color:#FFCC06;
+}
+
+.vkrouzku2zn1Bkaltab p {
+    margin-top: 3px;
+    font-size: 34px;
+    font-weight: 400;
+    color: white;
+}
+
+.vkrouzku2zn2Bkaltab {
+    border: 2px solid #876D05;
+    border-radius: 100%;
+    height: 45px;
+    width: 45px;
+    text-align: center;
+    background-color:#876D05;
+}
+
+.vkrouzku2zn2Bkaltab p {
+    margin-top: 3px;
+    font-size: 34px;
+    font-weight: 400;
+    color: white;
+}
+
+div.vkrouzku2zn1Bkaltab {
+    position:relative;
+    top: 30px;
+}
+
+div.vkrouzku2zn2Bkaltab {
+    position:relative;
+    left:52px;
+    top: -49px;
+}
+
+
+.vkrouzku2zn1 {
+    border: 2px solid #4D4A47;
+    border-radius: 100%;
+    height: 45px;
+    width: 45px;
+    text-align: center;
+    background-color:#4D4A47;
+}
+
+.vkrouzku2zn1 p {
+    margin-top: 3px;
+    font-size: 34px;
+    font-weight: 400;
+    color: white;
+}
+
+.vkrouzku2zn2 {
+    border: 2px solid #737070;
+    border-radius: 100%;
+    height: 45px;
+    width: 45px;
+    text-align: center;
+    background-color:#737070;
+}
+
+.vkrouzku2zn2 p {
+    margin-top: 3px;
+    font-size: 34px;
+    font-weight: 400;
+    color: white;
+}
+
+.vkrouzku1znViceInfo {
+    border: 1px solid #383330;
+    border-radius: 100%;
+    height: 28px;
+    width: 28px;
+    text-align: center;
+    background-color:#FAFAFA;
+}
+
+.vkrouzku1znViceInfo p {
+    margin-top: -11px;
+    font-size: 40px;
+    font-weight: 600;
+    color: #383330;
+}
+
+.vkrouzku1znSipka1 {
+    border: 1px solid #F7C610;
+    border-radius: 100%;
+    height: 28px;
+    width: 28px;
+    text-align: center;
+    background-color:#FAFAFA;
+}
+
+.vkrouzku1znSipka1 p {
+    margin-top: 2px;
+    /*
+    position:relative;
+    left:-10px;
+    */
+    font-size: 22px;
+    font-weight: 600;
+    color: #F7C610;
+}
+
+.vkrouzku1znSipka2 {
+    border: 1px solid #CC332E;
+    border-radius: 100%;
+    height: 28px;
+    width: 28px;
+    text-align: center;
+    background-color:#FAFAFA;
+}
+
+.vkrouzku1znSipka2 p {
+    margin-top: 2px;
+    /*
+    position:relative;
+    left:-10px;
+    */
+    font-size: 22px;
+    font-weight: 600;
+    color: #CC332E;
+}
+
+
+div.onas {
+    position: relative;
+    width:800px;
+    left: 1px;
+    top: 1px;
+    height:90px; 
+}
+
+div.calendarofevents {
+    position: relative;
+    width:800px;
+    left: 10px;
+    top: 2px;
+    height:400px; 
+}
+
+div.calendarofevents2 {
+    position: relative;
+    width:800px;
+    left: 50px;
+    top: 2px;
+    height:auto; 
+}
+
+.bughousewarskalendarakce td {
+ vertical-align:top;
+ text-align:justify;
+}
+.bughousewarscalendarofevents td {
+ vertical-align:top;
+}
+
+
+div.services {
+    position: relative;
+    width:800px;
+    left: 1px;
+    top: 30px;
+    height:575px; 
+}
+
+div.comunity {
+    position: relative;
+    width:800px;
+    left: 1px;
+    top: -30px;
+    height:550px; 
+}
+
+div.contacts {
+    position: relative;
+    width:800px;
+    left: 1px;
+    top: 1px;
+    height:650px; 
+}
+
+div.onasdetail {
+    position: relative;
+    left: 1px;
+    top: 1px;
+    height:600px; 
+    width:700px;
+}
+
+footer{
+	background: #EDEDED;
+	width: 100%;
+	float:none;
+}
+
+footer p {
+	font: 8px/1 "Segoe UI";
+	color: #000000;
+	text-align: center;
+}
+
+
+.fb-like-box {
+background:#FFFFFF;
+}
+
+
+

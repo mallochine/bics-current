@@ -1,0 +1,36 @@
+v 100
+observe_list = 0:0
+timeOfReg = 1387368164
+Flags = 983143
+name = {%u}
+passwd = {%p}
+fullName = {%f}
+emailAddress = {%e}
+prompt = {fics% }
+last_channel = -1
+s_stats = {
+    rating = 1900
+    sterr = 300
+}
+z_stats = {
+    rating = 1900
+    sterr = 300
+}
+fr_bug_stats = {
+    rating = 1900
+    sterr = 300
+}
+simul_stats = {
+    rating = 1900
+    sterr = 300
+}
+bug_stats = {
+    rating = 1900
+    sterr = 300
+}
+d_time = 3
+d_inc = 3
+d_height = 24
+d_width = 79
+promote = 5
+
