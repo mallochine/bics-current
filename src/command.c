@@ -196,7 +196,7 @@ static int get_parameters(int command, char *parameters, param_list params)
       if (!*parameters)
 	return (c == 'p' ? COM_OK : COM_BADPARAMETERS);
       if (sscanf(parameters, "%d", &(params)[i].val.integer) != 1)
-	return COM_BADPARAMETERS;
+	    return COM_BADPARAMETERS;
       (params)[i].type = TYPE_INT;
       parameters = eatword(parameters);
       if (*parameters != '\0') {
@@ -411,12 +411,18 @@ static int process_command(int p, char *com_string, char **cmd)
 
     /* fics shit (on fics command starting with $$ wont change your idle status) */
     if (com_string[0] == '$' && com_string[1] && com_string[1] == '$') {
-        return one_command(p, eatwhite(com_string+2), cmd);
+        // Alex Guo: switched out the following two lines, but keep this comment
+        // here because I have no idea whether it would break anything....:S
+        com_string += 2;
+        //return one_command(p, eatwhite(com_string+2), cmd);
     }
 
 	/* don't expand the alias command */
 	if (com_string[0] == '$') {
-		return one_command(p, eatwhite(com_string+1), cmd);
+        // Alex Guo: switched out the following two lines, but keep this comment
+        // here because I have no idea whether it would break anything....:S
+        com_string += 1;
+		//return one_command(p, eatwhite(com_string+1), cmd);
 	}
 
 	alias_substitute(pp->alias_list, pp->numAlias,
@@ -483,7 +489,12 @@ static int process_login(int p, char *loginname)
 
 	strlcpy(loginnameii, loginname, sizeof(loginnameii));
 
-	if (!alphastring(loginnameii)) {
+    // Special case for Babaschess. Babaschess sends some crazy string like
+    // "%b11010101000101010101010"
+    if (loginnameii[0] == '%' && loginnameii[1] == 'b')
+        return COM_OK;
+
+    if (!alphastring(loginnameii)) {
 		pprintf(p, "\nSorry, names can only consist of lower and upper case letters.  Try again.\n");
 		goto new_login;
 	}
@@ -609,7 +620,7 @@ static int process_password(int p, char *password)
       fd = pp->socket;
       fromHost = pp->thisHost;
       if (*password) {
-	pprintf(p, "\n\n**** Invalid password! ****\n\n");
+	    pprintf(p, "\n\n**** Invalid password! ****\n\n");
         d_printf("FICS (process_password): Bad password for %s [%s] [%s] [%s]\n",
 		pp->login,
 		password,
@@ -643,7 +654,7 @@ static int process_password(int p, char *password)
     }
   }
 
-  pprintf(p,"**** Starting BICS session as %s ****\n",pp->name);
+  pprintf(p,"\n**** Starting BICS session as %s ****\n",pp->name);
 
   if (player_ishead(p)) {
 	  pprintf(p,"\n  ** LOGGED IN AS HEAD ADMIN **\n");
@@ -715,10 +726,6 @@ static int process_password(int p, char *password)
 		SetPFlag(p, PFLAG_OPEN, 0);
 	}
 
-
-
-
-
   return 0;
 }
 
@@ -746,9 +753,15 @@ static int process_prompt(int p, char *command)
     retval = COM_OK;
 
     if (pp->game >= 0 && game_globals.garray[pp->game].status == GAME_ACTIVE
-        && pp->side == game_globals.garray[pp->game].game_state.onMove
-        && game_globals.garray[pp->game].flag_pending != FLAG_NONE) {
-        ExecuteFlagCmd(p, net_globals.con[pp->socket]);
+        && pp->side == game_globals.garray[pp->game].game_state.onMove) {
+        //&& game_globals.garray[pp->game].flag_pending != FLAG_NONE) {
+        struct game *gg = &game_globals.garray[pp->game];
+
+        // Alex Guo: equivalent to old code of checking whether the -game-
+        // had flag pending. It shouldn't be, but I'm not sure what the
+        // correct behavior here is
+        if (gg->flagging_white != FLAG_NONE || gg->flagging_black != FLAG_NONE)
+            ExecuteFlagCmd(p, net_globals.con[pp->socket]);
     }
 
 	process_move(p, command);
@@ -863,6 +876,7 @@ int process_new_connection(int fd, struct in_addr fromHost)
 	//psend_raw_file(p, MESS_DIR, MESS_WELCOME);
 	pprintf(p, "Welcome to the Bughouse Internet Chess Server (BICS)!\n");
 	pprintf(p, "-----------------------------------------------------\n");
+    pprintf(p, "Webpage: http://www.freechess.org\n");
 	pprintf(p, "Head admin : %s", config_get_tmp("HEAD_ADMIN"));
 	pprintf(p, "    Complaints to : %s\n", config_get_tmp("HEAD_ADMIN_EMAIL"));
 	pprintf(p, "Server location: %s", config_get_tmp("SERVER_LOCATION"));
@@ -870,6 +884,7 @@ int process_new_connection(int fd, struct in_addr fromHost)
 	pprintf(p, "Server name : %s\n", config_get_tmp("SERVER_HOSTNAME"));
     pprintf(p, "-----------------------------------------------------\n");
 	psend_raw_file(p, MESS_DIR, MESS_LOGIN);
+    pprintf(p, "\n");
 	pprintf(p, "login: ");
 
 	return 0;

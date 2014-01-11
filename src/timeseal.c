@@ -91,6 +91,168 @@ void timeseal_init(const char *path)
 	close(fd[0]);
 }
 
+// return 1 if we executed flag cmd, 0 otherwise.
+int timeseal_check_flags(struct game *gg, int p)
+{
+    if (!gg)
+        return 0;
+
+    struct player *pp = player_getStruct(p);
+
+    if (!pp)
+        return 0;
+
+    if (gg->wTimeWhenReceivedMove != 0 // only check if we have received a
+                                       // reply (the ^B9 tag)
+        && gg->flagging_white == FLAG_CALLED
+        && pp->side == WHITE) {
+        ExecuteFlagCmd(p, net_globals.con[pp->socket]);
+        return 1;
+    }
+
+    if (gg->bTimeWhenReceivedMove != 0 // See above.
+        && gg->flagging_black == FLAG_CALLED
+        && pp->side == BLACK) {
+        ExecuteFlagCmd(p, net_globals.con[pp->socket]);
+        return 1;
+    }
+
+    return 0;
+}
+
+// return 1 if any player has called flag, 0 otherwise.
+int timeseal_areflagson(struct game *gg, int p)
+{
+    if (!gg)
+        return 0;
+
+    struct player *pp = &player_globals.parray[p];
+
+    if (gg->flagging_white == FLAG_CALLED && pp->side == WHITE) {
+        return 1;
+    }
+
+    if (gg->flagging_black == FLAG_CALLED && pp->side == BLACK) {
+        return 1;
+    }
+}
+
+void timeseal_turnoff_flags(struct game *gg, int p)
+{
+    if (!gg)
+        return;
+
+    struct player *pp = player_getStruct(p);
+
+    if (pp->side == WHITE)
+        gg->flagging_white = FLAG_NONE;
+
+    if (pp->side == BLACK)
+        gg->flagging_black = FLAG_NONE;
+}
+
+void timeseal_updateLag(struct game *gg, struct player *pp)
+{
+    if (pp->side == WHITE) {
+        /* Calculate lag for the player who just moved, using the
+         * timestamp of his last move, and the timestamp of the
+         * reply, which is TimeWhenReceivedMove
+         */
+        int TimeWhenReceivedMove;
+        int LastMoveTime;
+        if (gg->wUpdateLag)
+        {
+            TimeWhenReceivedMove = gg->wTimeWhenReceivedMove;
+            LastMoveTime = gg->wLastMoveTime;
+            gg->wLag = gg->wTimeWhenReceivedMove - gg->wLastMoveTime;
+            gg->wUpdateLag = 0;
+
+            printf("[timeseal]: wTimeWhenReceivedMove:%d\n",
+                TimeWhenReceivedMove);
+            printf("[timeseal]: wLastMoveTime:%d\n",
+                LastMoveTime);
+            printf("[timeseal]: wLag:%d\n",gg->wLag);
+        }
+    } else {
+        /* Calculate lag for the player who just moved, using the
+         * timestamp of his last move, and the timestamp of the
+         * reply, which is TimeWhenReceivedMove
+         */
+        int TimeWhenReceivedMove;
+        int LastMoveTime;
+        if (gg->bUpdateLag)
+        {
+            TimeWhenReceivedMove = gg->bTimeWhenReceivedMove;
+            LastMoveTime = gg->bLastMoveTime;
+
+            gg->bLag = gg->bTimeWhenReceivedMove - gg->bLastMoveTime;
+            gg->bUpdateLag = 0;
+
+            printf("[timeseal]: bTimeWhenReceivedMove:%d\n",
+                TimeWhenReceivedMove);
+            printf("[timeseal]: bLastMoveTime:%d\n",
+                LastMoveTime);
+            printf("[timeseal]: bLag:%d\n",gg->bLag);
+        }
+    }
+}
+
+// return 1 if lag was updated, 0 otherwise.
+int timeseal_updateTimeOfReply(int p, struct connection_t *con)
+{
+    struct player *pp = player_getStruct(p);
+    struct game *gg = player_getGameStruct(pp);
+
+    if (!pp || !gg)
+        return 0;
+
+    if (pp->side == WHITE)
+    {
+        if (gg->wTimeWhenReceivedMove == 0) {
+            gg->wTimeWhenReceivedMove = con->time;
+            return 1;
+        }
+        else
+            return 0;
+    }
+    else
+    {
+        if (gg->bTimeWhenReceivedMove == 0) {
+            gg->bTimeWhenReceivedMove = con->time;
+            return 1;
+        }
+        else
+            return 0;
+    }
+}
+
+//struct player *timeseal_getPlayer(int p)
+//{
+//    if (p < 0)          // player does not exist
+//        return NULL;
+//
+//    return &player_globals.parray[p];
+//}
+//
+//struct game *timeseal_getGame(struct player *pp)
+//{
+//    if (!pp)
+//        return NULL;
+//
+//    if (pp->game < 0)   // game does not exist
+//        return NULL;
+//
+//    return &game_globals.garray[ pp->game ];
+//}
+
+void timeseal_normalMoveTagHandler(int p, struct connection_t *con)
+{
+    struct player *pp = player_getStruct(p);
+    struct game *gg = player_getGameStruct(pp);
+
+    if (timeseal_updateTimeOfReply(p, con))
+        timeseal_updateLag(gg, pp);
+}
 
 /* 
    parse a command line from a user on *con that may be timeseal encoded. 
@@ -101,12 +263,12 @@ int timeseal_parse(char *command, struct connection_t *con)
 {
 	unsigned t;
 	int p = player_find(con->fd);
-	
+
     /* do we have a decoder sub-process? */
 	if (timeseal_globals.decoder_conn <= 0) return 1;
 	
-	/* are they using timeseal on this connection? */
-	if (!con->timeseal_init && !con->timeseal) return 1;
+    /* are they using timeseal on this connection? */
+    if (!con->timeseal_init && !con->timeseal) return 1;
 
     if (strlen(command) >= 1004) {
         pprintf (p, "TIMESEAL: your line is too long! I die.\n");
@@ -115,16 +277,16 @@ int timeseal_parse(char *command, struct connection_t *con)
         net_close_connection(con->fd);
         return 0;
     }
-	
+
     t = decode(command);
-	
-	if (t == 0) {
-		/* this wasn't encoded using timeseal */
-		d_printf("Non-timeseal data [%s]\n", command);
-		con->timeseal_init = 0;
-		return 1;
-	}
-	
+
+    if (t == 0) {
+        /* this wasn't encoded using timeseal */
+        d_printf("Non-timeseal data [%s]\n", command);
+        con->timeseal_init = 0;
+        return 1;
+    }
+
 	if (con->timeseal_init) {
 		con->timeseal_init = 0;
 		con->timeseal = 1;
@@ -134,113 +296,49 @@ int timeseal_parse(char *command, struct connection_t *con)
 		}
 	}
 	con->time = t;
-	
-	/* now check for the special move time tag */
-	if (strcmp(command, "9") == 0)
+
+    struct player *pp = &player_globals.parray[p];
+    struct game *gg;
+    if (pp->game < 0)
+        gg = NULL;
+    else
+        gg = &game_globals.garray[pp->game];
+
+    // The first special case is if flag is pending and we receive "^B9" reply
+    // tag. This means that a [G] string was sent, and now this is the reply.
+    // In this case, we want to subtract the time and check whether he has
+    // flagged. Additionally, we want to clear the flag pending once
+    // we receive confirmation that the client is alive
+    if (gg && strcmp(command, "9") == 0 &&
+       (gg->flagging_white != FLAG_NONE || gg->flagging_black != FLAG_NONE)) {
+
+        if (timeseal_check_flags(gg, p))
+            timeseal_turnoff_flags(gg, p);
+        else
+            timeseal_normalMoveTagHandler(p, con);
+
+        return 0;
+    }
+    // The second special case is if flag is pending but this is NOT "^B9"
+    // reply. That means that it is either something like "finger" or
+    // "e2e4" command.
+    else if (strcmp(command, "9") != 0) {
+        char *cmd = "";
+        if (timeseal_areflagson(gg, p)) {
+            if (is_move(command))
+                timeseal_turnoff_flags(gg, p);
+            else
+                timeseal_check_flags(gg, p);
+        }
+    }
+    // Now the generic case is if we received a ^B9 command, and flag is
+    // not pending
+    else if (strcmp(command, "9") == 0)
     {
-		struct player *pp = &player_globals.parray[p];
-			
-		if (p >= 0 && pp->game >= 0)
-        {
-			int g = pp->game;
-			struct game *gg = &game_globals.garray[g];
-
-            // Alex Guo: I commented out the following block
-            // of code on the assumption that it does not matter
-            // -when- we receive ^B9 as long as [w/b]TimeWhenReceivedMove
-            // is 0
-//            if (game_globals.garray[g].game_state.onMove !=
-//                pp->side)	{
-//                return 0;
-//            }
-			
-            if (pp->side == WHITE) {
-                if (game_globals.garray[g].wTimeWhenReceivedMove == 0) {
-                    game_globals.garray[g].wTimeWhenReceivedMove = t;
-
-                    /* Calculate lag for the player who just moved, using the
-                     * timestamp of his last move, and the timestamp of the
-                     * reply, which is TimeWhenReceivedMove
-                     */
-                    int TimeWhenReceivedMove;
-                    int LastMoveTime;
-                    if (gg->wUpdateLag) {
-                        TimeWhenReceivedMove = gg->wTimeWhenReceivedMove;
-                        LastMoveTime = gg->wLastMoveTime;
-                        gg->wLag = gg->wTimeWhenReceivedMove - gg->wLastMoveTime;
-                        gg->wUpdateLag = 0;
-
-                        printf("[timeseal]: wTimeWhenReceivedMove:%d\n",
-                            TimeWhenReceivedMove);
-                        printf("[timeseal]: wLastMoveTime:%d\n",
-                            LastMoveTime);
-                        printf("[timeseal]: wLag:%d\n",gg->wLag);
-                    }
-                }
-
-            } else {
-                if (game_globals.garray[g].bTimeWhenReceivedMove == 0) {
-                    game_globals.garray[g].bTimeWhenReceivedMove = t;
-
-                    /* Calculate lag for the player who just moved, using the
-                     * timestamp of his last move, and the timestamp of the
-                     * reply, which is TimeWhenReceivedMove
-                     */
-                    int TimeWhenReceivedMove;
-                    int LastMoveTime;
-                    if (gg->bUpdateLag)
-                    {
-                        TimeWhenReceivedMove = gg->bTimeWhenReceivedMove;
-                        LastMoveTime = gg->bLastMoveTime;
-
-                        gg->bLag = gg->bTimeWhenReceivedMove - gg->bLastMoveTime;
-                        gg->bUpdateLag = 0;
-
-                        printf("[timeseal]: bTimeWhenReceivedMove:%d\n",
-                            TimeWhenReceivedMove);
-                        printf("[timeseal]: bLastMoveTime:%d\n",
-                            LastMoveTime);
-                        printf("[timeseal]: bLag:%d\n",gg->bLag);
-                    }
-                }
-            }
-            if (game_globals.garray[g].flag_pending != FLAG_NONE) {
-                ExecuteFlagCmd(p, net_globals.con[pp->socket]);
-            }
-//			if (pp->timeseal_pending == TIMESEAL_CHECKING)
-//			{
-//				pp->timeseal_pending = FLAG_NONE;
-//				if (pp->side == WHITE) gg->wTimeWhenReceivedMove = t;
-//				else gg->bTimeWhenReceivedMove = t;
-//			
-//			} else if (pp->timeseal_pending == FLAG_CALLED)	
-//			{
-//				
-//				pp->timeseal_pending = FLAG_NONE;
-//				if (pp->side == WHITE) 
-//				{
-//					gg->wRealTime -= con->time - gg->wTimeWhenReceivedMove;
-//					gg->wTimeWhenReceivedMove = con->time;
-//					if (gg->wRealTime <= 0) ExecuteFlag(g);
-//				}
-//				else 
-//				{
-//					gg->bRealTime -= con->time - gg->bTimeWhenReceivedMove;
-//					gg->bTimeWhenReceivedMove = con->time;
-//					if (gg->bRealTime <= 0) ExecuteFlag(g);
-//				}
-//			} else if (pp->timeseal_pending == FLAG_CHECKING)
-//			{
-//				pp->timeseal_pending = FLAG_NONE;
-//				
-//				stop_clocks(gg->link);
-//			}
-		}
-		
-
-		return 0;
+        timeseal_normalMoveTagHandler(p, con);
+        return 0;
 	}
-	
+
 	return 1;
 }
 
@@ -258,20 +356,28 @@ void ExecuteFlagCmd(int p, struct connection_t *con)
 
     gg = &game_globals.garray[pp->game];
 
+    int newTimeWhenReceivedReply = con->time;
+
+    // It is very important that we don't alter the time that the server
+    // has in record for both sides here. We let that happen in UpdateTimeX.
+    // Instead, we just want to check whether we should call flag.
     if (pp->side == WHITE) {
-        gg->wRealTime -= con->time - gg->wTimeWhenReceivedMove;
-        gg->wTimeWhenReceivedMove = con->time;
-        if (gg->wRealTime < 0) {
-            pcommand(pp->opponent, "flag");
+        int time = gg->wRealTime;
+        time -= newTimeWhenReceivedReply - gg->wTimeWhenReceivedMove;
+        if (time <= 0) {
+            game_wonontime(gg, p, BLACK);
+
+            // now that we know the result, change the time
+            gg->wRealTime = time;
         }
     } else if (pp->side == BLACK) {
-        gg->bRealTime -= con->time - gg->wTimeWhenReceivedMove;
-        gg->bTimeWhenReceivedMove = con->time;
-        if (gg->bRealTime < 0) {
-            pcommand(pp->opponent, "flag");
+        int time = gg->bRealTime;
+        time -= newTimeWhenReceivedReply - gg->bTimeWhenReceivedMove;
+        if (time <= 0) {
+            game_wonontime(gg, p, WHITE);
+
+            // now that we know the result, change the time
+            gg->bRealTime = time;
         }
     }
-
-    game_update_time(pp->game);
-    gg->flag_pending = FLAG_NONE;
 }

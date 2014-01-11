@@ -70,7 +70,7 @@ static struct command_type command_list[] = {
 	{"eco",			"n",    com_eco,		ADMIN_USER },
 	{"examine",		"on",   com_examine,		ADMIN_USER },
 
-	{"finger",		"oo",	com_stats,		ADMIN_USER },
+	{"finger",		"oo",	com_finger,		ADMIN_USER },
 	//{"fen",		        "oo",	com_fen,	        ADMIN_USER }, // i see no reason for this to be taken out of code. -johnthegreat
 	{"flag",		"",	com_flag,		ADMIN_USER },
 	{"flip",		"",	com_flip,		ADMIN_USER },
@@ -181,7 +181,7 @@ static struct command_type command_list[] = {
 
 	{"whenshut",		"",	com_whenshut,	        ADMIN_USER },
 	{"whisper",		"S",	com_whisper,		ADMIN_USER },
-	{"who",			"o",    com_who,		ADMIN_USER },
+	{"who",			"op",    com_who,		ADMIN_USER },
 	{"atest",		"",     com_test,		ADMIN_USER },
 	{"withdraw",		"n",	com_withdraw,		ADMIN_USER },
 	{"wname",		"O",    com_wname,		ADMIN_USER },

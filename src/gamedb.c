@@ -31,12 +31,73 @@ static void write_g_out(int g1, int g2, char *file, int maxlines, time_t *now1, 
 static int game_zero(int g);
 
 
+
 const char *TypeStrings[NUM_GAMETYPES] = {"untimed", "crazyhouse", "standard", 
 			  "nonstandard", "FrBug", "SimulBug", 
 			  "bughouse"};
 
+int game_player_time(struct player *pp, struct game *gg);
 
+struct game *game_getStruct(int g)
+{
+    if (g < 0)   // game does not exist
+        return NULL;
 
+    return &game_globals.garray[ g ];
+}
+
+// Return whether white won, lost, or whether it was a draw.
+// This is "Simple" because you could get a much more detailed
+// result....see the cases in the switch statement below
+// for examples of more detailed results.
+int game_getWhiteResultSimple(int g)
+{
+    switch (game_globals.garray[g].result) {
+    case END_CHECKMATE:
+    case END_RESIGN:
+    case END_FLAG:
+    case END_ADJWIN:
+      if (game_globals.garray[g].winner == WHITE)
+        return RESULT_WIN;
+      else
+        return RESULT_LOSS;
+      break;
+    case END_AGREEDDRAW:
+    case END_REPETITION:
+    case END_50MOVERULE:
+    case END_STALEMATE:
+    case END_NOMATERIAL:
+    case END_BOTHFLAG:
+    case END_ADJDRAW:
+    case END_FLAGNOMATERIAL:
+      return RESULT_DRAW;
+      break;
+    default:
+      d_printf( "CHESSD: Update undecided game %d?\n", game_globals.garray[g].result);
+      return -1;
+    }
+}
+
+// If we got a winning result, return loss.
+// If we got a losing result, return win;
+// If we got a draw, return draw;
+int game_getOppositeResultSimple(int result)
+{
+    switch (result) {
+    case RESULT_WIN:
+        return RESULT_LOSS;
+        break;
+    case RESULT_LOSS:
+        return RESULT_WIN;
+        break;
+    case RESULT_DRAW:
+        return RESULT_DRAW;
+    default:
+        // TODO: do error handling here
+        return -1;
+        break;
+    }
+}
 
 /* this method is awful! how about allocation as we need it and freeing
 afterwards! */
@@ -85,6 +146,8 @@ static int game_zero(int g)
 	game_globals.garray[g].bInitTime = 300;	/* 5 minutes */
 	game_globals.garray[g].bIncrement = 0;
     game_globals.garray[g].flag_pending = FLAG_NONE;
+    game_globals.garray[g].flagging_white = FLAG_NONE;
+    game_globals.garray[g].flagging_black = FLAG_NONE;
 	strcpy(game_globals.garray[g].FENstartPos,INITIAL_FEN);
 
 	return 0;
@@ -118,6 +181,20 @@ int game_finish(int g)
 	game_remove(g);
 	return 0;
 }
+
+// return the time (in milliseconds) that the player has.
+// Example:
+// - 5 minutes remaining => returns 300000
+// - 1 second remaining => returns 1000
+//int game_player_time(struct player *pp, struct game *gg) {
+//    int time;
+//    if (net_globals.con[pp->socket]->timeseal) {
+//        time = (pp->side == WHITE ? gg->wRealTime : gg->bRealTime);
+//    } else {
+//        time = (pp->side == WHITE ? gg->wTime : gg->bTime);
+//    }
+//    return time;
+//}
 
 void MakeFENpos (int g, char *FEN)
 {
@@ -236,16 +313,16 @@ void send_board_to(int g, int p)
 		      pp->style,
 		      side, relation, p);
 	
-    //if (relation == 1) { 
+    struct game *gg = player_getGameStruct(pp);
+
     if (pp->game == g && net_globals.con[pp->socket]->timeseal) {
-		//pp->timeseal_pending = TIMESEAL_CHECKING;
-		pprintf_noformat(p, "\n%s\n[G]\n", b);
-        pprintf_noformat(p, "\nDEBUG:%s\n", b);
+		pprintf_noformat(p, "\n%s\n", b);
+        pprintf_noformat(p, "[G]\n");
+        //pprintf_noformat(p, "\nDEBUG:%s\n", b);
 	} else {
         pprintf_noformat(p, "\n%s", b);
     }
 
-  
     if (p != command_globals.commanding_player)
         send_prompt(p);
 }
@@ -282,9 +359,7 @@ void send_boards(int g)
 		}
 		return;
 	}
-	
-	
-					
+
 		for (p = 0; p < player_globals.p_num; p++) {
 			struct player *pp = &player_globals.parray[p];
 			if (pp->status == PLAYER_EMPTY)
@@ -312,22 +387,21 @@ better to solve that abort instead of flag when 0 moves made
 	/* no update on first move */
 	//if (gg->game_state.moveNum == 1) 
 	//	return;
+
 	if (gg->clockStopped)
 		return;
+
 	if (gg->type == TYPE_UNTIMED)
 		return;
+
 	now = tenth_secs();
 	timesince = now - gg->lastDecTime;
-	//pprintf(gg->white,"GAME UPDATE TIME!(po idee na pervom hode timesince=0)\nnow = %d\ntimesince = %d\ngg->lastDecTime = %d\n",now,timesince,gg->lastDecTime);
-        if (gg->game_state.onMove == WHITE) {
-		//pprintf(gg->white, "BRONSTEIN EXT v update_time!\nwTimePrevious = %d\nwRealTime = %d\n",gg->wTimePrevious,gg->wRealTime);
+
+    if (gg->game_state.onMove == WHITE) {
 		gg->wLastRealTime= gg->wRealTime; /* Bronstein Ext */
-		//pprintf(gg->white, "BRONSTEIN EXT v update_time!\nwTimePrevious = %d\n",gg->wTimePrevious);
-                gg->wRealTime -= timesince;
+        gg->wRealTime -= timesince;
 	} else {
-		//pprintf(gg->white, "BRONSTEIN EXT v update_time!\nbTimePrevious = %d\nbRealTime = %d\n",gg->bTimePrevious,gg->bRealTime);
 		gg->bLastRealTime= gg->bRealTime; /* Bronstein Ext */
-		//pprintf(gg->white, "BRONSTEIN EXT v update_time!\nbTimePrevious = %d\n",gg->bTimePrevious);
 		gg->bRealTime -= timesince;
 	}
 	gg->lastDecTime = now;

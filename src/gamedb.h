@@ -36,7 +36,7 @@ GENSTRUCT enum gamestatus {GAME_EMPTY, GAME_NEW, GAME_ACTIVE, GAME_EXAMINE, GAME
 
 /* Do not change the order of these - DAV */
 GENSTRUCT enum gametype {TYPE_UNTIMED, TYPE_CRAZYHOUSE, TYPE_STAND, TYPE_NONSTANDARD,
-               TYPE_BUGFR, TYPE_SIMUL, TYPE_BUGHOUSE};
+               TYPE_BUGFR, TYPE_SIMUL, TYPE_BUGHOUSE, TYPE_TEAMBUG};
 
 #define NUM_GAMETYPES 7
 
@@ -91,7 +91,9 @@ struct journal {
 
 GENSTRUCT struct game {
 	/* Not saved in game file */
-    int flag_pending;
+    int flag_pending;   // deprecated. See flagging_white, flagging_black;
+    int flagging_white; // if not FLAG_NONE, then black has called flag on white
+    int flagging_black; // if not FLAG_NONE, then white has called flag on black
 	unsigned lag;
 	unsigned TimeStamp;
 	unsigned prevTimeStamp; // debug

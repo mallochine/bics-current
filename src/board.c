@@ -183,8 +183,6 @@ static char *append_holding_machine(char *buf, int g, int c, int p)
 
 void update_holding(int g, int pieceCaptured)
 {
-  
- 
   struct game_state_t *gs = &game_globals.garray[g].game_state;
   int pl;
   char tmp1[80];
@@ -207,6 +205,7 @@ void update_holding(int g, int pieceCaptured)
   }
   tmp1[0] = '\0';
   append_holding_machine(tmp1, g, c, p);
+
   for (pl = 0; pl < player_globals.p_num; pl++) {
     if (player_globals.parray[pl].status == PLAYER_EMPTY)
       continue;
@@ -243,6 +242,8 @@ char *board_to_string(char *wn, char *bn,
 	    d_printf( "style12 string failed\n");
 	    return NULL;
     }
+
+    strcat(bstring, "\n");
   
     if (b->gameNum >= 0 && (game_globals.garray[b->gameNum].type == TYPE_BUGHOUSE
 	                    || game_globals.garray[b->gameNum].type == TYPE_CRAZYHOUSE)) {
@@ -312,7 +313,13 @@ static int style12(struct game_state_t *b, struct move_t *ml)
     printf("[style12]: lag:%d\n", lag);
     printf("[style12]: bLag:%d\n", gg.bLag);
     printf("[style12]: wLag:%d\n", gg.wLag);
-    
+
+    int areClocksTicking;
+    if (b->moveNum > 1 || gg.type == TYPE_BUGHOUSE)
+        areClocksTicking = 1;
+    else
+        areClocksTicking = 0;
+
     sprintf(tmp, "%d %s %s %d %d %d %d %d %d %d %d %s (%s) %s %d %d %d",
                  b->gameNum + 1,
                  game_globals.garray[b->gameNum].white_name,
@@ -332,7 +339,7 @@ static int style12(struct game_state_t *b, struct move_t *ml)
                  game_globals.garray[b->gameNum].numHalfMoves ?
 	                ml[game_globals.garray[b->gameNum].numHalfMoves - 1].algString : "none",
                  (orient == WHITE) ? 0 : 1,
-                 b->moveNum > 1 ? 1 : 0,
+                 areClocksTicking,
                  lag); 
 
 //    strcat(bstring, tmp);

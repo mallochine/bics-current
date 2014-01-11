@@ -6,186 +6,42 @@ configure:646: checking whether the C compiler (gcc  ) works
 configure:662: gcc -o conftest    conftest.c  1>&5
 configure:688: checking whether the C compiler (gcc  ) is a cross-compiler
 configure:693: checking whether we are using GNU C
-configure:702: gcc -E conftest.c
 configure:721: checking whether gcc accepts -g
 configure:753: checking whether ln -s works
 configure:804: checking for a BSD compatible install
 configure:858: checking for main in -lm
-configure:873: gcc -o conftest -g -O2   conftest.c -lm   1>&5
 configure:906: checking for dirent.h that defines DIR
-configure:919: gcc -c -g -O2  conftest.c 1>&5
 configure:944: checking for opendir in -ldir
-configure:963: gcc -o conftest -g -O2   conftest.c -ldir  -lm  1>&5
-/usr/bin/ld: cannot find -ldir
-collect2: ld returned 1 exit status
-configure: failed program was:
-#line 952 "configure"
-#include "confdefs.h"
-/* Override any gcc2 internal prototype to avoid an error.  */
-/* We use char because int might match the return type of a gcc2
-    builtin and then its argument prototype would still apply.  */
-char opendir();
-
-int main() {
-opendir()
-; return 0; }
 configure:1027: checking how to run the C preprocessor
-configure:1048: gcc -E  conftest.c >/dev/null 2>conftest.out
 configure:1107: checking for ANSI C header files
-configure:1120: gcc -E  conftest.c >/dev/null 2>conftest.out
-configure:1187: gcc -o conftest -g -O2   conftest.c -lm  1>&5
-configure: In function 'main':
-configure:1182:67: warning: incompatible implicit declaration of built-in function 'exit' [enabled by default]
 configure:1211: checking for sys/wait.h that is POSIX.1 compatible
-configure:1232: gcc -c -g -O2  conftest.c 1>&5
 configure:1256: checking for fcntl.h
-configure:1266: gcc -E  conftest.c >/dev/null 2>conftest.out
 configure:1256: checking for strings.h
-configure:1266: gcc -E  conftest.c >/dev/null 2>conftest.out
 configure:1256: checking for sys/file.h
-configure:1266: gcc -E  conftest.c >/dev/null 2>conftest.out
 configure:1256: checking for sys/ioctl.h
-configure:1266: gcc -E  conftest.c >/dev/null 2>conftest.out
 configure:1256: checking for sys/md5.h
-configure:1266: gcc -E  conftest.c >/dev/null 2>conftest.out
-configure:1262:21: fatal error: sys/md5.h: No such file or directory
-compilation terminated.
-configure: failed program was:
-#line 1261 "configure"
-#include "confdefs.h"
-#include <sys/md5.h>
 configure:1256: checking for sys/time.h
-configure:1266: gcc -E  conftest.c >/dev/null 2>conftest.out
 configure:1256: checking for unistd.h
-configure:1266: gcc -E  conftest.c >/dev/null 2>conftest.out
 configure:1294: checking for working const
-configure:1348: gcc -c -g -O2  conftest.c 1>&5
 configure:1369: checking for size_t
 configure:1402: checking whether time.h and sys/time.h may both be included
-configure:1416: gcc -c -g -O2  conftest.c 1>&5
 configure:1437: checking whether struct tm is in sys/time.h or time.h
-configure:1450: gcc -c -g -O2  conftest.c 1>&5
 configure:1474: checking for dlopen
-configure:1502: gcc -o conftest -g -O2   conftest.c -lm  1>&5
-/tmp/ccSBVcSX.o: In function `main':
-/home/ec2-user/space/bics/bics-chess-read-only/src/configure:1496: undefined reference to `dlopen'
-collect2: ld returned 1 exit status
-configure: failed program was:
-#line 1479 "configure"
-#include "confdefs.h"
-/* System header to define __stub macros and hopefully few prototypes,
-    which can conflict with char dlopen(); below.  */
-#include <assert.h>
-/* Override any gcc2 internal prototype to avoid an error.  */
-/* We use char because int might match the return type of a gcc2
-    builtin and then its argument prototype would still apply.  */
-char dlopen();
-
-int main() {
-
-/* The GNU C library defines this for functions which it implements
-    to always fail with ENOSYS.  Some functions are actually named
-    something starting with __ and the normal name is an alias.  */
-#if defined (__stub_dlopen) || defined (__stub___dlopen)
-choke me
-#else
-dlopen();
-#endif
-
-; return 0; }
 configure:1528: checking for dlopen in -ldl
-configure:1547: gcc -o conftest -g -O2   conftest.c -ldl  -lm  1>&5
 configure:1574: checking for compar_fn_t in stdlib.h
-configure:1589: gcc -c -g -O2  conftest.c 1>&5
 configure:1611: checking whether gcc needs -traditional
 configure:1657: checking return type of signal handlers
-configure:1679: gcc -c -g -O2  conftest.c 1>&5
 configure:1698: checking for strftime
-configure:1726: gcc -o conftest -g -O2   conftest.c -lm  -ldl 1>&5
-configure:1710:6: warning: conflicting types for built-in function 'strftime' [enabled by default]
 configure:1794: checking for vprintf
-configure:1822: gcc -o conftest -g -O2   conftest.c -lm  -ldl 1>&5
-configure:1806:6: warning: conflicting types for built-in function 'vprintf' [enabled by default]
 configure:1899: checking for wait3 that fills in rusage
-configure:1940: gcc -o conftest -g -O2   conftest.c -lm  -ldl 1>&5
-configure: In function 'main':
-configure:1927:57: warning: incompatible implicit declaration of built-in function 'exit' [enabled by default]
-configure:1929:5: warning: incompatible implicit declaration of built-in function '_exit' [enabled by default]
-configure:1934:5: warning: incompatible implicit declaration of built-in function 'exit' [enabled by default]
 configure:1965: checking for gethostname
-configure:1993: gcc -o conftest -g -O2   conftest.c -lm  -ldl 1>&5
 configure:1965: checking for gettimeofday
-configure:1993: gcc -o conftest -g -O2   conftest.c -lm  -ldl 1>&5
 configure:1965: checking for select
-configure:1993: gcc -o conftest -g -O2   conftest.c -lm  -ldl 1>&5
 configure:1965: checking for socket
-configure:1993: gcc -o conftest -g -O2   conftest.c -lm  -ldl 1>&5
 configure:1965: checking for strcspn
-configure:1993: gcc -o conftest -g -O2   conftest.c -lm  -ldl 1>&5
-configure:1977:6: warning: conflicting types for built-in function 'strcspn' [enabled by default]
 configure:1965: checking for strdup
-configure:1993: gcc -o conftest -g -O2   conftest.c -lm  -ldl 1>&5
-configure:1977:6: warning: conflicting types for built-in function 'strdup' [enabled by default]
 configure:1965: checking for strstr
-configure:1993: gcc -o conftest -g -O2   conftest.c -lm  -ldl 1>&5
-configure:1977:6: warning: conflicting types for built-in function 'strstr' [enabled by default]
 configure:1965: checking for dprintf
-configure:1993: gcc -o conftest -g -O2   conftest.c -lm  -ldl 1>&5
 configure:2020: checking for strnlen
-configure:2048: gcc -o conftest -g -O2   conftest.c -lm  -ldl 1>&5
 configure:2020: checking for strlcpy
-configure:2048: gcc -o conftest -g -O2   conftest.c -lm  -ldl 1>&5
-/tmp/cc417Ixy.o: In function `main':
-/home/ec2-user/space/bics/bics-chess-read-only/src/configure:2042: undefined reference to `strlcpy'
-collect2: ld returned 1 exit status
-configure: failed program was:
-#line 2025 "configure"
-#include "confdefs.h"
-/* System header to define __stub macros and hopefully few prototypes,
-    which can conflict with char strlcpy(); below.  */
-#include <assert.h>
-/* Override any gcc2 internal prototype to avoid an error.  */
-/* We use char because int might match the return type of a gcc2
-    builtin and then its argument prototype would still apply.  */
-char strlcpy();
-
-int main() {
-
-/* The GNU C library defines this for functions which it implements
-    to always fail with ENOSYS.  Some functions are actually named
-    something starting with __ and the normal name is an alias.  */
-#if defined (__stub_strlcpy) || defined (__stub___strlcpy)
-choke me
-#else
-strlcpy();
-#endif
-
-; return 0; }
 configure:2020: checking for strlcat
-configure:2048: gcc -o conftest -g -O2   conftest.c -lm  -ldl 1>&5
-/tmp/ccGKZqbG.o: In function `main':
-/home/ec2-user/space/bics/bics-chess-read-only/src/configure:2042: undefined reference to `strlcat'
-collect2: ld returned 1 exit status
-configure: failed program was:
-#line 2025 "configure"
-#include "confdefs.h"
-/* System header to define __stub macros and hopefully few prototypes,
-    which can conflict with char strlcat(); below.  */
-#include <assert.h>
-/* Override any gcc2 internal prototype to avoid an error.  */
-/* We use char because int might match the return type of a gcc2
-    builtin and then its argument prototype would still apply.  */
-char strlcat();
-
-int main() {
-
-/* The GNU C library defines this for functions which it implements
-    to always fail with ENOSYS.  Some functions are actually named
-    something starting with __ and the normal name is an alias.  */
-#if defined (__stub_strlcat) || defined (__stub___strlcat)
-choke me
-#else
-strlcat();
-#endif
-
-; return 0; }

@@ -217,29 +217,24 @@ void rating_sterr_delta(int p1, int p2, int type, int gtime, int result,
   denominator = 1.0 / (s1 * s1) + q * q * fs2 * fs2 * E * (1.0 - E);
   GK = q * fs2 / denominator;
 
-
   delta = GK * (w - E);
 
-    if (type == TYPE_BUGHOUSE)
-   {
+  if (type == TYPE_BUGHOUSE)
+  {
     //SKAcz stable bughouse rating system extension :
     // FactorPartnersLevelDistance 1 means the same class partners, 2 means distance 2
     // bigest distance decreasing delta K factor of ELO system
 
-      double FactorPartnersLevelDistanceTeam;
-      double FactorPartnersLevelDistanceTeamOpps;
-      double FactorPartnersLevelDistance;
+    double FactorPartnersLevelDistanceTeam;
+    double FactorPartnersLevelDistanceTeamOpps;
+    double FactorPartnersLevelDistance;
 
-      FactorPartnersLevelDistanceTeam = max(200,abs(r1 - r1part))/200;
-      FactorPartnersLevelDistanceTeamOpps = max(200,abs(r2 - r2part))/200;
-      FactorPartnersLevelDistance = max (FactorPartnersLevelDistanceTeam,FactorPartnersLevelDistanceTeamOpps);
+    FactorPartnersLevelDistanceTeam = max(200,abs(r1 - r1part))/200;
+    FactorPartnersLevelDistanceTeamOpps = max(200,abs(r2 - r2part))/200;
+    FactorPartnersLevelDistance = max (FactorPartnersLevelDistanceTeam,FactorPartnersLevelDistanceTeamOpps);
 
-      //pprintf(p1,"r1:%d r1p:%d r2:%d r2p:%d s1:%f s1p:%f s2:%f s2p:%f fs2:%f delta:%f FactorPartnersLevelDistance:%f delta/FactorPartnersLevelDistance=%f GK:%f w:%f E:%f \n", r1, r1part, r2, r2part, s1,s1part, s2, s2part,fs2, delta,FactorPartnersLevelDistance,delta/FactorPartnersLevelDistance, GK, w , E);
-
-
-      delta = delta / FactorPartnersLevelDistance;
-
-   };
+    delta = delta / FactorPartnersLevelDistance;
+  };
 
   if (new)
     *deltarating = Round(Gr0 + delta);
@@ -247,6 +242,168 @@ void rating_sterr_delta(int p1, int p2, int type, int gtime, int result,
     *deltarating = Round(delta);	// Returned values: deltarating, newsterr
   *newsterr = 1.0 / sqrt(denominator);
 
+}
+
+// Alex Guo: copied from void rating_delta_sterr, a function which made zero
+// sense.
+void glicko(struct statistics *stats_one, struct statistics *stats_two,
+            int result, int *deltarating, double *newsterr)
+{
+  double s1, s2, s1part, s2part;
+  int r1, r2, r1part, r2part, new;	/* Initial sterrs and ratings */
+  double q, E, fs2, denominator, GK, w;	/* Parts of fancy formulas */
+  double delta;				/* Result to return */
+
+  int now = time(NULL);
+
+  r1 = stats_one->rating;
+  s1 = current_sterr(stats_one->sterr, now - stats_one->ltime);
+
+  r2 = stats_two->rating;
+  s2 = current_sterr(stats_two->sterr, now - stats_two->ltime);
+
+  new = 0;
+
+  /* now crunch */
+  if (result == RESULT_WIN) {
+    w = 1.0;
+  } else if (result == RESULT_DRAW) {
+    w = 0.5;
+  } else {
+    w = 0.0;
+  }
+
+  q = Gq;
+  E = GE(r1, r2, s2, &fs2);	/* side effect: calculate fs2 */
+
+  denominator = 1.0 / (s1 * s1) + q * q * fs2 * fs2 * E * (1.0 - E);
+  GK = q * fs2 / denominator;
+
+  delta = GK * (w - E);
+
+  if (new)
+    *deltarating = Round(Gr0 + delta);
+  else
+    *deltarating = Round(delta);	// Returned values: deltarating, newsterr
+  *newsterr = 1.0 / sqrt(denominator);
+}
+
+void stats_updateStats(struct bugteam *team, int result, int ratingchg,
+                       double sterr)
+{
+    if (!team || !team->stats)
+        return;
+
+    int p1, p2; // partnerone and partnertwo's slots occupy in player_globals
+    p1 = player_find_bylogin(team->partnerone);
+    p2 = player_find_bylogin(team->partnertwo);
+
+    if (p1 < 0 || p2 < 0)
+        return;
+
+    int now = time(NULL);
+    int oldrating = team->stats->rating;
+    team->stats->rating += ratingchg;
+    team->stats->sterr = sterr;
+    team->stats->ltime = now;
+
+    pprintf(p1, "Bug Team rating change: %d -> %d\n", oldrating,
+        team->stats->rating
+    );
+    pprintf(p2, "Bug Team rating change: %d -> %d\n", oldrating,
+        team->stats->rating
+    );
+
+    if (team->stats->rating > team->stats->best && is_active(team->stats->num)){
+        team->stats->best = team->stats->rating;
+        team->stats->whenbest = now;
+        pprintf(p1, "Your team has achieved the best active rating so far.\n");
+        pprintf(p2, "Your team has achieved the best active rating so far.\n");
+    }
+
+    switch (result) {
+    case RESULT_WIN:
+        team->stats->win += 1;
+        break;
+    case RESULT_DRAW:
+        team->stats->dra += 1;
+        break;
+    case RESULT_LOSS:
+        team->stats->los += 1;
+    default:
+        // TODO: error handle this case
+        break;
+    }
+
+    if (team->stats->num < 0)
+        team->stats->num = 0;
+    team->stats->num += 1;
+}
+
+// Update the rating for the team
+int bugteam_rating_update(int g, int link_game)
+{
+    struct game *gg_cur = game_getStruct(g);
+    struct game *gg_link = game_getStruct(link_game);
+
+    if (!gg_cur || !gg_link)
+        return -1;
+
+    // Get stats for each team
+    struct bugteam teamone = {
+        (player_getStruct(gg_cur->white))->name,
+        (player_getStruct(gg_link->black))->name,
+        NULL
+    };
+    struct bugteam teamtwo = {
+        (player_getStruct(gg_cur->black))->name,
+        (player_getStruct(gg_link->white))->name,
+        NULL
+    };
+
+    teamone.stats = bugteamstats_getStats(&teamone);
+    teamtwo.stats = bugteamstats_getStats(&teamtwo);
+
+    if (!teamone.stats) {
+        bugteam_newTeam(&teamone);
+        teamone.stats = bugteamstats_getStats(&teamone);
+        // TODO: check the return of getStats for error
+    }
+
+    if (!teamtwo.stats) {
+        bugteam_newTeam(&teamtwo);
+        teamtwo.stats = bugteamstats_getStats(&teamtwo);
+        // TODO: check the return of getStats for error
+    }
+
+    // Get results for each team
+    int teamone_result, teamtwo_result; // result that team one/two got
+    teamone_result = game_getWhiteResultSimple(g);
+    teamtwo_result = game_getOppositeResultSimple(teamone_result);
+
+    // Calculate rating change to be done
+    int teamone_ratingchg, teamtwo_ratingchg;
+    double teamone_sterr, teamtwo_sterr;
+
+    glicko(teamone.stats, teamtwo.stats, teamone_result, &teamone_ratingchg,
+        &teamone_sterr);
+    glicko(teamtwo.stats, teamone.stats, teamtwo_result, &teamtwo_ratingchg,
+        &teamtwo_sterr);
+
+    // Change data, then save stats to database
+    stats_updateStats(&teamone, teamone_result,teamone_ratingchg,
+                      teamone_sterr);
+    stats_updateStats(&teamtwo, teamtwo_result,teamtwo_ratingchg,
+                      teamtwo_sterr);
+
+    bugteamstats_updateStats(&teamone);
+    bugteamstats_updateStats(&teamtwo);
+
+    // Last-minute memory management
+    free(teamone.stats);
+    free(teamtwo.stats);
+
+    return 0;
 }
 
 int rating_update(int g, int link_game)
@@ -619,7 +776,37 @@ static int Best(int p, param_list param, int ShowComp)
 
 int com_best(int p, param_list param)
 {
-  return Best(p, param, 1);
+
+  // Special case for getting the top 20 bughouse teams
+  if (param[0].type != NULL && 
+     ((param[0].val.string[0] == 'b' && param[0].val.string[1] == 't') || // best tb
+       param[0].val.string[0] == 'b')) {                                  // best B
+
+    dbi_result best_teams = bugteamstats_best();
+    if (dbi_result_get_numrows(best_teams) == 0) {
+      pprintf(p, "No teams are active enough to be considered best.\n");
+    }
+  
+    // TODO: check return of dbi_result_first_row
+    dbi_result_first_row(best_teams);
+  
+    int i = 1;
+    do {
+      char *partnerone = dbi_result_get_string(best_teams, "partnerone");
+      char *partnertwo = dbi_result_get_string(best_teams, "partnertwo");
+      int rating = dbi_result_get_int(best_teams, "rating");
+  
+      pprintf(p, "%d. %-20s %-20s %4d\n", i, partnerone, partnertwo, rating);
+      i++;
+  
+    } while (dbi_result_next_row(best_teams));
+  
+    dbi_result_free(best_teams);
+
+    return COM_OK;
+  }
+  else
+    return Best(p, param, 1);
 }
 
 int com_hbest(int p, param_list param)

@@ -17,13 +17,12 @@ void check_flag(int g, int color)
 	else
 	{
 		if ((gg->type != TYPE_BUGHOUSE) && !BoolCheckPFlag(gg->white, PFLAG_AUTOFLAG))
-			return;	
+			return;
 		player_globals.parray[gg->black].timeseal_pending = FLAG_CALLED;
 		pprintf (gg->black, "\n[G]\n");
 	}
 
 }
-
 
 void check_flag_bughouse(int g)
 {
@@ -72,39 +71,53 @@ int UpdateTimeX(struct player *pp, struct game *gg)
 		{
 			stop_clocks(gg->link);
 			return 1;
-		}	
+		}
 	}
-	
+
 	if (pp->side == WHITE) {
 		
+        // The time that a person spent moving is determined by the
+        // timestamp that he made a move, and the timestamp when
+        // he replied that he received the board.
+        //
+        // In the code, this is TimeWhenMoved - TimeWhenReceivedMove
+        //
 		gg->wLastRealTime = gg->wRealTime;
 		gg->wTimeWhenMoved = net_globals.con[pp->socket]->time;
 		
 		if (((gg->wTimeWhenMoved - gg->wTimeWhenReceivedMove) < 0) ||
-		    (gg->wTimeWhenReceivedMove == 0)) gg->wTimeWhenReceivedMove = gg->wTimeWhenMoved;
+		    (gg->wTimeWhenReceivedMove == 0)) 
+            gg->wTimeWhenReceivedMove = gg->wTimeWhenMoved;
 		else gg->wRealTime -= gg->wTimeWhenMoved - gg->wTimeWhenReceivedMove;
 		
+        // Now that we calculated time, we want to check for timeout here
+        //
 		if (gg->wRealTime<=0) 
 		{
-			if (BoolCheckPFlag(gg->black, PFLAG_AUTOFLAG) || gg->type == TYPE_BUGHOUSE){
+			if (BoolCheckPFlag(gg->black, PFLAG_AUTOFLAG)){
 				stop_clocks(pp->game); 
 				return 1; 
 			}
 		}
-		
+
 		if (gg->game_state.moveNum == 1) gg->wLastRealTime=gg->wInitTime;
 		gg->wRealTime += gg->wIncrement;
-		if (gg->wRealTime > gg->wLastRealTime) gg->wRealTime = gg->wLastRealTime; // bronstein extension 
+
+        // bronstein extension
+		if (gg->wRealTime > gg->wLastRealTime)
+            gg->wRealTime = gg->wLastRealTime;
+
 	} else if (pp->side == BLACK) {
 		gg->bLastRealTime = gg->bRealTime;
 		gg->bTimeWhenMoved = net_globals.con[pp->socket]->time;
 				
 		if (((gg->bTimeWhenMoved - gg->bTimeWhenReceivedMove) < 0) ||
-		    (gg->bTimeWhenReceivedMove == 0)) gg->bTimeWhenReceivedMove = gg->bTimeWhenMoved;
+		    (gg->bTimeWhenReceivedMove == 0))
+            gg->bTimeWhenReceivedMove = gg->bTimeWhenMoved;
 		else gg->bRealTime -= gg->bTimeWhenMoved - gg->bTimeWhenReceivedMove;
-		
+
 		if (gg->bRealTime<=0) { 
-			if (BoolCheckPFlag(gg->white, PFLAG_AUTOFLAG) || gg->type == TYPE_BUGHOUSE) {
+			if (BoolCheckPFlag(gg->white, PFLAG_AUTOFLAG)) {
 				stop_clocks(pp->game); 
 				return 1; 
 			}
@@ -112,31 +125,25 @@ int UpdateTimeX(struct player *pp, struct game *gg)
 	
 		if (gg->game_state.moveNum == 1) gg->bLastRealTime=gg->bInitTime;
 		gg->bRealTime += gg->bIncrement;
-		if (gg->bRealTime > gg->bLastRealTime) gg->bRealTime = gg->bLastRealTime; // bronstein extension 
+
+        // bronstein extension
+		if (gg->bRealTime > gg->bLastRealTime)
+            gg->bRealTime = gg->bLastRealTime;
 	}	
 
 	return 0;
-
-
-
-
 }
 
-
-
-
-//void comp_lag(int g,int lagTime)
-//{
-//	struct game *gg = &game_globals.garray[g];
-//	if (gg->wTimeForCompensator + gg->bTimeForCompensator == 0) return;
-//	if (lagTime<0) lagTime =0;
-// 	gg->wRealTime+=(int) ( (double)lagTime* (double)gg->wTimeForCompensator /((double)gg->wTimeForCompensator+(double)gg->bTimeForCompensator) );
-//	gg->bRealTime+=(int) ( (double)lagTime* (double)gg->bTimeForCompensator /((double)gg->wTimeForCompensator+(double)gg->bTimeForCompensator) );
-//    gg->wTimeForCompensator=0;
-//	gg->bTimeForCompensator=0;
-	
-//}
-
+// If player "pp" called flag on his opponent, then
+// check whether that flag is true or not.
+//
+// If the flag is true, then end the game in favor of pp.
+// If not true, send a message back to player "pp" that
+// his opponent is not actually out of time.
+int game_check_flag(struct player *pp, struct game *gg)
+{
+    ;
+}
 
 int com_unpause(int p, param_list param)
 {

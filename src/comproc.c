@@ -116,11 +116,12 @@ static void com_stats_andify(int *numbers, int howmany, char *dest)
 
 static void com_stats_rating(char *hdr, struct statistics * stats, char *dest, long now)
 {
-  char tmp[100];
+  char tmp[1000];
 
   *dest = 0;
 
-  if (stats->num == 0) return;
+  if (stats->num == 0)
+    return;
 
   sprintf(dest, "%-10s%4s    %5.1f   %4d   %4d   %4d   %4d", hdr,
 	  ratstr(stats->rating), current_sterr(stats->sterr, now-stats->ltime),
@@ -128,11 +129,45 @@ static void com_stats_rating(char *hdr, struct statistics * stats, char *dest, l
   if (stats->whenbest) {
     sprintf(tmp, "   %d", stats->best);
     strcat(dest, tmp);
-    strftime(tmp, sizeof(tmp), " (%d-%b-%Y)", localtime((time_t *) & stats->whenbest));
-    strcat(dest, tmp);
-  } //not shown best rating :aramen // lets show best rating
+//    strftime(tmp, sizeof(tmp), " (%d-%b-%Y)", localtime((time_t *) & stats->whenbest));
+//    strcat(dest, tmp);
+  }
   strcat(dest, "\n");
   return;
+}
+
+int com_finger(int p, param_list param)
+{
+    if (param[1].type == TYPE_NULL)
+        return com_stats(p, param);
+    else
+        return com_teamfinger(p, param);
+}
+
+int com_teamfinger(int p, param_list param)
+{
+    if (param[0].type != TYPE_WORD || param[1].type != TYPE_WORD) {
+        pprintf(p, "We need two usernames to lookup.\n");
+        return COM_OK;
+    }
+
+    struct bugteam team = {param[0].val.word, param[1].val.word, NULL};
+    team.stats = bugteamstats_getStats(&team);
+
+    if (!team.stats)
+        pprintf(p, "No statistics for this team.\n");
+    else {
+        char tmp[255];
+        int now = time(NULL);
+
+        pprintf(p, "Finger of %s and %s:\n", team.partnerone, team.partnertwo);
+        pprintf(p, "\n         rating     RD     win   loss   draw  total  \n");
+
+        com_stats_rating("Bug Team", team.stats, tmp, now);
+        if (*tmp != '\0') pprintf(p, tmp);
+    }
+
+    return COM_OK;
 }
 
 int com_stats(int p, param_list param)
@@ -231,16 +266,33 @@ int com_stats(int p, param_list param)
     if (showRatingsFlag > 0) {
       now = time(NULL);
       pprintf(p, "\n         rating     RD     win   loss   draw  total   \n"); //remove best string, because best rating not shown now
+
       com_stats_rating("Crazyhouse", &player_globals.parray[p1].z_stats, tmp, now);
       if (*tmp) pprintf(p, tmp);
+
       com_stats_rating("Standard", &player_globals.parray[p1].s_stats, tmp, now);
       if (*tmp) pprintf(p, tmp);
+
       com_stats_rating("SimulBug", &player_globals.parray[p1].simul_stats, tmp, now);
       if (*tmp) pprintf(p, tmp);
+
       com_stats_rating("FRBug", &player_globals.parray[p1].fr_bug_stats, tmp, now);
       if (*tmp) pprintf(p, tmp);
+
       com_stats_rating("Bughouse", &player_globals.parray[p1].bug_stats, tmp, now);
       if (*tmp) pprintf(p, tmp);
+
+      com_stats_rating("Tourney", &player_globals.parray[p1].tourney_stats, tmp, now);
+      if (*tmp) pprintf(p, tmp);
+
+      struct statistics stats;
+      struct bugteam team = {NULL, NULL, &stats};
+      bugteamstats_bestOfPlayer(player_globals.parray[p1].name, &team);
+      if (team.partnerone && team.partnertwo) {
+        pprintf(p, "\nBest team: %s and %s:\n", team.partnerone, team.partnertwo);
+        com_stats_rating("Bug Team", team.stats, tmp, now);
+        if (*tmp) pprintf(p, tmp);
+      }
     }
   }
   pprintf(p, "\n");
@@ -542,7 +594,7 @@ int com_who_bug(int p,param_list param)
   else
       { param[0].val.word[0] = '\0'; }
 
-  if (param[0].val.word[0] == '\0') { strcpy(test,"gp"); }
+  if (param[0].val.word[0] == '\0') { strcpy(test,"ugp"); }
   // -------------
 
   if (strchr(test,'g'))
@@ -593,14 +645,14 @@ int com_who_bug(int p,param_list param)
           }
          }
 
- pprintf(p, " %3d game%s displayed.\n", totalcount, (totalcount == 1) ? "" : "s");
+ pprintf(p, " %3d game%s displayed.\n\n", totalcount, (totalcount == 1) ? "" : "s");
  }
  totalcount=0;
 
  if (strchr(test,'p'))
  {
  ptmp[0] = '\0';
- pprintf(p,"Partnerships not playing bughouse:\n\n");
+ pprintf(p,"Partnerships not playing bughouse:\n");
 
   for (i = 0; i < player_globals.p_num; i++) {
 	struct player *pp = &player_globals.parray[i];
@@ -654,8 +706,17 @@ int com_who_bug(int p,param_list param)
 
   }
 
-pprintf(p, "\n %3d partnership%s displayed.\n", totalcount,(totalcount == 1) ? "" : "s");
+pprintf(p, "\n %3d partnership%s displayed.\n\n", totalcount,(totalcount == 1) ? "" : "s");
  }
+
+    // Alex Guo: alias "bugwho u" with "who". This means that the player
+    // will see -all- the people on the server when he searches for
+    // unpartnered people, which is OK because we are a bughouse server
+    // anyways.
+    if (strchr(test, 'u')) {
+        pprintf(p,"Unpartnered players:\n");
+        pcommand(p, "who");
+    }
 
  /*if (strchr(test,'u'))
    {
@@ -1116,9 +1177,37 @@ for (p1 = 0; p1 < player_globals.p_num; p1++) {
 	return COM_OK;
 }
 
+int com_listBugTeams(int p, param_list param)
+{
+    dbi_result result;
 
+    result = bugteam_getAll();
 
+    if (!db_check_error())
+        return COM_OK;
 
+    if (dbi_result_get_numrows(result) == 0) {
+        pprintf(p, "There are no bug teams that have played yet.\n");
+        return COM_OK;
+    }
+
+    // TODO: check return of dbi_result_first_row
+    dbi_result_first_row(result);
+
+    do {
+        char *partnerone = dbi_result_get_string(result, "partnerone");
+        char *partnertwo = dbi_result_get_string(result, "partnertwo");
+        int rating = dbi_result_get_int(result, "rating");
+        double RD = dbi_result_get_double(result, "sterr");
+
+        pprintf(p, "%-20s %-20s %-4d\n", partnerone, partnertwo, rating);
+
+    } while (dbi_result_next_row(result));
+
+    dbi_result_free(result);
+
+    return COM_OK;
+}
 
 
 /* This is the of the most complicated commands in terms of parameters */
@@ -1155,6 +1244,18 @@ int com_who(int p, param_list param)
 	} */
 		cmp_func = bug_cmp;  //default bug rating  : aramen
 		sort_type = bug_rat;
+
+    // Special case for Bug team ratings. "who tb" => list all bug teams
+    // TODO: redesign this whole damn function
+    if (param[0].type != TYPE_NULL) {
+        char *gametype = param[0].val.string;
+
+        if (gametype[0] == 'b' && gametype[1] == 't') {
+            com_listBugTeams(p, param);
+            // TODO: check return value of listBugTeams
+            return COM_OK;
+        }
+    }
 
 	if (param[0].type != TYPE_NULL)
 		return COM_BADPARAMETERS;

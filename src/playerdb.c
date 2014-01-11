@@ -22,6 +22,21 @@
 
 static int player_zero(int p);
 
+struct player *player_getStruct(p)
+{
+    if (p < 0)          // player does not exist
+        return NULL;
+
+    return &player_globals.parray[p];
+}
+
+struct player *player_getGameStruct(struct player *pp)
+{
+    if (!pp)
+        return NULL;
+
+    return game_getStruct(pp->game);
+}
 
 static int get_empty_slot(void)
 {
@@ -279,6 +294,7 @@ static int ReadPlayerFile_v100(FILE *fp, int p)
 	return 0;
 }
 
+// Return 0 if successful, or an error code otherwise.
 int player_read(int p, char *name)
 {
 	struct player *pp = &player_globals.parray[p];
@@ -433,7 +449,7 @@ int player_find(int fd)
 int player_find_bylogin(const char *name)
 {
 	int i;
-	
+
 	for (i = 0; i < player_globals.p_num; i++) {
 		if ((player_globals.parray[i].status == PLAYER_EMPTY) ||
 		    (player_globals.parray[i].status == PLAYER_LOGIN) ||
@@ -771,7 +787,7 @@ int player_remove_observe(int p, int g)
 int player_game_ended(int g)
 {
 	int p;
-	
+
 	for (p = 0; p < player_globals.p_num; p++) {
 		struct player *pp = &player_globals.parray[p];
 		if (pp->status == PLAYER_EMPTY)

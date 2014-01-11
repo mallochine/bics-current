@@ -19,9 +19,8 @@
 */
 
 #include "includes.h"
-#include "reload.h"
 
-dbi_conn conn; //mega global connect
+dbi_conn conn;
 
 static void variable_reload(void)
 {
@@ -59,30 +58,59 @@ void reload_open(void)
 
 void db_connect()
 {
+  if (dbi_conn_ping(conn))
+      return;
 
-//  dbi_initialize("/usr/local/lib/dbd");
-//  dbi_initialize("/var/lib/pgsql9");
-//  conn = dbi_conn_new("pgsql");
   dbi_initialize("/usr/lib64/dbd");
   conn = dbi_conn_new("mysql");
   dbi_conn_set_option(conn, "host", DB_HOST);
   dbi_conn_set_option(conn, "username", DB_USER);
   dbi_conn_set_option(conn, "password", DB_PASSWORD);
   dbi_conn_set_option(conn, "dbname", DB_NAME);
- if (dbi_conn_connect(conn) < 0) {
+  if (dbi_conn_connect(conn) < 0) {
       const char *s;
       dbi_conn_error(conn,&s);
       d_printf("database connect error %s \n",s);
-    }
+  }
 
- return;
+  return;
 }
+
 void db_disconnect()
 {
 	dbi_conn_close(conn);
 	dbi_shutdown();
 }
 
+// return 1 if table exists, 0 otherwise
+int db_table_exists(char *tbl)
+{
+    dbi_result result;
+
+    db_connect();
+    result = dbi_conn_queryf(conn, "SHOW TABLES LIKE '%s'", tbl);
+
+    int numrows = dbi_result_get_numrows(result);
+
+    char *err;
+    if (dbi_conn_error(conn, &err) != DBI_ERROR_NONE)
+        printf("Error creating tourney_stats:%s\n", err);
+
+    dbi_result_free(result);
+    return !!(numrows);
+}
+
+// Return 1 if no error, 0 otherwise.
+int db_check_error()
+{
+    char *err;
+    if (dbi_conn_error(conn, &err) != DBI_ERROR_NONE) {
+        printf("Error creating tourney_stats:%s\n", err);
+        return 0;
+    }
+    else
+        return 1;
+}
 
 /* initialise variables that can be re-initialised on code reload */
 void reload_close(void)

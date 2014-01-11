@@ -197,6 +197,8 @@ int gen_dump_struct_game(struct parse_string *, const char *, unsigned);
 int gen_parse_struct_game(char *, const char *);
 static const struct parse_struct pinfo_game[] = {
 {"flag_pending", 0, sizeof(int), offsetof(struct game, flag_pending), 0, NULL, 0, gen_dump_int, gen_parse_int},
+{"flagging_white", 0, sizeof(int), offsetof(struct game, flagging_white), 0, NULL, 0, gen_dump_int, gen_parse_int},
+{"flagging_black", 0, sizeof(int), offsetof(struct game, flagging_black), 0, NULL, 0, gen_dump_int, gen_parse_int},
 {"lag", 0, sizeof(unsigned), offsetof(struct game, lag), 0, NULL, 0, gen_dump_unsigned, gen_parse_unsigned},
 {"TimeStamp", 0, sizeof(unsigned), offsetof(struct game, TimeStamp), 0, NULL, 0, gen_dump_unsigned, gen_parse_unsigned},
 {"prevTimeStamp", 0, sizeof(unsigned), offsetof(struct game, prevTimeStamp), 0, NULL, 0, gen_dump_unsigned, gen_parse_unsigned},
@@ -375,6 +377,7 @@ static const struct parse_struct pinfo_player[] = {
 {"fr_bug_stats", 0, sizeof(struct statistics), offsetof(struct player, fr_bug_stats), 0, NULL, 0, gen_dump_struct_statistics, gen_parse_struct_statistics},
 {"simul_stats", 0, sizeof(struct statistics), offsetof(struct player, simul_stats), 0, NULL, 0, gen_dump_struct_statistics, gen_parse_struct_statistics},
 {"bug_stats", 0, sizeof(struct statistics), offsetof(struct player, bug_stats), 0, NULL, 0, gen_dump_struct_statistics, gen_parse_struct_statistics},
+{"tourney_stats", 0, sizeof(struct statistics), offsetof(struct player, tourney_stats), 0, NULL, 0, gen_dump_struct_statistics, gen_parse_struct_statistics},
 {"d_time", 0, sizeof(int), offsetof(struct player, d_time), 0, NULL, 0, gen_dump_int, gen_parse_int},
 {"d_inc", 0, sizeof(int), offsetof(struct player, d_inc), 0, NULL, 0, gen_dump_int, gen_parse_int},
 {"d_height", 0, sizeof(int), offsetof(struct player, d_height), 0, NULL, 0, gen_dump_int, gen_parse_int},
@@ -406,6 +409,21 @@ int gen_dump_struct_player(struct parse_string *p, const char *ptr, unsigned ind
 }
 int gen_parse_struct_player(char *ptr, const char *str) {
 	return gen_parse_struct(pinfo_player, ptr, str);
+}
+
+int gen_dump_struct_bugteam(struct parse_string *, const char *, unsigned);
+int gen_parse_struct_bugteam(char *, const char *);
+static const struct parse_struct pinfo_bugteam[] = {
+{"partnerone", 1, sizeof(char), offsetof(struct bugteam, partnerone), 0, NULL, 0, gen_dump_char, gen_parse_char},
+{"partnertwo", 1, sizeof(char), offsetof(struct bugteam, partnertwo), 0, NULL, 0, gen_dump_char, gen_parse_char},
+{"stats", 1, sizeof(struct statistics), offsetof(struct bugteam, stats), 0, NULL, 0, gen_dump_struct_statistics, gen_parse_struct_statistics},
+{NULL, 0, 0, 0, 0, NULL, 0, NULL, NULL}};
+
+int gen_dump_struct_bugteam(struct parse_string *p, const char *ptr, unsigned indent) {
+	return gen_dump_struct(pinfo_bugteam, p, ptr, indent);
+}
+int gen_parse_struct_bugteam(char *ptr, const char *str) {
+	return gen_parse_struct(pinfo_bugteam, ptr, str);
 }
 
 int gen_dump_struct_pending(struct parse_string *, const char *, unsigned);

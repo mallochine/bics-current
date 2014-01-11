@@ -101,6 +101,8 @@ int com_more(int p, param_list param);
 int com_quit(int p, param_list param);
 int com_set(int p, param_list param);
 int FindPlayer(int p, char* name, int *p1, int *connected);
+int com_finger(int p, param_list param);
+int com_teamfinger(int p, param_list param);
 int com_stats(int p, param_list param);
 int com_password(int p, param_list param);
 int com_uptime(int p, param_list param);
@@ -110,6 +112,7 @@ int com_logons(int p, param_list param);
 void AddPlayerLists (int p1, char *ptmp);
 int com_who_bug(int p,param_list param);
 int com_showadmins(int p);
+int com_listBugTeams(int p, param_list param);
 int com_who(int p, param_list param);
 int com_open(int p, param_list param);
 int com_bell(int p, param_list param);
@@ -134,6 +137,9 @@ void ShowClauses (int p, int p1, textlist *clauses);
 
 /* The following definitions come from gamedb.c  */
 
+struct game *game_getStruct(int g);
+int game_getWhiteResultSimple(int g);
+int game_getOppositeResultSimple(int result);
 int game_new(void);
 int game_free(int g);
 int game_remove(int g);
@@ -173,12 +179,15 @@ int game_count(void);
 
 void game_ended(int g, int winner, int why);
 int pIsPlaying (int p);
+void timeseal_update_clocks(struct player *pp, struct game *gg);
 void process_move(int p, char *command);
 int com_resign(int p, param_list param);
 char *GetFENpos (int g, int half_move);
 int com_draw(int p, param_list param);
 int com_abort(int p, param_list param);
+int game_player_time(struct player *pp, struct game *gg);
 int com_flag(int p, param_list param);
+void game_wonontime(struct game *gg, int p, int color);
 int com_adjourn(int p, param_list param);
 int com_takeback(int p, param_list param);
 int com_switch(int p, param_list param);
@@ -234,6 +243,8 @@ void initial_load(void);
 void reload_open(void);
 void db_connect();
 void db_disconnect();
+int db_table_exists(char *tbl);
+int db_check_error();
 void reload_close(void);
 
 /* The following definitions come from follow.c  */
@@ -284,6 +295,8 @@ void select_loop(void );
 
 /* The following definitions come from playerdb.c  */
 
+struct player *player_getStruct(p);
+struct player *player_getGameStruct(struct player *pp);
 int player_new(void);
 void ResetStats(struct statistics *ss);
 void ResetIVars(int p);
@@ -340,6 +353,11 @@ double GetRD(struct player *p, int gametype);
 double current_sterr(double s, long t);
 void rating_sterr_delta(int p1, int p2, int type, int gtime, int result,
 			        int *deltarating, double *newsterr);
+void glicko(struct statistics *stats_one, struct statistics *stats_two,
+            int result, int *deltarating, double *newsterr);
+void stats_updateStats(struct bugteam *team, int result, int ratingchg,
+                       double sterr);
+int bugteam_rating_update(int g, int link_game);
 int rating_update(int g, int link_game);
 int com_assess(int p, param_list param);
 int com_best(int p, param_list param);
@@ -444,6 +462,7 @@ int create_new_match(int g, int white_player, int black_player,
                              int wt, int winc, int bt, int binc,
                              int rated, char *category, char *board,
                              int white, int simul);
+int BugMatchErrorHandler(int g1, int pp1, int partner);
 int accept_match(struct pending *pend, int p, int p1);
 int com_match(int p, param_list param);
 int com_rmatch(int p, param_list param);
@@ -607,6 +626,12 @@ void _crypt_to64(unsigned char *s, unsigned long v, int n);
 /* The following definitions come from timeseal.c  */
 
 void timeseal_init(const char *path);
+int timeseal_check_flags(struct game *gg, int p);
+int timeseal_areflagson(struct game *gg, int p);
+void timeseal_turnoff_flags(struct game *gg, int p);
+void timeseal_updateLag(struct game *gg, struct player *pp);
+int timeseal_updateTimeOfReply(int p, struct connection_t *con);
+void timeseal_normalMoveTagHandler(int p, struct connection_t *con);
 int timeseal_parse(char *command, struct connection_t *con);
 void ExecuteFlagCmd(int p, struct connection_t *con);
 
@@ -617,8 +642,37 @@ void check_flag_bughouse(int g);
 void ExecuteFlag(int g);
 void stop_clocks(int g);
 int UpdateTimeX(struct player *pp, struct game *gg);
+int game_check_flag(struct player *pp, struct game *gg);
 int com_unpause(int p, param_list param);
 int com_pause(int p, param_list param);
+
+/* The following definitions come from tbl/tourney_stats.c  */
+
+void tourneystats_createTable();
+void tourneystats_newPlayer(char *username);
+struct statistics *tourneystats_getStats(char *username);
+
+/* The following definitions come from tbl/bugteam_stats.c  */
+
+void bugteamstats_createTable();
+int bugteamstats_newTeam(struct bugteam *team);
+struct statistics *bugteamstats_getStats(struct bugteam *team);
+int bugteamstats_updateStats(struct bugteam *team);
+int bugteamstats_bestOfPlayer(char *player, struct bugteam *team);
+int bugteamstats_rowToStruct(dbi_result result, struct statistics *stats);
+
+/* The following definitions come from tbl/bugteam.c  */
+
+void bugteam_createTable();
+int bugteam_newTeam(struct bugteam *team);
+int bugteam_getTeamId(struct bugteam *team);
+int bugteam_playerCmp(char *playerone, char *playertwo);
+int bugteam_rowToStruct(dbi_result result, struct bugteam *team);
+void bugteam_orderTeam(char **partnerone, char **partnertwo);
+
+/* The following definitions come from tbl/stats.c  */
+
+int stats_RowToStruct(dbi_result result, struct statistics *ret);
 
 /* The following definitions come from tdb/tdb.c  */
 

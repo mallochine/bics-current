@@ -78,5 +78,6 @@
 #include "md5.h"
 #include "globals.h"
 #include <dbi/dbi.h>
+#include "reload.h"
 
 #include "proto.h"

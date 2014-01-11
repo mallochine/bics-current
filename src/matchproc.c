@@ -191,7 +191,7 @@ static void output_match_messages(int wp,int bp,int g, char* mess)
   int p;
   char *outStr;
 
-  asprintf(&outStr,"\nCreating: %s (%d) %s (%d) %s %s %d %d\n",
+  asprintf(&outStr,"Creating: %s (%d) %s (%d) %s %s %d %d\n",
 	   player_globals.parray[wp].name,
 	   game_globals.garray[g].white_rating,
 	   player_globals.parray[bp].name,
@@ -204,10 +204,10 @@ static void output_match_messages(int wp,int bp,int g, char* mess)
   pprintf(bp, "%s", outStr);
   free(outStr);
 
-  asprintf(&outStr, "\n{Game %d (%s vs. %s) %s %s %s match.}\n",
+  asprintf(&outStr, "{Game %d (%s vs. %s) %s %s %s match.}\n",
           g + 1, player_globals.parray[wp].name,
           player_globals.parray[bp].name,
-	  mess,
+          mess,
           rstr[game_globals.garray[g].rated],
           bstr[game_globals.garray[g].type]);
   pprintf(wp, "%s", outStr);
@@ -259,18 +259,22 @@ static void output_match_messages(int wp,int bp,int g, char* mess)
 
 /*
  * p = player to send the <g1> string to
- * g = game number (i think)
+ * g = game number
  */
 void gameinfo(int p, int g)
 {
 	struct game *gg = &game_globals.garray[g];
+
+    int startMinutes = gg->wInitTime/60000;
+    int increment = gg->wIncrement;
+
 	/*
 	it=initial_white_time,initial_black_time [ CDay: **INCORRECT** its it=initialWhiteTimeSec,initialWhiteIncSec]
 	i=initial_white_inc,initial_black_inc [CDay: **INCORRECT** its it=initialBlackTimeSec,initialBlackIncSec]
 	 */
 	//<g1> 1 p=0 t=blitz r=1 u=1,1 it=5,5 i=8,8 pt=0 rt=1586E,2100 ts=1,0
 	//<g1> 1 p=0 t=bughouse r=0 u=0,0 it=120,0 i=120,0 pt=1515870810 rt=1900,1900 ts=1,1
-	pprintf(p, "\n<g1> %d p=0 t=%s r=%d u=0,0 it=%d,%d i=%d,%d pt=%d rt=%d,%d ts=1,1\n",
+	pprintf(p, "\n<g1> %d p=0 t=%s r=%d u=0,1 it=%d,%d i=%d,%d pt=%d rt=%d,%d ts=1,1 m=%d n=%d\n",
 		 g+1,
 		 bstr[gg->type],
 		 gg->rated,
@@ -278,9 +282,11 @@ void gameinfo(int p, int g)
 		 gg->wIncrement,
 		 gg->bInitTime/1000,
 		 gg->bIncrement,
-		 gg->link, // i think this is partner's board ??
+		 gg->link + 1, // i think this is partner's board ??
 		 gg->white_rating,
-		 gg->black_rating
+		 gg->black_rating,
+         startMinutes,
+         increment
 	);
 }
 
@@ -312,6 +318,7 @@ int create_new_match(int g, int white_player, int black_player,
   prepare_match(g, wt, bt, winc, binc, white_player, black_player, rated);
 
   output_match_messages(white_player,black_player, g, "Creating");
+  // Alex Guo: need to separate output from logic/model
   gameinfo(white_player, g);
   gameinfo(black_player, g);
   player_globals.parray[white_player].game = g;
@@ -325,6 +332,7 @@ int create_new_match(int g, int white_player, int black_player,
 
 
 
+  // Alex Guo: need to separate output from logic/model
   send_boards(g);
   gics_globals.userstat.games++;
 
@@ -333,6 +341,18 @@ int create_new_match(int g, int white_player, int black_player,
   follow_start(white_player,black_player);
 
   return COM_OK;
+}
+
+int BugMatchErrorHandler(int g1, int pp1, int partner)
+{
+    char tmp[100];
+
+    sprintf(tmp, "There was a problem creating the new match.\n");
+    pprintf_prompt(partner, tmp);
+    pprintf_prompt(pp1, tmp);
+    sprintf(tmp, "There was a problem creating your partner's match.\n");
+    game_remove(g1); /* abort first game */
+    return COM_OK;
 }
 
 int accept_match(struct pending *pend, int p, int p1)
@@ -410,40 +430,46 @@ int accept_match(struct pending *pend, int p, int p1)
 		pp = &player_globals.parray[p];
 	} else if (game_read(g1, p, p1) < 0)
 	{ /* so no adjourned game */
-    if (create_new_match(g1,p, p1, wt, winc, bt, binc, rated, category, board, white,0) == COM_FAILED)
-		return COM_OK;
+
+    // Alex Guo: this is creating the match too early. If we are doing bughouse,
+    // we need to first create the other board, and THEN create the match
+    //if (create_new_match(g1,p, p1, wt, winc, bt, binc, rated, category, board, white,0) == COM_FAILED) {
+	//	return COM_OK;
+    //}
 
 
 	/* create first game */
 	int g2=-1;
 
+    int g1_white = white;
+
 	if (bh)
 	{ /* do bughouse creation */
-		white = (pp->side == WHITE ? 0 : 1);
+
 		g2 = game_new();
 
+        if (g2 < 0)
+            return BugMatchErrorHandler(g1, pp1, partner);
 
-
-		if ((g2 < 0) || (create_new_match(g2,partner, pp1, wt, winc, bt, binc, rated, category, board,white,0)
-			== COM_FAILED))
-		{
-			sprintf(tmp, "There was a problem creating the new match.\n");
-			pprintf_prompt(partner, tmp);
-			pprintf_prompt(pp1, tmp);
-			sprintf(tmp, "There was a problem creating your partner's match.\n");
-			game_remove(g1); /* abort first game */
-			return COM_OK;
-		}
 		game_globals.garray[g1].link = g2; /* link the games */
 		game_globals.garray[g2].link = g1;
 		game_globals.garray[g1].databaseLink= g2;
 		game_globals.garray[g2].databaseLink = g1;
+
+        if (create_new_match(g1,p, p1, wt, winc, bt, binc, rated, category, board, g1_white,0)
+            == COM_FAILED)
+            return COM_OK;
+
+		white = (pp->side == WHITE ? 0 : 1);
 
 		player_globals.parray[partner].last_category = strdup(category);
 		player_globals.parray[partner].last_board = strdup(board);
 		player_globals.parray[pp1].last_category = strdup(category);
 		player_globals.parray[pp1].last_board = strdup(board);
 
+		if ((create_new_match(g2,partner, pp1, wt, winc, bt, binc, rated, category, board,white,0)
+			== COM_FAILED))
+            return BugMatchErrorHandler(g1, pp1, partner);
 
 		sprintf(tmp, "\nYour partner is playing game %d (%s vs. %s).\n",
               g2 + 1, game_globals.garray[g2].white_name, game_globals.garray[g2].black_name);
@@ -459,7 +485,23 @@ int accept_match(struct pending *pend, int p, int p1)
 		pfollow_start(p, p1);
 
 	}
+    else {
+        if (create_new_match(g1,p, p1, wt, winc, bt, binc, rated, category, board, g1_white,0)
+            == COM_FAILED)
+            return COM_OK;
+    }
 
+    // Alex Guo: now here, send the information to the clients.
+    //if (g1 >= 0) {
+    //    gameinfo(p, g1);
+    //    gameinfo(p1, g1);
+    //    send_boards(g1);
+    //}
+    //if (g2 >= 0) {
+    //    gameinfo(partner, g2);
+    //    gameinfo(pp1, g2);
+    //    send_boards(g2);
+    //}
 
 	return COM_OK;
   }

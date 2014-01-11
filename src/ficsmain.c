@@ -177,9 +177,12 @@ static void do_chroot(const char *dir)
 static void segv_handler(int sig)
 {
 	char cmd[100];
+    char *argv[] = { "/bin/sh", "./scripts/slow_boot.sh" };
+    execve(argv[0],&argv[0], NULL);
 	snprintf(cmd, sizeof(cmd), "/usr/local/bin/strace -tt -p %d > /usr/local/chessd/segv_%d 2>&1", 
 		 (int)getpid(), (int)getpid());
 	system(cmd);
+    printf("exiting now\n");
 	_exit(1);
 }
 
@@ -223,8 +226,8 @@ int main(int argc, char *argv[])
 	}  
 
 	signal(SIGTERM, TerminateServer);
-	/*signal(SIGSEGV, segv_handler);
-	signal(SIGBUS, segv_handler);*/
+	signal(SIGSEGV, segv_handler);
+	signal(SIGBUS, segv_handler);
 	signal(SIGINT, TerminateServer);
 	signal(SIGPIPE, BrokenPipe);
 

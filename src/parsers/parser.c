@@ -108,7 +108,19 @@ const char *marshall_player(const struct player *pp)
 */
 int unmarshall_player(struct player *pp, const char *s)
 {
-	return gen_parse(pinfo_player, (char *)pp, s);
+    int result = gen_parse(pinfo_player, (char *)pp, s);
+
+    // Alex Guo: Tourney rating is a new feature that we're introducing.
+    // For tourney rating, we are going to be using a MySQL backend instead
+    // of a filesystem
+    struct statistics *tourney_stats = tourneystats_getStats(pp->name);
+
+    memcpy(&pp->tourney_stats, tourney_stats, sizeof(struct statistics));
+    free(tourney_stats);
+    if (pp->tourney_stats.num == 0)
+        pp->tourney_stats.num = -1;
+
+    return result;
 }
 
 

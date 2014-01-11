@@ -22,12 +22,16 @@
 
 void game_ended(int g, int winner, int why)
 {
+  // Alex Guo: send what the server thinks is the final position
+  send_boards(g);
+
   struct game *gg = &game_globals.garray[g];
   char outstr[200];
   char tmp[200];
   int p;
   int gl = gg->link;
   int rate_change = 0;
+  int bugteam_rate_change = 0; // whether rating should be adjusted for bug team
   int isDraw = 0;
   int whiteResult;
   char winSymbol[10];
@@ -158,12 +162,14 @@ void game_ended(int g, int winner, int why)
 	sprintf(tmp, "%s's partner won} %s", NameOfWinner, winSymbol);
     strcpy(EndSymbol, "PW");
     rate_change = 1;
+    bugteam_rate_change = 1;
     break;
   case PARTNER_DRAW:
 	sprintf(tmp, "Partners' game drawn} 1/2-1/2");
     isDraw = 1;
     strcpy(EndSymbol, "PDr");
     rate_change = 1;
+    bugteam_rate_change = 1;
     whiteResult = RESULT_DRAW;
    	break;
   case END_NOMATERIAL:
@@ -220,24 +226,31 @@ void game_ended(int g, int winner, int why)
   if (beingplayed) {
    	pprintf_noformat(gg->white, outstr);
     pprintf_noformat(gg->black, outstr);
+
+    if (gg->rated && (why1 == PARTNER_WON || why1 == PARTNER_DRAW)
+        && gg->type == TYPE_BUGHOUSE)
+        bugteam_rating_update(g, gl);
+
     //Bell (gg->white);
     //Bell (gg->black);
+
    	gg->link = -1;
 
-
 	if (gl >= 0 && game_globals.garray[gl].link >= 0) {
-       	if ((gg->rated) && (rate_change)) rating_update(g, gl);
+       	if (gg->rated && rate_change)
+            rating_update(g, gl);
+
 		if (whiteResult == RESULT_LOSS 	|| whiteResult == RESULT_WIN || whiteResult == RESULT_DRAW)
 			bughouse_game_write(g, gl, whiteResult);
 		game_ended(gl, CToggle(winner), why1);
 
     }
-	 if (gg->rated && rate_change && gg->type != TYPE_BUGHOUSE)
-    /* Adjust ratings; bughouse gets done later. */
-    rating_update(g, -1);
+
+    if (gg->rated && rate_change && gg->type != TYPE_BUGHOUSE)
+        rating_update(g, -1);
 
      // result for observers
-   for (p = 0; p < player_globals.p_num; p++) {
+    for (p = 0; p < player_globals.p_num; p++) {
       //struct player *pp = &player_globals.parray[p];
       if ((p == gg->white) || (p == gg->black)) continue;
 
@@ -254,9 +267,9 @@ void game_ended(int g, int winner, int why)
     }
   }
 
-	if ((gg->type != TYPE_BUGHOUSE) && (whiteResult == RESULT_LOSS
-		|| whiteResult == RESULT_WIN || whiteResult == RESULT_DRAW))
-	game_write_complete(g, whiteResult);
+  if ((gg->type != TYPE_BUGHOUSE) && (whiteResult == RESULT_LOSS
+      || whiteResult == RESULT_WIN || whiteResult == RESULT_DRAW))
+    game_write_complete(g, whiteResult);
 
 
   /* Mail off the moves */ // we need to test it first
@@ -282,7 +295,6 @@ void game_ended(int g, int winner, int why)
       send_prompt(gg->white);
     if (gg->black != command_globals.commanding_player)
       send_prompt(gg->black);
-
   }
   game_finish(g);
 }
@@ -334,7 +346,66 @@ int pIsPlaying (int p)
 	return 1;
 }
 
+/* add clock increments */
+static void game_add_increment(struct player *pp, struct game *gg)
+{
+    /* no update on first move */
+    //if (gg->game_state.moveNum == 1) return;
 
+    printf("wIncrement:%d\n", gg->wIncrement);
+    printf("bIncrement:%d\n", gg->bIncrement);
+    if (net_globals.con[pp->socket]->timeseal) {    /* does he use timeseal? */
+        if (pp->side == WHITE) {
+            gg->wRealTime += gg->wIncrement;
+            gg->wTime = gg->wRealTime / 100;    /* remember to conv to
+                                                   tenth secs */
+        } else if (pp->side == BLACK) {
+            gg->bRealTime += gg->bIncrement;
+            gg->bTime = gg->bRealTime / 100;    /* remember to conv to
+                                                   tenth secs */
+        }
+    } else {
+        if (gg->game_state.onMove == BLACK) {
+            gg->bTime += gg->bIncrement / 100;
+        }
+        if (gg->game_state.onMove == WHITE) {
+            gg->wTime += gg->wIncrement / 100;
+        }
+    }
+}
+
+/* updates clocks for a game with timeseal */
+void timeseal_update_clocks(struct player *pp, struct game *gg)
+{
+    /* no update on first move */
+    //if (gg->game_state.moveNum == 1) return;
+
+    if (pp->side == WHITE) {
+        gg->wLastRealTime = gg->wRealTime;
+        gg->wTimeWhenMoved = net_globals.con[pp->socket]->time;
+        if (((gg->wTimeWhenMoved - gg->wTimeWhenReceivedMove) < 0) ||
+            (gg->wTimeWhenReceivedMove == 0)) {
+            /* might seem weird - but could be caused by a person moving BEFORE
+               he receives the board pos (this is possible due to lag) but it's
+               safe to say he moved in 0 secs :-) */
+            gg->wTimeWhenReceivedMove = gg->wTimeWhenMoved;
+        } else {
+            gg->wRealTime -= gg->wTimeWhenMoved - gg->wTimeWhenReceivedMove;
+        }
+    } else if (pp->side == BLACK) {
+        gg->bLastRealTime = gg->bRealTime;
+        gg->bTimeWhenMoved = net_globals.con[pp->socket]->time;
+        if (((gg->bTimeWhenMoved - gg->bTimeWhenReceivedMove) < 0) ||
+            (gg->bTimeWhenReceivedMove == 0)) {
+            /* might seem weird - but could be caused by a person moving BEFORE
+               he receives the board pos (this is possible due to lag) but it's
+               safe to say he moved in 0 secs :-) */
+            gg->bTimeWhenReceivedMove = gg->bTimeWhenMoved;
+        } else {
+            gg->bRealTime -= gg->bTimeWhenMoved - gg->bTimeWhenReceivedMove;
+        }
+    }
+}
 
 void process_move(int p, char *command)
 {
@@ -401,6 +472,20 @@ void process_move(int p, char *command)
 		}
 	}
 
+/*
+  switch (parse_move(command, &gg->game_state, &move, pp->promote)) {
+  case MOVE_ILLEGAL:
+    pprintf(p, "Illegal move.\n");
+    return;
+    break;
+  case MOVE_AMBIGUOUS:
+    pprintf(p, "Ambiguous move.\n");
+    return;
+    break;
+  default:
+    break;
+  }
+  */
 
 
   /*if (gg->status == GAME_EXAMINE) {
@@ -434,6 +519,8 @@ void process_move(int p, char *command)
 
 	  /*				REAL GAME				*/
 
+/* Aramen's code completely wrecked time. Time to throw this one out too.
+ */
 
 	if (UpdateTimeX(pp,gg))
 		return;
@@ -449,11 +536,28 @@ void process_move(int p, char *command)
 			break;
 	}
 
+    /*
+    i = pp->opponent;
 
+    if (net_globals.con[pp->socket]->timeseal) {
+        timeseal_update_clocks(pp, &game_globals.garray[g]);
+    }
+    */
+    /* we need to reset the opp's time for receiving the board since the
+       timeseal decoder only alters the time if it's 0 Otherwise the time
+       would be changed if the player did a refresh which would screw up
+       the timings */
+    /*
+    if (pp->side == WHITE) {
+      gg->bTimeWhenReceivedMove = 0;
+    } else {
+      gg->wTimeWhenReceivedMove = 0;
+    }
+    */
 
+    //game_update_time(g);
+    //game_add_increment(pp, gg);
 
-
-	i = pp->opponent;
     /* Do the move */
 	gg->numHalfMoves++;
     if (gg->numHalfMoves > gg->moveListSize) {
@@ -467,7 +571,7 @@ void process_move(int p, char *command)
 	if (result == MOVE_OK && gg->link >= 0 && move.pieceCaptured != NOPIECE) {
 	  /* transfer captured piece to partner */
       /* check if piece reverts to a pawn */
-      if (was_promoted(&game_globals.garray[g], move.toFile, move.toRank))
+      if (was_promoted(gg, move.toFile, move.toRank))
         update_holding(gg->link, colorval(move.pieceCaptured) | PAWN);
       else
         update_holding(gg->link, move.pieceCaptured);
@@ -476,7 +580,7 @@ void process_move(int p, char *command)
 	// crazyhouse here!
 	if (result == MOVE_OK && gg->type == TYPE_CRAZYHOUSE){
 		if (move.pieceCaptured != NOPIECE){
-			if (was_promoted(&game_globals.garray[g], move.toFile, move.toRank))
+			if (was_promoted(gg, move.toFile, move.toRank))
 				update_holding(g, colorval(move.pieceCaptured) | PAWN);
 			else
 				update_holding(g, move.pieceCaptured);
@@ -487,7 +591,15 @@ void process_move(int p, char *command)
 		}
 	}
 
-	now = tenth_secs2();
+    if (result == MOVE_OK && gg->type == TYPE_BUGHOUSE) {
+        if (move.pieceCaptured == NOPIECE) {
+            update_holding(g, NOPIECE);
+        }
+    }
+
+    // Alex Guo: don't understand the new version of tenth_secs2
+    now = tenth_secs2();
+    //now = tenth_secs();
 	move.atTime = now;
 
     if (gg->numHalfMoves > 1) {
@@ -524,12 +636,6 @@ void process_move(int p, char *command)
             gg->bLastMoveTime = gg->bTimeWhenMoved;
             printf("[process_move]: bLastMoveTime:%d\n", gg->bLastMoveTime);
 		}
-
-// Aramen's code. I comment this out.
-//		move.lag -= move.tookTime;
-//		// only for a few days
-//		if (move.lag<0)
-//			move.lag=0;
 	}
 
 	MakeFENpos(g, move.FENpos);
@@ -551,7 +657,7 @@ void process_move(int p, char *command)
   }
 
   // Alex Guo: Two things here:
-  // 1) Assumption: We don't need these variables anymore
+  // 1) Assumption: We don't need these variables (TimeWhenRecvMove) anymore
   //      - theory: send_boards() below should simply be
   //      sending the boards, not manipulate any data
   //      with TimeWhenReceivedMove
@@ -561,11 +667,7 @@ void process_move(int p, char *command)
   gg->bTimeWhenReceivedMove = 0;
   gg->wTimeWhenReceivedMove = 0;
 
-
   send_boards(g);
-
-
-
 
   if (result == MOVE_ILLEGAL) {
     pprintf(p, "Internal error, illegal move accepted!\n");
@@ -772,9 +874,6 @@ int com_draw(int p, param_list param)
   return COM_OK;
 }
 
-
-
-
 int com_abort(int p, param_list param)
 {
   struct player *pp = &player_globals.parray[p];
@@ -783,8 +882,12 @@ int com_abort(int p, param_list param)
   int courtesyOK = 1;
 
   g = pp->game;
-  if (!pIsPlaying(p))
+  if (!pIsPlaying(p)) {
+    pprintf(p, "You're not playing a game\n");
     return COM_OK;
+  }
+
+  struct game *gg = &game_globals.garray[ pp->game ];
 
   p1 = pp->opponent;
   if (p == game_globals.garray[g].white) {
@@ -798,9 +901,17 @@ int com_abort(int p, param_list param)
     myGTime = game_globals.garray[g].bTime;
     yourGTime = game_globals.garray[g].wTime;
   }
+
+  // If the game has less than 2 half-moves and the player asked for abort,
+  // just abort the game immediately
+  if (gg->numHalfMoves <= 4) {
+      game_ended(g, yourColor, END_ABORT);
+      return COM_OK;
+  }
+
   //if ((player_globals.parray[p1].simul_info != NULL) &&
   //   (player_globals.parray[p1].simul_info->numBoards &&
-  //      player_globals.parray[p1].simul_info->boards[player_globals.parray[p1].simul_info-     >onBoard] != g)) {
+  //      player_globals.parray[p1].simul_info->boards[player_globals.parray[p1].simul_info->onBoard] != g)) {
   //  pprintf(p, "You can only make requests when the simul player is at your board.\n");
   //  return COM_OK;
   //}
@@ -811,6 +922,13 @@ int com_abort(int p, param_list param)
   } else {
     game_update_time(g);
 
+    // (Note copied about 20 lines from here)
+    //
+    // Alex Guo: gg->flag_pending is deprecated, but is used below.
+    // Here, it is kept below because gg->flagging_white and gg->flagging_black
+    // were created to deal only with flags, not with aborts.
+    // So it is not certain how to use flagging_white and flagging_black
+    // appropriately in this situation
     if (net_globals.con[pp->socket]->timeseal
         && game_globals.garray[g].game_state.onMove == myColor
         && game_globals.garray[g].flag_pending == FLAG_ABORT) {
@@ -822,7 +940,7 @@ int com_abort(int p, param_list param)
       game_ended(g, yourColor, END_ABORT);
     }
 
-    if (net_globals.con[player_globals.parray[p1].socket]->timeseal) {  /* opp uses timese     al? */
+    if (net_globals.con[player_globals.parray[p1].socket]->timeseal) {  /* opp uses timeseal? */
 
       int yourRealTime = (myColor == WHITE  ?  game_globals.garray[g].bRealTime
                                             :  game_globals.garray[g].wRealTime);
@@ -830,6 +948,13 @@ int com_abort(int p, param_list param)
         /* Override courtesyabort; opponent still has time.  Check for lag. */
         courtesyOK = 0;
 
+        // (Note copied from 20 lines above).
+        //
+        // Alex Guo: gg->flag_pending is deprecated, but is used below.
+        // Here, it is kept below because gg->flagging_white and gg->flagging_black
+        // were created to deal only with flags, not with aborts.
+        // So it is not certain how to use flagging_white and flagging_black
+        // appropriately in this situation
         if (game_globals.garray[g].game_state.onMove != myColor
             && game_globals.garray[g].flag_pending != FLAG_CHECKING) {
           /* Opponent may be lagging; let's ask. */
@@ -844,7 +969,7 @@ int com_abort(int p, param_list param)
 
     if (myGTime > 0 && yourGTime <= 0 && courtesyOK) {
       /* player wants to abort + opponent is out of time = courtesyabort */
-      pprintf(p, "Since you have time, and your opponent has none, the game has been abort     ed.");
+      pprintf(p, "Since you have time, and your opponent has none, the game has been aborted.");
       pprintf(p1, "Your opponent has aborted the game rather than calling your flag.");
       decline_withdraw_offers(p, -1, -1, DO_DECLINE);
       game_ended(g, myColor, END_COURTESY);
@@ -858,45 +983,6 @@ int com_abort(int p, param_list param)
     }
   }
   return COM_OK;
-//  struct player *pp = &player_globals.parray[p];
-//  struct pending* pend;
-//  int p1, g, myColor, yourColor;
-//
-//  p1 = pp->opponent;
-//  g = pp->game;
-//  if (!pIsPlaying(p))
-//    return COM_OK;
-//
-//  if (game_globals.garray[pp->game].numHalfMoves < 2) {
-//	game_ended(g, (pp->side == WHITE) ? WHITE : BLACK, END_ABORT1);
-//	return COM_OK;
-//  }
-//
-//
-//  if (p == game_globals.garray[g].white) {
-//    myColor = WHITE;
-//    yourColor = BLACK;
-//  } else {
-//    myColor = BLACK;
-//    yourColor = WHITE;
-//  }
-//
-//  if ((pend = find_pend(p1, p, PEND_ABORT)) != NULL) {
-//    delete_pending(pend);
-//    decline_withdraw_offers(p, -1, -1,DO_DECLINE);
-//    game_ended(g, yourColor, END_ABORT);
-//  } else {
-//      // Alex Guo Note: not sure whether my original code here was correct
-//    //game_update_time(g);
-//      pprintf(p1, "\n");
-//      pprintf_highlight(p1, "%s", pp->name);
-//      pprintf(p1, " would like to abort the game; ");
-//      pprintf_prompt(p1, "type \"abort\" to accept.\n");
-//      pprintf(p, "Abort request sent.\n");
-//      add_request(p, p1, PEND_ABORT);
-//
-//  }
-//  return COM_OK;
 }
 
 static int player_has_mating_material(struct game_state_t *gs, int color)
@@ -925,12 +1011,27 @@ static int player_has_mating_material(struct game_state_t *gs, int color)
   return ((minor_pieces > 1) ? 1 : 0);
 }
 
+//// return the time (in milliseconds) that the player has.
+//// Example:
+//// - 5 minutes remaining => returns 300000
+//// - 1 second remaining => returns 1000
+int game_player_time(struct player *pp, struct game *gg)
+{
+    int time;
+    if (net_globals.con[pp->socket]->timeseal) {
+        time = (pp->side == WHITE ? gg->wRealTime : gg->bRealTime);
+    } else {
+        time = (pp->side == WHITE ? gg->wTime : gg->bTime);
+    }
+    return time;
+}
+
 int com_flag(int p, param_list param)
 {
     struct player *pp = &player_globals.parray[p];
     struct game *gg;
     int g;
-    int myColor;
+    int myColor, oppColor;
 
 	if (!pIsPlaying(p)) {
 		pprintf(p, "You are not playing a game.\n");
@@ -942,75 +1043,103 @@ int com_flag(int p, param_list param)
     gg = &game_globals.garray[g];
 
     myColor = (p == gg->white ? WHITE : BLACK);
+    oppColor = (myColor == WHITE ? BLACK : WHITE);
+
     if (gg->type == TYPE_UNTIMED) {
         pprintf(p, "You can't flag an untimed game.\n");
         return COM_OK;
     }
-    if (gg->numHalfMoves < 2) {
-        pprintf(p, "You cannot flag before both players have moved.\nUse abort instead.\n"     );
+    if (gg->numHalfMoves <= 4) {
+        pprintf(p, "You cannot flag before both players have moved.\nUse abort instead.\n");
         return COM_OK;
     }
-    game_update_time(g);
+    //game_update_time(g);
 
-    {
-        int myTime, yourTime, opp = pp->opponent, serverTime;
+    int myTime, oppTime, opp = pp->opponent, serverTime;
+    struct player *oppObj = &player_globals.parray[pp->opponent];
 
-        if (net_globals.con[pp->socket]->timeseal) {    /* does caller use timeseal? */
-            myTime = (myColor==WHITE?gg->wRealTime:gg->bRealTime);
-        } else {
-            myTime = (myColor == WHITE?gg->wTime:gg->bTime);
-        }
-        serverTime = (myColor == WHITE?gg->bTime:gg->wTime);
+    // Get the times for the players in the game
+    myTime = game_player_time(pp, gg);
+    oppTime = game_player_time(oppObj, gg);
 
-        if (net_globals.con[player_globals.parray[opp].socket]->timeseal) { /* opp uses ti     meseal? */
-            yourTime = (myColor == WHITE?gg->bRealTime:gg->wRealTime);
-        } else {
-            yourTime = serverTime;
-        }
+    // Get the time on the server.
+    // Alex Guo: the variable 'serverTime' is not important
+    serverTime = (myColor == WHITE ? gg->bTime : gg->wTime);
 
-        /* the clocks to compare are now in myTime and yourTime */
-        if ((myTime <= 0) && (yourTime <= 0)) {
-            decline_withdraw_offers(p, -1, -1,DO_DECLINE);
-            game_ended(g, myColor, END_BOTHFLAG);
-            return COM_OK;
-        }
-
-        if (yourTime > 0) {
-            /* Opponent still has time, but if that's only because s/he
-             * may be lagging, we should ask for an acknowledgement and then
-             * try to call the flag. */
-
-            if (serverTime <= 0 && gg->game_state.onMove != myColor
-                && gg->flag_pending != FLAG_CHECKING) {
-                /* server time thinks opponent is down, but RealTIme disagrees.
-                 * ask client to acknowledge it's alive. */
-                gg->flag_pending = FLAG_CALLED;
-                gg->flag_check_time = time(0);
-                pprintf(p, "Opponent has timeseal; checking if (s)he's lagging.\n");
-                pprintf (opp, "\n[G]\n");
-                return COM_OK;
-            }
-
-            /* if we're here, it means one of:
-             * 1. the server agrees opponent has time, whether lagging or not.
-             * 2. opp. has timeseal (if yourTime != serverTime), had time left
-             *    after the last move (yourTime > 0), and it's still your move.
-             * 3. we're currently checking a flag call after having receiving
-             *    acknowledgement from the other timeseal (and would have reset
-             *    yourTime if the flag were down). */
-
-            pprintf(p, "Your opponent is not out of time!\n");
-            return COM_OK;
-        }
+    /* the clocks to compare are now in myTime and oppTime */
+    if ((myTime <= 0) && (oppTime <= 0)) {
+        decline_withdraw_offers(p, -1, -1,DO_DECLINE);
+        game_ended(g, myColor, END_BOTHFLAG);
+        return COM_OK;
     }
 
-    decline_withdraw_offers(p, -1, -1,DO_DECLINE);
-    if (player_has_mating_material(&gg->game_state, myColor))
-        game_ended(g, myColor, END_FLAG);
-    else
-        game_ended(g, myColor, END_FLAGNOMATERIAL);
+    if (oppTime > 0) {
+        /* Opponent still has time, but if that's only because s/he
+         * may be lagging, we should ask for an acknowledgement and then
+         * try to call the flag. */
 
-	return COM_OK;
+        // Alex Guo: some lines below were commented out, because use of 
+        // serverTime is deprecated.
+        //
+        //if (serverTime <= 0 && gg->game_state.onMove != myColor
+        //    && gg->flag_pending != FLAG_CHECKING) {
+        if (gg->game_state.onMove != myColor) {
+        //    && gg->flag_pending != FLAG_CHECKING) {
+            if (oppColor == BLACK)
+                gg->flagging_black = FLAG_CALLED;
+            else // oppColor is WHITE
+                gg->flagging_white = FLAG_CALLED;
+
+            // Alex Guo: flag_pending is deprecated. But code is left in
+            // in case we need to revert.
+            //
+            // flag_check_time also does not make any sense, but is left in 
+            // because I don't know whether there's actually 
+            // code relying on flag_check_time
+            //
+            //gg->flag_pending = FLAG_CALLED;
+            gg->flag_check_time = time(0);
+
+            pprintf(p, "Opponent has timeseal; checking if (s)he's lagging.\n");
+            pprintf (opp, "\n[G]\n");
+
+            return COM_OK;
+        }
+
+        /* if we're here, it means one of:
+         * 1. the server agrees opponent has time, whether lagging or not.
+         * 2. opp. has timeseal (if oppTime != serverTime), had time left
+         *    after the last move (oppTime > 0), and it's still your move.
+         * 3. we're currently checking a flag call after having receiving
+         *    acknowledgement from the other timeseal (and would have reset
+         *    oppTime if the flag were down). */
+
+        pprintf(p, "Your opponent is not out of time!\n");
+        return COM_OK;
+    }
+    else // opponent's time is <= 0, so call flag on him
+    {
+        game_wonontime(gg, p, myColor);
+//        decline_withdraw_offers(p, -1, -1,DO_DECLINE);
+//        if (player_has_mating_material(&gg->game_state, myColor))
+//            game_ended(g, myColor, END_FLAG);
+//        else
+//            game_ended(g, myColor, END_FLAGNOMATERIAL);
+
+        return COM_OK;
+    }
+
+}
+
+void game_wonontime(struct game *gg, int p, int color)
+{
+    struct player *pp = &player_globals.parray[p];
+
+    decline_withdraw_offers(p, -1, -1,DO_DECLINE);
+    if (player_has_mating_material(&gg->game_state, color))
+        game_ended(pp->game, color, END_FLAG);
+    else
+        game_ended(pp->game, color, END_FLAGNOMATERIAL);
 }
 
 int com_adjourn(int p, param_list param)

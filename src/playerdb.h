@@ -98,8 +98,6 @@ GENSTRUCT struct statistics {
 #define FLAG_CALLED 1
 #define FLAG_ABORT 2
 
-
-
 GENSTRUCT struct player {
 	/* This first block is not saved between logins */
 	char *login;
@@ -159,6 +157,7 @@ GENSTRUCT struct player {
 	struct statistics fr_bug_stats;
 	struct statistics simul_stats;
 	struct statistics bug_stats;
+    struct statistics tourney_stats;
 	int d_time;
 	int d_inc;
 	int d_height;
@@ -184,6 +183,12 @@ GENSTRUCT struct player {
 	int latest_news;
 	int admin_latest_news;
 
+};
+
+GENSTRUCT struct bugteam {
+    char *partnerone;
+    char *partnertwo;
+    struct statistics *stats;
 };
 
 typedef struct textlist {
