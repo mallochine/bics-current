@@ -38,6 +38,8 @@ class BICSDB
             return False;
         if (strlen($username) < 3)
             return False;
+        if (strlen($username) > 20)
+            return False;
         $tmp = strtolower($username);
         $firstchar = $tmp[0];
         if (file_exists("/var/bics/players/$firstchar/$tmp"))
@@ -45,11 +47,19 @@ class BICSDB
         return True;
     }
 
+    function logNewPlayer($username, $file) {
+        file_put_contents("/var/bics-logs/$username", $file);
+    }
+
+    // TODO: Alex Guo: this is not good design. The output must be
+    // separated from the model. But it is here for now because
+    // convenient, and switching costs to a new design is very small.
     function addplayer($username, $fullname, $email) {
         if (!$this->checkUsername($username)) {
             echo "Registration failed. <br />";
             echo "Your username can only have letters, ";
             echo "must have more than 3 characters, ";
+            echo "less than 20 characters, ";
             echo "and must not yet exist.";
             return;
         }
@@ -62,5 +72,6 @@ class BICSDB
         $username = strtolower($username);
         $firstchar = $username[0];
         file_put_contents("/var/bics/players/$firstchar/$username", $newuser);
+        $this->logNewPlayer($username, $newuser);
     }
 }
