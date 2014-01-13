@@ -63,6 +63,9 @@ void stop_clocks(int g)
 
 int UpdateTimeX(struct player *pp, struct game *gg)
 {
+    if (!gg)
+        return 1;
+
 	pp->timeseal_pending = FLAG_NONE;
 	if (gg->type == TYPE_BUGHOUSE)
 	{
@@ -74,6 +77,9 @@ int UpdateTimeX(struct player *pp, struct game *gg)
 		}
 	}
 
+    if (gg->game_state.moveNum == 1 && gg->type != TYPE_BUGHOUSE)
+        return 0;
+
 	if (pp->side == WHITE) {
 		
         // The time that a person spent moving is determined by the
@@ -84,7 +90,7 @@ int UpdateTimeX(struct player *pp, struct game *gg)
         //
 		gg->wLastRealTime = gg->wRealTime;
 		gg->wTimeWhenMoved = net_globals.con[pp->socket]->time;
-		
+
 		if (((gg->wTimeWhenMoved - gg->wTimeWhenReceivedMove) < 0) ||
 		    (gg->wTimeWhenReceivedMove == 0)) 
             gg->wTimeWhenReceivedMove = gg->wTimeWhenMoved;

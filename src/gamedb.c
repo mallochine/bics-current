@@ -227,7 +227,9 @@ char *game_str(int rated, int wt, int winc, int bt, int binc,
 	   char *cat, char *board)
 {
 	static char tstr[200];
-	sprintf(tstr, "%s %s %s%s",
+    // Alex Guo: below string used to be "%s %s %s%s"
+    // TODO: fix board string so that we can go back to above string
+	sprintf(tstr, "%s%s %s%s",
 		rstr[rated],
 		board,
 		bstr[game_isblitz(cat,board)],

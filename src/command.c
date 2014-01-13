@@ -876,7 +876,7 @@ int process_new_connection(int fd, struct in_addr fromHost)
 	//psend_raw_file(p, MESS_DIR, MESS_WELCOME);
 	pprintf(p, "Welcome to the Bughouse Internet Chess Server (BICS)!\n");
 	pprintf(p, "-----------------------------------------------------\n");
-    pprintf(p, "Webpage: http://www.freechess.org\n");
+    pprintf(p, "Webpage: http://www.alexbug.com\n");
 	pprintf(p, "Head admin : %s", config_get_tmp("HEAD_ADMIN"));
 	pprintf(p, "    Complaints to : %s\n", config_get_tmp("HEAD_ADMIN_EMAIL"));
 	pprintf(p, "Server location: %s", config_get_tmp("SERVER_LOCATION"));

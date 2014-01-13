@@ -18,5 +18,5 @@
  *
  */
 
-char VERS_NUM[] = "r-DEVEL";
-char COMP_DATE[] = "Sat Jan 11 12:45:56 UTC 2014";
+char VERS_NUM[] = "Release-1.0";
+char COMP_DATE[] = "Mon Jan 13 11:00:58 UTC 2014";

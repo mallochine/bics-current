@@ -203,14 +203,17 @@ void update_holding(int g, int pieceCaptured)
   } else {
 	  p = 0; c = 0;
   }
-  tmp1[0] = '\0';
-  append_holding_machine(tmp1, g, c, p);
+  tmp1[0] = '\n';
+  tmp1[1] = '\0';
+  append_holding_machine(tmp1+1, g, c, p);
 
   for (pl = 0; pl < player_globals.p_num; pl++) {
     if (player_globals.parray[pl].status == PLAYER_EMPTY)
       continue;
     if (player_is_observe(pl, g) || (player_globals.parray[pl].game == g)) {
-      pprintf_prompt(pl, tmp1);
+      // Alex Guo: only print if there was a piece captured
+      if (p != NOPIECE)
+        pprintf_prompt(pl, tmp1);
 	}
   }
 }
