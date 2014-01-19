@@ -289,7 +289,8 @@ int com_stats(int p, param_list param)
       struct bugteam team = {NULL, NULL, &stats};
       bugteamstats_bestOfPlayer(player_globals.parray[p1].name, &team);
       if (team.partnerone && team.partnertwo) {
-        pprintf(p, "\nBest team: %s and %s:\n", team.partnerone, team.partnertwo);
+        pprintf(p, "\nBest team: %s and %s. ", team.partnerone, team.partnertwo);
+        pprintf(p, "\"finger %s %s\":\n", team.partnerone, team.partnertwo);
         com_stats_rating("Bug Team", team.stats, tmp, now);
         if (*tmp) pprintf(p, tmp);
       }
@@ -652,7 +653,7 @@ int com_who_bug(int p,param_list param)
  if (strchr(test,'p'))
  {
  ptmp[0] = '\0';
- pprintf(p,"Partnerships not playing bughouse:\n");
+ pprintf(p,"Partnerships not playing bughouse:\n\n");
 
   for (i = 0; i < player_globals.p_num; i++) {
 	struct player *pp = &player_globals.parray[i];
@@ -706,7 +707,7 @@ int com_who_bug(int p,param_list param)
 
   }
 
-pprintf(p, "\n %3d partnership%s displayed.\n\n", totalcount,(totalcount == 1) ? "" : "s");
+pprintf(p, " %3d partnership%s displayed.\n\n", totalcount,(totalcount == 1) ? "" : "s");
  }
 
     // Alex Guo: alias "bugwho u" with "who". This means that the player
@@ -714,7 +715,7 @@ pprintf(p, "\n %3d partnership%s displayed.\n\n", totalcount,(totalcount == 1) ?
     // unpartnered people, which is OK because we are a bughouse server
     // anyways.
     if (strchr(test, 'u')) {
-        pprintf(p,"Unpartnered players:\n");
+        pprintf(p,"All players:\n");
         pcommand(p, "who");
     }
 

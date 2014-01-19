@@ -668,8 +668,15 @@ int com_xtell(int p, param_list param)
 
 int com_say(int p, param_list param)
 {
-	struct player *pp = &player_globals.parray[p];
-   int telled=0;
+    struct player *pp = &player_globals.parray[p];
+    char *old_last_tell;
+
+    if (pp->last_tell)
+        old_last_tell = strdup(pp->last_tell);
+    else
+        old_last_tell = NULL;
+
+    int telled=0;
 	/*	FOR BUGHOUSE 	*/
 	if (pp->last_bug == 1) {
 		if (pp->last_opponent) tell_s(p, pp->last_opponent, param[0].val.string, TELL_SAY, 0);
@@ -677,7 +684,7 @@ int com_say(int p, param_list param)
 		tell_s(p, pp->last_partner_opp, param[0].val.string, TELL_SAY, 0);
 		telled=1;
 	} else if (pp->last_opponent) {
-	tell_s(p, pp->last_opponent, param[0].val.string, TELL_SAY, 0);
+	    tell_s(p, pp->last_opponent, param[0].val.string, TELL_SAY, 0);
 		telled=1;
 	}
 /*		int logg1,logg2;
@@ -685,9 +692,29 @@ int com_say(int p, param_list param)
       logg2=game_globals.garray[logg1].link;
 		if( (logg1>=0) || (logg2>=0))
   */
-			if(telled)
-					 return COM_OK;
-		pprintf(p, "No one to say anything to, try tell.\n");
+	if (telled) {
+        // Alex Guo: replace whatever's currently pp->last_tell with the old
+        // last tell, because say is not meant to modify last tell
+        if (!pp->last_tell) {
+            pp->last_tell = old_last_tell;
+            return COM_OK;
+        }
+        if (!old_last_tell)
+            return COM_OK;
+        // If the current last tell is the same as the old one, then we don't
+        // need to do anything
+        if (strcmp(old_last_tell, pp->last_tell) == 0) {
+            free(old_last_tell);
+            return COM_OK;
+        }
+        else {
+            free(pp->last_tell);
+            pp->last_tell = old_last_tell;
+            return COM_OK;
+        }
+    }
+	pprintf(p, "No one to say anything to, try tell.\n");
+
 	return COM_OK;
 }
 

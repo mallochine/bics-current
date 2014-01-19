@@ -1069,7 +1069,7 @@ int com_examine(int p, param_list param)
   // Alex Guo: Aramen made significant revisions to the code
   // that dealt with examine (see process_move in gameproc.c).
   // So "examine" isn't working.
-  pprintf(p, "examine not working right now.\n");
+  pprintf(p, "examine is not working right now.\n");
   return COM_OK;
 
   if (pp->game >=0) {

@@ -33,7 +33,7 @@
 
 TYPE="chessd"
 REVISION=`svn info | grep Revision | awk '{print $2;}'`
-BRANCH="1.0"
+BRANCH="1.01"
 RELEASE="Release${REVISION}-${BRANCH}"
 SNAPDATE=""
 if [ "X${SNAPDATE}" != "X" ]; then

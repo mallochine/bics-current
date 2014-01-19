@@ -77,8 +77,8 @@ int UpdateTimeX(struct player *pp, struct game *gg)
 		}
 	}
 
-    if (gg->game_state.moveNum == 1 && gg->type != TYPE_BUGHOUSE)
-        return 0;
+    //if (gg->game_state.moveNum == 1 && gg->type != TYPE_BUGHOUSE)
+    //    return 0;
 
 	if (pp->side == WHITE) {
 		
@@ -94,19 +94,22 @@ int UpdateTimeX(struct player *pp, struct game *gg)
 		if (((gg->wTimeWhenMoved - gg->wTimeWhenReceivedMove) < 0) ||
 		    (gg->wTimeWhenReceivedMove == 0)) 
             gg->wTimeWhenReceivedMove = gg->wTimeWhenMoved;
-		else gg->wRealTime -= gg->wTimeWhenMoved - gg->wTimeWhenReceivedMove;
+		else if (gg->game_state.moveNum > 1 || gg->type == TYPE_BUGHOUSE)
+            gg->wRealTime -= gg->wTimeWhenMoved - gg->wTimeWhenReceivedMove;
 		
         // Now that we calculated time, we want to check for timeout here
         //
 		if (gg->wRealTime<=0) 
 		{
-			if (BoolCheckPFlag(gg->black, PFLAG_AUTOFLAG)){
+            // Alex Guo: autoflag on by default
+			//if (BoolCheckPFlag(gg->black, PFLAG_AUTOFLAG)){
 				stop_clocks(pp->game); 
 				return 1; 
-			}
+			//}
 		}
 
-		if (gg->game_state.moveNum == 1) gg->wLastRealTime=gg->wInitTime;
+		if (gg->game_state.moveNum == 1)
+            gg->wLastRealTime=gg->wInitTime;
 		gg->wRealTime += gg->wIncrement;
 
         // bronstein extension
@@ -120,16 +123,19 @@ int UpdateTimeX(struct player *pp, struct game *gg)
 		if (((gg->bTimeWhenMoved - gg->bTimeWhenReceivedMove) < 0) ||
 		    (gg->bTimeWhenReceivedMove == 0))
             gg->bTimeWhenReceivedMove = gg->bTimeWhenMoved;
-		else gg->bRealTime -= gg->bTimeWhenMoved - gg->bTimeWhenReceivedMove;
+        else if (gg->game_state.moveNum > 1 || gg->type == TYPE_BUGHOUSE)
+		    gg->bRealTime -= gg->bTimeWhenMoved - gg->bTimeWhenReceivedMove;
 
 		if (gg->bRealTime<=0) { 
-			if (BoolCheckPFlag(gg->white, PFLAG_AUTOFLAG)) {
+            // Alex Guo: autoflag on by default
+			//if (BoolCheckPFlag(gg->white, PFLAG_AUTOFLAG)) {
 				stop_clocks(pp->game); 
 				return 1; 
-			}
+			//}
 		}
 	
-		if (gg->game_state.moveNum == 1) gg->bLastRealTime=gg->bInitTime;
+		if (gg->game_state.moveNum == 1)
+            gg->bLastRealTime=gg->bInitTime;
 		gg->bRealTime += gg->bIncrement;
 
         // bronstein extension

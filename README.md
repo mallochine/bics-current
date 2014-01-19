@@ -13,9 +13,8 @@ mostly in src/tbl/* for the team rating feature.
 
 Lastly, some acknowledgements. I'd like to thank SKAcz for doing a brilliant job
 with PR on FICS and for ensuring a high quality release. Together, we caught
-many time bugs. I'd also like to thank all the alpha testers. There were about
-5-10 of you, and I'm afraid to list you guys out in case I forgot one of you.
-But you guys know who you are, and many thanks for helping us get the code
+many time bugs. I'd also like to thank all the alpha testers. 
+You guys know who you are, and many thanks for helping us get the code
 debugged. Thanks to Wir, for doing a great job managing our first tournament.
 And last but not least, thanks especially to the developers who wrote the
 thousands and thousands of lines of code, Aramen and Lasker developers.
