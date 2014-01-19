@@ -1,2 +1,6 @@
 reload.h
 src/reload.h
+src/makerank
+src/chessd_addplayer
+src/chessd.so
+src/reload.o
