@@ -806,6 +806,12 @@ int com_match(int p, param_list param)
     	return COM_OK;
     }
 
+    if (CheckPFlag(p1, PFLAG_WHITELIST) && !player_isAllowedPlay(p1, p)) {
+        struct player *pp2 = player_getStruct(p1);
+        pprintf(p, "%s is not allowing requests from you.\n", pp2->name);
+        return COM_OK;
+    }
+
     if (param[1].type != TYPE_NULL) {
       if (!parse_match_string(p, &wt,&bt,&winc,&binc,&white,&rated,category,
                                                   board,param[1].val.string))

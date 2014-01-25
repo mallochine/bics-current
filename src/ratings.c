@@ -199,6 +199,18 @@ void rating_sterr_delta(int p1, int p2, int type, int gtime, int result,
   GetCurrentStats (p2, &r2, &s2, &new, &r2part, &s2part, type, gtime);
   GetCurrentStats (p1, &r1, &s1, &new, &r1part, &s1part, type, gtime);
 
+  if (s1 < 80)
+    s1 = 80;
+
+  if (s2 < 80)
+    s2 = 80;
+
+  if (s1part < 80)
+    s1part = 80;
+
+  if (s2part < 80)
+    s2part = 80;
+
   /* now crunch */
   if (result == RESULT_WIN) {
     w = 1.0;
@@ -242,6 +254,14 @@ void rating_sterr_delta(int p1, int p2, int type, int gtime, int result,
     *deltarating = Round(delta);	// Returned values: deltarating, newsterr
   *newsterr = 1.0 / sqrt(denominator);
 
+  // Alex Guo:
+  // Note 1: we divide deltarating by two, to prevent volatile rating change
+  // Note 2: for some reason, zh gets +8 while bughouse gets +3....so making
+  // special case for bughouse
+  if (type == TYPE_BUGHOUSE)
+    *deltarating = 1.5*(*deltarating);
+  else
+    *deltarating = *deltarating / 2;
 }
 
 // Alex Guo: copied from void rating_delta_sterr, a function which made zero

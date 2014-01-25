@@ -491,12 +491,46 @@ int player_find_part_login(const char *name)
 		return found;
 }
 
+// Checks whether p is censoring p1
 int player_censored(int p, int p1)
 {
-	if (in_list(p, L_CENSOR, player_globals.parray[p1].login))
-		return 1;
-	else
-		return 0;
+    return player_in_list(L_CENSOR, p, p1);
+}
+
+// Checks whether p is ignoring p1
+int player_isIgnored(int p, int p1)
+{
+    return player_in_list(L_IGNORE, p, p1);
+}
+
+// Checks whether p is hearing channel tells from p1
+int player_isHearCh(int p, int p1)
+{
+    return player_in_list(L_HEARCH, p, p1);
+}
+
+// Checks whether p is allowing tells from p1
+int player_isAllowedTells(int p, int p1)
+{
+    return (player_in_list(L_ALLOWTELL, p, p1) ||
+        player_in_list(L_ALLOWALL, p, p1));
+}
+
+// Checks whether p is allowing matches and partnership
+// requests from p1
+int player_isAllowedPlay(int p, int p1)
+{
+    return (player_in_list(L_ALLOWPLAY, p, p1) ||
+        player_in_list(L_ALLOWALL, p, p1));
+}
+
+// Checks whether p is in p1's list
+int player_in_list(int list, int p, int p1)
+{
+    if (in_list(p, list, player_globals.parray[p1].login))
+        return 1;
+    else
+        return 0;
 }
 
 /* is p1 on p's notify list? */

@@ -64,6 +64,11 @@ static ListTable ListArray[] =
  {P_PERSONAL, "nopartner"},
  //{P_PERSONAL, "follow"},
  {P_PERSONAL, "remote"},
+ {P_PERSONAL, "ignore"}, // deprecated...does not work
+ {P_PERSONAL, "allowtell"},
+ {P_PERSONAL, "allowplay"},
+ {P_PERSONAL, "allowall"},
+ {P_PERSONAL, "hearch"},
  {0, NULL}};
 
 /* free up memory used by lists */

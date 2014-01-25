@@ -226,25 +226,6 @@ int timeseal_updateTimeOfReply(int p, struct connection_t *con)
     }
 }
 
-//struct player *timeseal_getPlayer(int p)
-//{
-//    if (p < 0)          // player does not exist
-//        return NULL;
-//
-//    return &player_globals.parray[p];
-//}
-//
-//struct game *timeseal_getGame(struct player *pp)
-//{
-//    if (!pp)
-//        return NULL;
-//
-//    if (pp->game < 0)   // game does not exist
-//        return NULL;
-//
-//    return &game_globals.garray[ pp->game ];
-//}
-
 void timeseal_normalMoveTagHandler(int p, struct connection_t *con)
 {
     struct player *pp = player_getStruct(p);
@@ -252,6 +233,148 @@ void timeseal_normalMoveTagHandler(int p, struct connection_t *con)
 
     if (timeseal_updateTimeOfReply(p, con))
         timeseal_updateLag(gg, pp);
+}
+
+int timeseal_getSpamCheckpoint()
+{
+    return ((int) time(NULL));
+}
+
+void timeseal_clearSpamCheck(struct connection_t *con)
+{
+    if (!con)
+        return;
+
+    con->spam_checkpoint = 0;
+    con->numSpam = 0;
+    timeseal_MakeMRC(con, NULL);
+}
+
+void timeseal_clearSpamCheckAll(struct connection_t *con)
+{
+    timeseal_clearSpamCheck(con);
+    con->spam_warnings = 0;
+}
+
+// We abstract the comparison function because we might want to modify it.
+// For instance, we might want to take into account preceding '$'s
+int timeseal_isSameCommand(const char *cmd1, const char *cmd2)
+{
+    if (!cmd1 && !cmd2)
+        return 1;
+
+    if (!cmd1 || !cmd2)
+        return 0;
+
+    if (strcmp(cmd1, cmd2) == 0)
+        return 1;
+    else
+        return 0;
+}
+
+// Install command as the most recently used command for con.
+// Manages the memory allocation for con->most_recent_command.
+void timeseal_MakeMRC(struct connection_t *con, char *command)
+{
+    if (!con)
+        return;
+
+    if (!command) {
+        con->most_recent_command = NULL;
+        con->MRC_first_timestamp = 0;
+        con->MRC_num_issued = 0;
+        return;
+    }
+
+    if (con->most_recent_command)
+        free(con->most_recent_command);
+
+    con->most_recent_command = strdup(command);
+    con->MRC_first_timestamp = (int) time(NULL);
+    con->MRC_num_issued = 1;
+
+    return;
+}
+
+// Return 1 if p is spamming, 0 otherwise.
+// NOTE: Alex Guo: Possible bug. We aren't using mutexes to protect the
+// value of pp->numSpam, so possible race conditions on reads/writes
+// on pp->numSpam?
+int timeseal_checkSpam(int p, struct connection_t *con, char *command)
+{
+    struct player *pp = player_getStruct(p);
+    if (!pp || !con || !command)
+        return 0;
+
+//    // Before we can look at command, we need to get rid of preceding $'s
+//    while (command[0] != '\0' && command[0] == '$')
+//        command++;
+
+    // Set variables for check against DDOS
+    int spam_checkpoint = timeseal_getSpamCheckpoint();
+    if (con->spam_checkpoint == 0) {
+        con->spam_checkpoint = spam_checkpoint;
+        con->numSpam = 0;
+    }
+
+    // Set variables for check against message spam
+    if (con->most_recent_command == NULL)
+        timeseal_MakeMRC(con, command);
+    else if (timeseal_isSameCommand(con->most_recent_command, command)) {
+        int now = (int) time(NULL);
+        if (now - con->MRC_first_timestamp <= 30)
+            con->MRC_num_issued++;
+        else
+            timeseal_MakeMRC(con, command);
+    } else
+        timeseal_MakeMRC(con, command);
+
+    d_printf("[checkSpam]: %d\n", con->numSpam);
+
+    // A command counts as spam if it is not a move and is not
+    // "^B9" string, which is reserved by timeseal.
+    // Additionally, we don't check for spam within the first
+    // couple seconds of a login, as most clients have automated
+    // settings when a user first logs in.
+    if (spam_checkpoint == con->spam_checkpoint
+        && spam_checkpoint - pp->logon_time > 3
+        && !is_move(command)
+        && strcmp(command, "9") != 0)
+    {
+        con->numSpam++;
+    }
+
+
+    // This guard is to protect against DDOS-like attacks
+    if (con->numSpam >= 8)
+        return 1;
+
+    // This guard is to protect against spam of the same message
+    if (con->MRC_num_issued >= 8)
+        return 1;
+
+    if (spam_checkpoint > con->spam_checkpoint) {
+        con->spam_checkpoint = spam_checkpoint;
+        con->numSpam = 0;
+    }
+
+    return 0;
+}
+
+void timeseal_sendSpamWarning(int p, struct connection_t *con)
+{
+    con->spam_warnings++;
+    pprintf(p, "WARNING: If you continue spamming, you will be kicked from the "
+               "server.\n");
+}
+
+// Return if the user has exceeded his spam limit
+int timeseal_spam_exceeded(struct connection_t *con)
+{
+    if (con->spam_warnings >= 1)
+        return 1;
+    else
+        return 0;
 }
 
 /* 
@@ -265,10 +388,8 @@ int timeseal_parse(char *command, struct connection_t *con)
 	int p = player_find(con->fd);
 
     /* do we have a decoder sub-process? */
-	if (timeseal_globals.decoder_conn <= 0) return 1;
-	
-    /* are they using timeseal on this connection? */
-    if (!con->timeseal_init && !con->timeseal) return 1;
+	if (timeseal_globals.decoder_conn <= 0)
+        return 1;
 
     if (strlen(command) >= 1004) {
         pprintf (p, "TIMESEAL: your line is too long! I die.\n");
@@ -279,6 +400,25 @@ int timeseal_parse(char *command, struct connection_t *con)
     }
 
     t = decode(command);
+
+    if (timeseal_checkSpam(p, con, command)) {
+        if (timeseal_spam_exceeded(con)) {
+            pprintf(p, "You have been kicked out for spamming.\n");
+            d_printf("Player %s got kicked :>\n", player_globals.parray[p].login);
+            timeseal_clearSpamCheckAll(con);
+            process_disconnection(con->fd);
+            net_close_connection(con->fd);
+        }
+        else {
+            timeseal_sendSpamWarning(p, con);
+            timeseal_clearSpamCheck(con);
+        }
+        return 0;
+    }
+
+//    /* are they using timeseal on this connection? */
+//    if (!con->timeseal_init && !con->timeseal)
+//        return 1;
 
     if (t == 0) {
         /* this wasn't encoded using timeseal */

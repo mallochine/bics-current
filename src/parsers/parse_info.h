@@ -129,6 +129,12 @@ static const struct parse_struct pinfo_connection_t[] = {
 {"timeseal", 0, sizeof(int), offsetof(struct connection_t, timeseal), 0, NULL, 0, gen_dump_int, gen_parse_int},
 {"timeseal_init", 0, sizeof(int), offsetof(struct connection_t, timeseal_init), 0, NULL, 0, gen_dump_int, gen_parse_int},
 {"time", 0, sizeof(unsigned), offsetof(struct connection_t, time), 0, NULL, 0, gen_dump_unsigned, gen_parse_unsigned},
+{"numSpam", 0, sizeof(int), offsetof(struct connection_t, numSpam), 0, NULL, 0, gen_dump_int, gen_parse_int},
+{"spam_checkpoint", 0, sizeof(int), offsetof(struct connection_t, spam_checkpoint), 0, NULL, 0, gen_dump_int, gen_parse_int},
+{"spam_warnings", 0, sizeof(int), offsetof(struct connection_t, spam_warnings), 0, NULL, 0, gen_dump_int, gen_parse_int},
+{"most_recent_command", 1, sizeof(char), offsetof(struct connection_t, most_recent_command), 0, NULL, 0, gen_dump_char, gen_parse_char},
+{"MRC_first_timestamp", 0, sizeof(int), offsetof(struct connection_t, MRC_first_timestamp), 0, NULL, 0, gen_dump_int, gen_parse_int},
+{"MRC_num_issued", 0, sizeof(int), offsetof(struct connection_t, MRC_num_issued), 0, NULL, 0, gen_dump_int, gen_parse_int},
 {NULL, 0, 0, 0, 0, NULL, 0, NULL, NULL}};
 
 int gen_dump_struct_connection_t(struct parse_string *p, const char *ptr, unsigned indent) {

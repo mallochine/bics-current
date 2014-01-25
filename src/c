@@ -1,0 +1,8 @@
+Binary file chessd_addplayer matches
+Binary file chessd.so matches
+command_list.h:180:	{"variables",		"o",	com_variables,		ADMIN_USER },
+Binary file command.o matches
+Binary file makerank matches
+proto.h:447:int com_variables(int p, param_list param);
+variable.c:918:int com_variables(int p, param_list param)
+Binary file variable.o matches

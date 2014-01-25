@@ -507,6 +507,21 @@ static int set_interface(int p, char *var, char *val)
 	return VAR_OK;
 }
 
+static int set_whitelist(int p, char *var, char *val)
+{
+    struct player *pp = player_getStruct(p);
+    if (!val)
+        return VAR_BADVAL;
+
+    int v = set_boolean_flag(p, val, PFLAG_WHITELIST);
+    if (v < 0)
+        return VAR_BADVAL;
+    if (v > 0)
+        pprintf(p, "We will now filter using your whitelists.\n");
+    else
+        pprintf(p, "Filtering using your whitelists is turned off.\n");
+}
+
 static int set_prompt(int p, char *var, char *val)
 {
 	struct player *pp = &player_globals.parray[p];
@@ -586,8 +601,8 @@ int com_partner(int p, param_list param)
 	// Added by johnthegreat
 	if (player_censored(pNew, p))
 	{
-	pprintf(p, "Player \"%s\" is censoring you.\n", param[0].val.word);
-	return COM_OK;
+        pprintf(p, "Player \"%s\" is censoring you.\n", param[0].val.word);
+        return COM_OK;
 	}
 	if (player_censored(p, pNew))
 	{
@@ -596,15 +611,20 @@ int com_partner(int p, param_list param)
 	}
 
 	if (in_list(pNew, L_NOPARTNER, pp->login))
-	{
-                pprintf(p, "You are on %s's nopartner list.\n", param[0].val.word);
-	        return COM_OK;
-	}
-	if (in_list(p, L_NOPARTNER, player_globals.parray[pNew].login))
-        {
-                pprintf(p, "%s is on your nopartner list.\n", param[0].val.word);
-                return COM_OK;
-        }
+    {
+        pprintf(p, "You are on %s's nopartner list.\n", param[0].val.word);
+        return COM_OK;
+    }
+    if (in_list(p, L_NOPARTNER, player_globals.parray[pNew].login))
+    {
+        pprintf(p, "%s is on your nopartner list.\n", param[0].val.word);
+        return COM_OK;
+    }
+
+    if (CheckPFlag(pNew, PFLAG_WHITELIST) && !player_isAllowedPlay(pNew, p)) {
+        pprintf(p, "%s is not allowing requests from you.\n", param[0].val.word);
+        return COM_OK;
+    }
 
 	if (pNew == p)
 	{
@@ -854,6 +874,7 @@ static var_list variables[] = {
   {"formula", set_formula},
   {"interface", set_interface},
   {"frbug", set_frbug},  // fr bug :aramen
+  {"whitelist", set_whitelist},
   {NULL, NULL}
 };
 
@@ -917,8 +938,10 @@ int com_variables(int p, param_list param)
   pprintf(p, "                            kibitz=%d                   highlight=%d\n",
 	  BoolCheckPFlag(p1, PFLAG_KIBITZ),
 	  player_globals.parray[p1].highlight);
-  pprintf(p, "rated=%d                    kiblevel=%-4d               bell=%d\n",
-	  BoolCheckPFlag(p1, PFLAG_RATED),  player_globals.parray[p1].kiblevel,
+  pprintf(p, "rated=%d   whitelist=%d     kiblevel=%-4d               bell=%d\n",
+	  BoolCheckPFlag(p1, PFLAG_RATED),
+      BoolCheckPFlag(p1, PFLAG_WHITELIST),
+      player_globals.parray[p1].kiblevel,
 	  BoolCheckPFlag(p1, PFLAG_BELL));
   pprintf(p, "ropen=%d                    tell=%d                     width=%-3d\n",
 	  BoolCheckPFlag(p1, PFLAG_ROPEN),

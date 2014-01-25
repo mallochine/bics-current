@@ -79,6 +79,7 @@ GENSTRUCT struct statistics {
 #define PFLAG_HIDEINFO 0x800000
 #define PFLAG_TOURNEY 0x1000000  /* Not coded yet. */
 #define PFLAG_DEBUG 0x2000000
+#define PFLAG_WHITELIST 0x4000000
 /* Note: we're starting the last byte, assuming a long int has 4 bytes;
    If we run out, we probably should make a Flag1 and a Flag2. */
 
@@ -91,7 +92,8 @@ GENSTRUCT struct statistics {
                       | PFLAG_PIN | PFLAG_GIN | PFLAG_AVAIL | PFLAG_AUTOFLAG \
                       | PFLAG_JPRIVATE | PFLAG_AUTOMAIL | PFLAG_MAILMESS \
                       | PFLAG_MAILMESS | PFLAG_SHOUT | PFLAG_CSHOUT \
-                      | PFLAG_TELL | PFLAG_KIBITZ | PFLAG_NOTIFYBY | PFLAG_PGN)
+                      | PFLAG_TELL | PFLAG_KIBITZ | PFLAG_NOTIFYBY | PFLAG_PGN \
+                      | PFLAG_WHITELIST)
 #define TIMESEAL_CHECKING 3
 #define FLAG_CHECKING -1
 #define FLAG_NONE 0
@@ -182,7 +184,6 @@ GENSTRUCT struct player {
 	struct List *lists;//////////
 	int latest_news;
 	int admin_latest_news;
-
 };
 
 GENSTRUCT struct bugteam {

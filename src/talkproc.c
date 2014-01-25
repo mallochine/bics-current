@@ -225,6 +225,17 @@ if (!CheckPFlag(p1, PFLAG_TELL) && !CheckPFlag(p, PFLAG_REG) && (why==TELL_TELL|
                 pprintf(p, "Player \"%s\" is censoring you.\n", player_globals.parray[p1].name);
                 return COM_OK;
             }
+            if (player_isIgnored(p1, p)) {
+                modify_last_tell(p, p1);
+                print_successful_tell(p, p1);
+                return COM_OK;
+            }
+            if (CheckPFlag(p1, PFLAG_WHITELIST)
+                && !player_isAllowedTells(p1, p)) {
+                modify_last_tell(p, p1);
+                pprintf(p, "He is not allowing tells from you.\n");
+                return COM_OK;
+            }
         }
     }
 
@@ -296,21 +307,48 @@ if (!CheckPFlag(p1, PFLAG_TELL) && !CheckPFlag(p, PFLAG_REG) && (why==TELL_TELL|
       sprintf(tmp, ", who has been idle %s", hms_desc(player_idle(p1)));
 
   if ((why == TELL_SAY) || (why == TELL_TELL) || (why == TELL_LTELL)) {
-    pprintf(p, "(told %s%s)\n", player_globals.parray[p1].name,
-            (((player_globals.parray[p1].game>=0) && (game_globals.garray[player_globals.parray[p1].game].status == GAME_EXAMINE))
-	     ? ", who is examining a game" :
-	     ((player_globals.parray[p1].game>=0) && (game_globals.garray[player_globals.parray[p1].game].status == GAME_SETUP))
-	     ? ", who is setting up a position" :
-	     (player_globals.parray[p1].game >= 0)
-	     ? ", who is playing" : tmp));
+      print_successful_tell(p, p1);
   }
 
   if (why == TELL_TELL || why == TELL_SAY) {
-	  FREE(pp->last_tell);
-	  pp->last_tell = strdup(player_globals.parray[p1].login);
+    modify_last_tell(p, p1);
   }
 
   return COM_OK;
+}
+
+// Print a successful tell message, like:
+// "(told Kasprosian, who is playing)"
+void print_successful_tell(int p, int p1)
+{
+    char tmp[MAX_LINE_SIZE];
+    struct player *pp1 = player_getStruct(p);
+    struct player *pp2 = player_getStruct(p1);
+    int game_status;
+
+    if (pp2->game > 0)
+        game_status = game_globals.garray[pp2->game].status;
+    else
+        game_status = GAME_EMPTY;
+
+    tmp[0] = '\0';
+    pprintf(p, "(told %s%s)\n", pp2->name,
+         ((pp2->game >= 0 && (game_status == GAME_EXAMINE))
+	        ? ", who is examining a game" :
+	     (pp2->game >= 0 && (game_status == GAME_SETUP))
+            ? ", who is setting up a position" :
+	     (pp2->game >= 0)
+            ? ", who is playing" : tmp));
+}
+void modify_last_tell(int p, int p1)
+{
+    struct player *pp = player_getStruct(p);
+
+    if (!pp)
+        return;
+
+    FREE(pp->last_tell);
+    pp->last_tell = strdup(player_globals.parray[p1].login);
 }
 
 int com_ptell(int p, param_list param)
@@ -420,14 +458,17 @@ static int chtell(int p, int ch, char *msg)
     return COM_OK;
   }
 
+  // Send the tells to people listening to the channel
   for (p1 = 0; p1 < player_globals.p_num; p1++) {
     if ((p1 == p) || (player_globals.parray[p1].status != PLAYER_PROMPT))
       continue;
-    if (((on_channel(ch, p1)) || ch == 24) && (!player_censored(p1, p))
+    //if (((on_channel(ch, p1)) || ch == 24) && (!player_censored(p1, p))
+    if (on_channel(ch, p1) && !player_censored(p1, p)
+        && (!player_isIgnored(p1, p) || player_isHearCh(p1, p))
         && (CheckPFlag(p, PFLAG_REG) || CheckPFlag(p1, PFLAG_TELL))) {
       tell(p, p1, msg, TELL_CHANNEL, ch);
       if (!player_censored(p1, p))
-	count++;
+        count++;
     }
   }
 
@@ -521,9 +562,12 @@ int com_kibitz(int p, param_list param)
 /*
    like tell() but takes a player name
 */
-static int tell_s(int p, const char *who, const char *msg, int why, int ch)
+static int tell_s(int p, char *who, const char *msg, int why, int ch)
 {
 	int p1;
+
+    if (who[strlen(who)-1] == '!')
+        who[strlen(who)-1] = '\0';
 
 	p1 = player_find_part_login(who);
 	if ((p1 < 0) || (player_globals.parray[p1].status == PLAYER_PASSWORD)

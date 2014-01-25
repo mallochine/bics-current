@@ -55,6 +55,16 @@ GENSTRUCT struct connection_t {
 	int timeseal;           /* are they using timeseal */
 	int timeseal_init;      /* are they in timeseal initialisation? */
 	unsigned time;          /* last time received from the client */
+
+    // New variables to deal with spam detection
+    int numSpam; /* Used by timeseal.c:timeseal_checkSpam() */
+    int spam_checkpoint; /* Used by timeseal.c:timeseal_checkSpam() */
+    int spam_warnings;
+
+    /* Checks for whether a user is spamming the same message*/
+    char *most_recent_command;
+    int MRC_first_timestamp; // MRC = Most Recent Command
+    int MRC_num_issued;
 };
 
 #endif /* NETWORK_H */

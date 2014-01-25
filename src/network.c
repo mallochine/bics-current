@@ -78,6 +78,9 @@ static int net_addConnection(int fd, struct in_addr fromHost)
 	net_globals.con[fd]->inBuf[0] = 0;
 	net_globals.con[fd]->processed = 0;
 	net_globals.con[fd]->outPos = 0;
+    net_globals.con[fd]->most_recent_command = NULL;
+    net_globals.con[fd]->MRC_first_timestamp = 0;
+    net_globals.con[fd]->MRC_num_issued = 0;
 	if (net_globals.con[fd]->sndbuf == NULL) {
 #ifdef DEBUG
 		d_printf( "CHESSD: nac(%d) allocating sndbuf.\n", fd);
@@ -500,6 +503,9 @@ void net_close(void)
 
 void net_close_connection(int fd)
 {
+  if (fd < 0 || !net_globals.con[fd])
+      return;
+
   if (net_globals.con[fd]->status == NETSTAT_CONNECTED)
     net_flush_connection(fd);
   else
@@ -613,9 +619,9 @@ void select_loop(void )
 		}
 	}
 
-	if (process_heartbeat(&current_socket) == COM_LOGOUT) {
-		process_disconnection(current_socket);
-		net_close_connection(current_socket);
-	}
+//	if (process_heartbeat(&current_socket) == COM_LOGOUT) {
+//		process_disconnection(current_socket);
+//		net_close_connection(current_socket);
+//	}
 }
 

@@ -11,6 +11,11 @@ GENSTRUCT enum ListWhich {L_ADMIN = 0, L_REMOVEDCOM, L_FILTER, L_BAN, L_RATEBAN,
 			  L_COMPUTER, L_TD,
 			  L_CENSOR, L_GNOTIFY, L_NOPLAY, L_NOTIFY, L_CHANNEL, L_NOPARTNER, /* L_FOLLOW,*/
 			  L_REMOTE,
+              L_IGNORE,
+              L_ALLOWTELL,
+              L_ALLOWPLAY,
+              L_ALLOWALL,
+              L_HEARCH,
 			  L_LASTLIST /* this MUST be the last list, add all lists before it */
 };
 
