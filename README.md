@@ -23,3 +23,11 @@ Let today be the first of many games to come.
 
 --Kasprosian
 January 11, 2014
+
+Compilation Instructions
+-------------------------
+You will need a MySQL database, with a database named "bics". You need to configure
+the MySQL username and password in src/reload.h.
+
+Then look at README for further compilation instructions (you're looking at README.md
+right now).
