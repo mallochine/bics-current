@@ -1,0 +1,10 @@
+Bughouse Chess
+
+Bughouse chess = game on 2 chessboards, between which taken material is travelling ...
+This modern realtime chess variant involves two boards placed side by side, two sets, four players, and two clocks. 
+The players sitting side by side are partners and play opposite colors. 
+When you capture a piece, you give it to your partner. 
+When it's your turn, you can either move one of your onboard pieces, or drop one of your offboard pieces on an empty square. 
+Your team loses if you get checkmated or run out of time. 
+
+See http://bughousechess.wz.cz/CompleteBughouseChessRules.htm

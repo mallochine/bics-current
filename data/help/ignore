@@ -1,0 +1,17 @@
+ignore
+
+Usage: +|-|= ignore [user]
+
+  When a player is on your ignore list, you will not hear anything from
+  him/her when he/she tells, shouts, kibitzes, whispers and says.  When
+  users on your ignore list send you a direct message using "tell", they will be
+  not notified of their being on your ignore list.  Here are the variations of the
+  command possible:
+
+      +ignore user     Add "user" to ignore list
+          -ignore user     Remove "user" from ignore list
+              =ignore          Display your ignore list
+
+              See Also:  addlist  kibitz  noplay  say  shout  tell  whisper
+
+              [Last modified: January 21, 2014 -- SKAcz]

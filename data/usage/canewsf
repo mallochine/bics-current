@@ -1,4 +1,0 @@
-  Command:  canewsf
-  Purpose:  changes information for an anews item
-  Usage:    canewsf # text
-  Examples: canewsf 25 Users should contact admins for help registering.

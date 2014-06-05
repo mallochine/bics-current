@@ -1,0 +1,26 @@
+Whitelist
+
+If You set whitelist 1, then only players You added to corresponding whitelist can interact with You.
+
+List of whitelists:
+allowall - ultimate white list, players listed here can fully interact with You
+allowtell - players listed here can talk/chat with You
+allowplay - players listed here can match You 
+
+To see who is in Your list use =list,
+to add/remove player use +/-list player.
+Example:
+I have 3 friends SKAcz, Matejus, Wir and only with them wish interact on server.
+So I will use this commands:
++allowall SKAcz
++allowall Matejus
++allowall Wir
+set whitelist 1
+
+Also i can check list like 
+=allowall
+-- allowall list: 3 names --
+Matejus  SKAcz    Wir  
+
+See also blacklist
+

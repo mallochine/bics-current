@@ -1,0 +1,21 @@
+Blacklist
+
+If You add player to blacklist, he will be removed from corresponding interaction with You.
+
+List of blacklists:
+censor - ultimate black list, players listed here cannot interact with You
+ignore - players listed here cannot talk/chat with You
+noplay - players listed here cannot match You
+set tell 0 - unregistered users cannot interact wirh You
+set shout 0 - You will not listen shouts
+set cshout 0 - You will not listen cshouts
+-ch 24 - You will not listen channel 24
+
+Example:
++censor Spamerix
+=censor
+-- censor list: 1 names --
+Spamerix
+
+
+See also whitelist
